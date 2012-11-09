@@ -1,0 +1,2 @@
+C:\MinGW\bin\ar.exe cr ..\..\..\lib\libsfml-main.a  CMakeFiles/sfml-main.dir/SFML_Main.cpp.obj
+C:\MinGW\bin\ranlib.exe ..\..\..\lib\libsfml-main.a
