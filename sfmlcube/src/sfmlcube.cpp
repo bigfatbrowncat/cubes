@@ -2,25 +2,35 @@
 ////////////////////////////////////////////////////////////
 // Headers
 ////////////////////////////////////////////////////////////
-#include <SFML/Window/Window.hpp>
-#include <SFML/Window.hpp>
+#include <SFML/Graphics.hpp>
 #include <fstream>
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-////////////////////////////////////////////////////////////
-/// Entry point of application
-///
-/// \return Application exit code
-///
-////////////////////////////////////////////////////////////
+void setPerspective(const sf::Window& win)
+{
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    gluPerspective(90.f, (float)win.getSize().x / win.getSize().y, 1.f, 500.f);
+}
+
 int main()
 {
     // Create the main window
-    sf::Window App(sf::VideoMode(640, 480, 32), "SFML Window");
+	unsigned int antialias = 8;
+
+
+    sf::Window app(sf::VideoMode(640, 480, 32),
+                   "SFML Window",
+                   sf::Style::Close | sf::Style::Resize,
+                   sf::ContextSettings(24, 8, antialias, 3, 2));
+
+    app.setFramerateLimit(60);
 
     // Create a clock for measuring the time elapsed
     sf::Clock Clock;
+
+
 
     // Set the color and depth clear values
     glClearDepth(1.f);
@@ -31,34 +41,35 @@ int main()
     glDepthMask(GL_TRUE);
 
     // Setup a perspective projection
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    gluPerspective(90.f, 1.f, 1.f, 500.f);
+    setPerspective(app);
 
     // Start the game loop
-    while (App.isOpen())
+    while (app.isOpen())
     {
         // Process events
         sf::Event Event;
-        while (App.pollEvent(Event))
+        while (app.pollEvent(Event))
         {
             // Close window : exit
             if (Event.type == sf::Event::Closed)
-                App.close();
+                app.close();
 
             // Escape key : exit
             if ((Event.type == sf::Event::KeyPressed) && (Event.key.code == sf::Keyboard::Escape))
-                App.close();
+                app.close();
 
             // Resize event : adjust viewport
             if (Event.type == sf::Event::Resized)
+            {
                 glViewport(0, 0, Event.size.width, Event.size.height);
+                setPerspective(app);
+            }
         }
 
         // Set the active window before using OpenGL commands
         // It's useless here because the active window is always the same,
         // but don't forget it if you use multiple windows
-        App.setActive();
+        app.setActive();
 
         // Clear color and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -113,7 +124,7 @@ int main()
         glEnd();
 
         // Finally, display the rendered frame on screen
-        App.display();
+        app.display();
     }
 
     return 0;//EXIT_SUCCESS;
