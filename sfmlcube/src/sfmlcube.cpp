@@ -7,6 +7,8 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
+#include "objloader.h"
+
 void setPerspective(const sf::Window& win)
 {
     glMatrixMode(GL_PROJECTION);
@@ -14,7 +16,7 @@ void setPerspective(const sf::Window& win)
     gluPerspective(90.f, (float)win.getSize().x / win.getSize().y, 1.f, 500.f);
 }
 
-void drawCube(const sf::Window& win, float xangle, float yangle, float zangle)
+void drawList(int num, const sf::Window& win, float xangle, float yangle, float zangle)
 {
     // Set the active window before using OpenGL commands
     // It's useless here because the active window is always the same,
@@ -32,6 +34,23 @@ void drawCube(const sf::Window& win, float xangle, float yangle, float zangle)
     glRotatef(yangle, 0.f, 1.f, 0.f);
     glRotatef(zangle, 0.f, 0.f, 1.f);
 
+    glScalef(50, 50, 50);
+
+    //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
+    //glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    GLfloat ambientLight[4] = {0.2, 0.2, 0.2, 1.0};
+    GLfloat diffuseLight[4] = {0.8, 0.8, 0.8, 1.0};
+    GLfloat specularLight[4] = {0.8, 0.8, 0.8, 1.0};
+    GLfloat positionLight[4] = {50, 50, 50, 1.0};
+    glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
+    glLightfv(GL_LIGHT0, GL_POSITION, positionLight);
+
+    glCallList(num);
+    /*
     // Draw a cube
     glBegin(GL_QUADS);
 
@@ -72,6 +91,7 @@ void drawCube(const sf::Window& win, float xangle, float yangle, float zangle)
         glVertex3f( 50.f, 50.f,  50.f);
 
     glEnd();
+    */
 }
 
 void updateTextPosition(sf::RenderWindow& win, sf::Text& text)
@@ -128,6 +148,9 @@ int main()
     glEnable(GL_DEPTH_TEST);
     glDepthMask(GL_TRUE);
 
+    objloader ol;
+    int num = ol.load("res/cube.obj", "res");
+
     // Setup a perspective projection
     setPerspective(app);
     updateView(app);
@@ -157,7 +180,7 @@ int main()
             }
         }
 
-        drawCube(app,
+        drawList(num, app,
                  clock.getElapsedTime().asSeconds() * 50,
                  clock.getElapsedTime().asSeconds() * 30,
                  clock.getElapsedTime().asSeconds() * 90);
