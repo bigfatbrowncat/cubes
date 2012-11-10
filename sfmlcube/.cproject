@@ -49,14 +49,16 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug.1602856165" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug">
 								<option id="gnu.cpp.link.option.flags.876182125" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -static-libstdc++" valueType="string"/>
 								<option id="gnu.cpp.link.option.libs.1522127800" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="sfml-graphics-s"/>
-									<listOptionValue builtIn="false" value="sfml-window-s"/>
-									<listOptionValue builtIn="false" value="sfml-system-s"/>
-									<listOptionValue builtIn="false" value="opengl32"/>
+									<listOptionValue builtIn="false" value="sfml-graphics-s-d"/>
+									<listOptionValue builtIn="false" value="sfml-window-s-d"/>
+									<listOptionValue builtIn="false" value="sfml-system-s-d"/>
 									<listOptionValue builtIn="false" value="glu32"/>
+									<listOptionValue builtIn="false" value="opengl32"/>
+									<listOptionValue builtIn="false" value="winmm"/>
+									<listOptionValue builtIn="false" value="gdi32"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1027495751" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SFML/out/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/out/Debug/lib}&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.547402574" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
@@ -122,11 +124,13 @@
 									<listOptionValue builtIn="false" value="sfml-graphics-s"/>
 									<listOptionValue builtIn="false" value="sfml-window-s"/>
 									<listOptionValue builtIn="false" value="sfml-system-s"/>
-									<listOptionValue builtIn="false" value="opengl32"/>
 									<listOptionValue builtIn="false" value="glu32"/>
+									<listOptionValue builtIn="false" value="opengl32"/>
+									<listOptionValue builtIn="false" value="winmm"/>
+									<listOptionValue builtIn="false" value="gdi32"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1869583647" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/SFML/out/lib}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/out/Release/lib}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.2035393543" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -static-libstdc++" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.219855867" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
