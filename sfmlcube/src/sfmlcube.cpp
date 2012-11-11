@@ -13,7 +13,7 @@ void setPerspective(const sf::Window& win)
 {
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    gluPerspective(90.f, (float)win.getSize().x / win.getSize().y, 1.f, 500.f);
+    gluPerspective(50.f, (float)win.getSize().x / win.getSize().y, 1.f, 1000.f);
 }
 
 void prepareShaders(sf::Shader& shad)
@@ -23,6 +23,9 @@ void prepareShaders(sf::Shader& shad)
 		printf("Can't load the shader. Sorry...");
 	}
 	shad.setParameter("texture", sf::Shader::CurrentTexture);
+	shad.setParameter("lightpos", sf::Vector3f(100, 100, -200));
+	shad.setParameter("shininess", 3);
+	shad.setParameter("ambient", 0.2, 0.2, 0.2, 1);
 }
 
 void drawList(int num, const sf::Shader& shad, const sf::Window& win, float xangle, float yangle, float zangle)
@@ -39,25 +42,25 @@ void drawList(int num, const sf::Shader& shad, const sf::Window& win, float xang
     // Apply some transformations
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    glTranslatef(0.f, 0.f, -200.f);
+    glTranslatef(0.f, 10.f, -300.f);
+    glScalef(60, 60, 60);
     glRotatef(xangle, 1.f, 0.f, 0.f);
     glRotatef(yangle, 0.f, 1.f, 0.f);
     glRotatef(zangle, 0.f, 0.f, 1.f);
 
-    glScalef(50, 50, 50);
 
     //glLightModeli(GL_LIGHT_MODEL_LOCAL_VIEWER, GL_TRUE);
     //glEnable(GL_LIGHTING);
-    glEnable(GL_LIGHT0);
+    //glEnable(GL_LIGHT0);
 
-    GLfloat ambientLight[4] = {0.2, 0.2, 0.2, 1.0};
+    /*GLfloat ambientLight[4] = {0.2, 0.2, 0.2, 1.0};
     GLfloat diffuseLight[4] = {0.8, 0.8, 0.8, 1.0};
     GLfloat specularLight[4] = {0.8, 0.8, 0.8, 1.0};
     GLfloat positionLight[4] = {50, 50, 50, 1.0};
     glLightfv(GL_LIGHT0, GL_AMBIENT, ambientLight);
     glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuseLight);
     glLightfv(GL_LIGHT0, GL_SPECULAR, specularLight);
-    glLightfv(GL_LIGHT0, GL_POSITION, positionLight);
+    glLightfv(GL_LIGHT0, GL_POSITION, positionLight);*/
 
     glCallList(num);
     /*
@@ -108,12 +111,12 @@ void drawList(int num, const sf::Shader& shad, const sf::Window& win, float xang
 void updateTextPosition(sf::RenderWindow& win, sf::Text& text)
 {
 	text.setPosition(win.getSize().x / 2 - text.getGlobalBounds().width / 2,
-			         win.getSize().y / 2 - text.getGlobalBounds().height / 2);
+			         3 * win.getSize().y / 4 - text.getGlobalBounds().height / 2);
 }
 
 sf::Text createText(sf::RenderWindow& win, const sf::Font& font)
 {
-    sf::Text text("Hello", font, 30);
+    sf::Text text("Zis is da monkey", font, 30);
     updateTextPosition(win, text);
     return text;
 }
@@ -133,7 +136,7 @@ int main()
 
 
     sf::RenderWindow mainWindow(sf::VideoMode(800, 600, 32),
-                   "SFML Window",
+                   "Hello, monkey!",
                    sf::Style::Close | sf::Style::Resize,
                    sf::ContextSettings(24, 8, antialias, 3, 2));
 
@@ -158,7 +161,8 @@ int main()
     glDepthMask(GL_TRUE);
 
     objloader ol;
-    int num = ol.load("res/cube.obj", "res");
+    int num = ol.load("res/monkey.obj", "res");
+    //ol.smoothnormals();
 
     sf::Shader shad;
     prepareShaders(shad);
@@ -193,9 +197,9 @@ int main()
         }
 
         drawList(num, shad, mainWindow,
-                 clock.getElapsedTime().asSeconds() * 50,
+                 /*clock.getElapsedTime().asSeconds() * 50*/0,
                  clock.getElapsedTime().asSeconds() * 30,
-                 clock.getElapsedTime().asSeconds() * 90);
+                 /*clock.getElapsedTime().asSeconds() * 90*/0);
 
         mainWindow.pushGLStates();
         mainWindow.draw(text, sf::RenderStates::Default);

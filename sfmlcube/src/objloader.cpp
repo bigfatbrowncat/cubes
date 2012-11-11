@@ -3,23 +3,23 @@
 #include "objloader.h"
 #include "string.h"
 
-	face::face(int facen,unsigned int f1,unsigned int f2,unsigned int f3,int t1,int t2,int t3,int m){
-		facenum=facen;
-		faces[0]=f1;
-		faces[1]=f2;
-		faces[2]=f3;
+	face::face(int faceNormal,unsigned int v1,unsigned int v2,unsigned int v3,int t1,int t2,int t3,int m){
+		faceNormalIndex=faceNormal;
+		vertexIndexes[0]=v1;
+		vertexIndexes[1]=v2;
+		vertexIndexes[2]=v3;
 		texcoord[0]=t1;
 		texcoord[1]=t2;
 		texcoord[2]=t3;
 		mat=m;
 		four=false;
 	}
-	face::face(int facen,unsigned int f1,unsigned int f2,unsigned int f3,unsigned int f4,int t1,int t2,int t3,int t4,int m){
-		facenum=facen;
-		faces[0]=f1;
-		faces[1]=f2;
-		faces[2]=f3;
-		faces[3]=f4;
+	face::face(int faceNormal,unsigned int v1,unsigned int v2,unsigned int v3,unsigned int v4,int t1,int t2,int t3,int t4,int m){
+		faceNormalIndex=faceNormal;
+		vertexIndexes[0]=v1;
+		vertexIndexes[1]=v2;
+		vertexIndexes[2]=v3;
+		vertexIndexes[3]=v4;
 		texcoord[0]=t1;
 		texcoord[1]=t2;
 		texcoord[2]=t3;
@@ -298,66 +298,66 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 		if(faces[i]->four)
 		{
 			glBegin(GL_QUADS);
-				if (faces[i]->facenum > 0)	// strange case facenum == -1 -- what does it mean??
+				if (faces[i]->faceNormalIndex > 0 && !isvertexnormal)	// strange case facenum == -1 -- what does it mean??
 				{
-					glNormal3f(normals[faces[i]->facenum-1]->x,normals[faces[i]->facenum-1]->y,normals[faces[i]->facenum-1]->z);
+					glNormal3f(normals[faces[i]->faceNormalIndex-1]->x,normals[faces[i]->faceNormalIndex-1]->y,normals[faces[i]->faceNormalIndex-1]->z);
 				}
 				
 				if(istexture && materials[faces[i]->mat]->texture!=-1)
 					glTexCoord2f(texturevector3d[faces[i]->texcoord[0]-1]->u,texturevector3d[faces[i]->texcoord[0]-1]->v);
 
 				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->faces[0]-1]->x,vertexnormals[faces[i]->faces[0]-1]->y,vertexnormals[faces[i]->faces[0]-1]->z);
+					glNormal3f(vertexnormals[faces[i]->vertexIndexes[0]-1]->x,vertexnormals[faces[i]->vertexIndexes[0]-1]->y,vertexnormals[faces[i]->vertexIndexes[0]-1]->z);
 
 				
-				glVertex3f(vertex[faces[i]->faces[0]-1]->x,vertex[faces[i]->faces[0]-1]->y,vertex[faces[i]->faces[0]-1]->z);
+				glVertex3f(vertex[faces[i]->vertexIndexes[0]-1]->x,vertex[faces[i]->vertexIndexes[0]-1]->y,vertex[faces[i]->vertexIndexes[0]-1]->z);
 				
 				if(istexture && materials[faces[i]->mat]->texture!=-1)
 					glTexCoord2f(texturevector3d[faces[i]->texcoord[1]-1]->u,texturevector3d[faces[i]->texcoord[1]-1]->v);
 
 
 				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->faces[1]-1]->x,vertexnormals[faces[i]->faces[1]-1]->y,vertexnormals[faces[i]->faces[1]-1]->z);
+					glNormal3f(vertexnormals[faces[i]->vertexIndexes[1]-1]->x,vertexnormals[faces[i]->vertexIndexes[1]-1]->y,vertexnormals[faces[i]->vertexIndexes[1]-1]->z);
 				
-				glVertex3f(vertex[faces[i]->faces[1]-1]->x,vertex[faces[i]->faces[1]-1]->y,vertex[faces[i]->faces[1]-1]->z);
+				glVertex3f(vertex[faces[i]->vertexIndexes[1]-1]->x,vertex[faces[i]->vertexIndexes[1]-1]->y,vertex[faces[i]->vertexIndexes[1]-1]->z);
 				
 				if(istexture && materials[faces[i]->mat]->texture!=-1)
 					glTexCoord2f(texturevector3d[faces[i]->texcoord[2]-1]->u,texturevector3d[faces[i]->texcoord[2]-1]->v);
 
 				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->faces[2]-1]->x,vertexnormals[faces[i]->faces[2]-1]->y,vertexnormals[faces[i]->faces[2]-1]->z);
+					glNormal3f(vertexnormals[faces[i]->vertexIndexes[2]-1]->x,vertexnormals[faces[i]->vertexIndexes[2]-1]->y,vertexnormals[faces[i]->vertexIndexes[2]-1]->z);
 
-				glVertex3f(vertex[faces[i]->faces[2]-1]->x,vertex[faces[i]->faces[2]-1]->y,vertex[faces[i]->faces[2]-1]->z);
+				glVertex3f(vertex[faces[i]->vertexIndexes[2]-1]->x,vertex[faces[i]->vertexIndexes[2]-1]->y,vertex[faces[i]->vertexIndexes[2]-1]->z);
 				
 				if(istexture && materials[faces[i]->mat]->texture!=-1)
 					glTexCoord2f(texturevector3d[faces[i]->texcoord[3]-1]->u,texturevector3d[faces[i]->texcoord[3]-1]->v);
 
 				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->faces[3]-1]->x,vertexnormals[faces[i]->faces[3]-1]->y,vertexnormals[faces[i]->faces[3]-1]->z);
+					glNormal3f(vertexnormals[faces[i]->vertexIndexes[3]-1]->x,vertexnormals[faces[i]->vertexIndexes[3]-1]->y,vertexnormals[faces[i]->vertexIndexes[3]-1]->z);
 			
-				glVertex3f(vertex[faces[i]->faces[3]-1]->x,vertex[faces[i]->faces[3]-1]->y,vertex[faces[i]->faces[3]-1]->z);
+				glVertex3f(vertex[faces[i]->vertexIndexes[3]-1]->x,vertex[faces[i]->vertexIndexes[3]-1]->y,vertex[faces[i]->vertexIndexes[3]-1]->z);
 			glEnd();
 		}else{
 			glBegin(GL_TRIANGLES);
-				glNormal3f(normals[faces[i]->facenum-1]->x,normals[faces[i]->facenum-1]->y,normals[faces[i]->facenum-1]->z);
+				glNormal3f(normals[faces[i]->faceNormalIndex-1]->x,normals[faces[i]->faceNormalIndex-1]->y,normals[faces[i]->faceNormalIndex-1]->z);
 
 				if(istexture && materials[faces[i]->mat]->texture!=-1)
 					glTexCoord2f(texturevector3d[faces[i]->texcoord[0]-1]->u,texturevector3d[faces[i]->texcoord[0]-1]->v);
 
 				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->faces[0]-1]->x,vertexnormals[faces[i]->faces[0]-1]->y,vertexnormals[faces[i]->faces[0]-1]->z);
+					glNormal3f(vertexnormals[faces[i]->vertexIndexes[0]-1]->x,vertexnormals[faces[i]->vertexIndexes[0]-1]->y,vertexnormals[faces[i]->vertexIndexes[0]-1]->z);
 
 
-				glVertex3f(vertex[faces[i]->faces[0]-1]->x,vertex[faces[i]->faces[0]-1]->y,vertex[faces[i]->faces[0]-1]->z);
+				glVertex3f(vertex[faces[i]->vertexIndexes[0]-1]->x,vertex[faces[i]->vertexIndexes[0]-1]->y,vertex[faces[i]->vertexIndexes[0]-1]->z);
 				
 				if(istexture && materials[faces[i]->mat]->texture!=-1)
 					glTexCoord2f(texturevector3d[faces[i]->texcoord[1]-1]->u,texturevector3d[faces[i]->texcoord[1]-1]->v);
 				
 				
 				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->faces[1]-1]->x,vertexnormals[faces[i]->faces[1]-1]->y,vertexnormals[faces[i]->faces[1]-1]->z);
+					glNormal3f(vertexnormals[faces[i]->vertexIndexes[1]-1]->x,vertexnormals[faces[i]->vertexIndexes[1]-1]->y,vertexnormals[faces[i]->vertexIndexes[1]-1]->z);
 				
-				glVertex3f(vertex[faces[i]->faces[1]-1]->x,vertex[faces[i]->faces[1]-1]->y,vertex[faces[i]->faces[1]-1]->z);
+				glVertex3f(vertex[faces[i]->vertexIndexes[1]-1]->x,vertex[faces[i]->vertexIndexes[1]-1]->y,vertex[faces[i]->vertexIndexes[1]-1]->z);
 				
 				
 				if(istexture && materials[faces[i]->mat]->texture!=-1)
@@ -365,9 +365,9 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 
 
 				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->faces[2]-1]->x,vertexnormals[faces[i]->faces[2]-1]->y,vertexnormals[faces[i]->faces[2]-1]->z);
+					glNormal3f(vertexnormals[faces[i]->vertexIndexes[2]-1]->x,vertexnormals[faces[i]->vertexIndexes[2]-1]->y,vertexnormals[faces[i]->vertexIndexes[2]-1]->z);
 		
-				glVertex3f(vertex[faces[i]->faces[2]-1]->x,vertex[faces[i]->faces[2]-1]->y,vertex[faces[i]->faces[2]-1]->z);
+				glVertex3f(vertex[faces[i]->vertexIndexes[2]-1]->x,vertex[faces[i]->vertexIndexes[2]-1]->y,vertex[faces[i]->vertexIndexes[2]-1]->z);
 			glEnd();
 		}
 	}
@@ -438,7 +438,7 @@ objloader::objloader()
 	ismaterial=false;
 	isnormals=false;
 	istexture=false;
-	isvertexnormal=false;
+	isvertexnormal=true;
 }
 
 void objloader::smoothnormals()
@@ -449,12 +449,15 @@ void objloader::smoothnormals()
 		int num=0;
 		for(unsigned int j=0;j<faces.size();j++)
 		{
-			if(faces[j]->faces[0]==i || faces[j]->faces[1]==i || faces[j]->faces[2]==i || faces[j]->faces[3]==i)
+			for (int k = 0; k < 4; k++)
 			{
-				vecX+=normals[faces[j]->facenum-1]->x;
-				vecY+=normals[faces[j]->facenum-1]->y;
-				vecZ+=normals[faces[j]->facenum-1]->z;
-				num++;
+				if(faces[j]->vertexIndexes[k]==i)
+				{
+					vecX+=normals[faces[j]->faceNormalIndex - 1]->x;
+					vecY+=normals[faces[j]->faceNormalIndex - 1]->y;
+					vecZ+=normals[faces[j]->faceNormalIndex - 1]->z;
+					num++;
+				}
 			}
 		}
 		if(num)

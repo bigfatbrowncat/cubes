@@ -22,9 +22,9 @@
 
 
 struct face{
-	int facenum;
+	int faceNormalIndex;
 	bool four;
-	unsigned int faces[4];
+	unsigned int vertexIndexes[4];
 	int texcoord[4];
 	int mat;
 	face(int facen,unsigned int f1,unsigned int f2,unsigned int f3,int t1,int t2,int t3,int m);
