@@ -16,12 +16,22 @@ void setPerspective(const sf::Window& win)
     gluPerspective(90.f, (float)win.getSize().x / win.getSize().y, 1.f, 500.f);
 }
 
-void drawList(int num, const sf::Window& win, float xangle, float yangle, float zangle)
+void prepareShaders(sf::Shader& shad)
+{
+	if (!shad.loadFromFile("res/minimal.vert", "res/minimal.frag"))
+	{
+		printf("Can't load the shader. Sorry...");
+	}
+	shad.setParameter("texture", sf::Shader::CurrentTexture);
+}
+
+void drawList(int num, const sf::Shader& shad, const sf::Window& win, float xangle, float yangle, float zangle)
 {
     // Set the active window before using OpenGL commands
     // It's useless here because the active window is always the same,
     // but don't forget it if you use multiple windows
 	win.setActive();
+	shad.bind();
 
     // Clear color and depth buffer
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -92,6 +102,7 @@ void drawList(int num, const sf::Window& win, float xangle, float yangle, float 
 
     glEnd();
     */
+    //shad.unbind();
 }
 
 void updateTextPosition(sf::RenderWindow& win, sf::Text& text)
@@ -121,14 +132,12 @@ int main()
 	unsigned int antialias = 8;
 
 
-    sf::RenderWindow app(sf::VideoMode(800, 600, 32),
+    sf::RenderWindow mainWindow(sf::VideoMode(800, 600, 32),
                    "SFML Window",
                    sf::Style::Close | sf::Style::Resize,
                    sf::ContextSettings(24, 8, antialias, 3, 2));
 
-    //sf::RenderWindow rw;
-
-    app.setFramerateLimit(60);
+    mainWindow.setFramerateLimit(60);
 
     // Create a clock for measuring the time elapsed
     sf::Clock clock;
@@ -138,7 +147,7 @@ int main()
 
     mainFont.loadFromFile("fonts/arian_amu/arnamu.ttf");
 
-    sf::Text text = createText(app, mainFont);
+    sf::Text text = createText(mainWindow, mainFont);
 
     // Set the color and depth clear values
     glClearDepth(1.f);
@@ -151,46 +160,49 @@ int main()
     objloader ol;
     int num = ol.load("res/cube.obj", "res");
 
+    sf::Shader shad;
+    prepareShaders(shad);
+
     // Setup a perspective projection
-    setPerspective(app);
-    updateView(app);
+    setPerspective(mainWindow);
+    updateView(mainWindow);
 
     // Start the game loop
-    while (app.isOpen())
+    while (mainWindow.isOpen())
     {
         // Process events
         sf::Event Event;
-        while (app.pollEvent(Event))
+        while (mainWindow.pollEvent(Event))
         {
             // Close window : exit
             if (Event.type == sf::Event::Closed)
-                app.close();
+                mainWindow.close();
 
             // Escape key : exit
             if ((Event.type == sf::Event::KeyPressed) && (Event.key.code == sf::Keyboard::Escape))
-                app.close();
+                mainWindow.close();
 
             // Resize event : adjust viewport
             if (Event.type == sf::Event::Resized)
             {
                 glViewport(0, 0, Event.size.width, Event.size.height);
-                setPerspective(app);
-                updateTextPosition(app, text);
-                updateView(app);
+                setPerspective(mainWindow);
+                updateTextPosition(mainWindow, text);
+                updateView(mainWindow);
             }
         }
 
-        drawList(num, app,
+        drawList(num, shad, mainWindow,
                  clock.getElapsedTime().asSeconds() * 50,
                  clock.getElapsedTime().asSeconds() * 30,
                  clock.getElapsedTime().asSeconds() * 90);
 
-        app.pushGLStates();
-        app.draw(text, sf::RenderStates::Default);
-        app.popGLStates();
+        mainWindow.pushGLStates();
+        mainWindow.draw(text, sf::RenderStates::Default);
+        mainWindow.popGLStates();
 
         // Finally, display the rendered frame on screen
-        app.display();
+        mainWindow.display();
     }
 
     return 0;//EXIT_SUCCESS;
