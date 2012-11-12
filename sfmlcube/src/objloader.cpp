@@ -3,28 +3,43 @@
 #include "objloader.h"
 #include "string.h"
 
-	face::face(int faceNormal,unsigned int v1,unsigned int v2,unsigned int v3,int t1,int t2,int t3,int m){
-		faceNormalIndex=faceNormal;
+	face::face(int v1, int v2, int v3, int t1, int t2, int t3, int n1, int n2, int n3, int m)
+	{
 		vertexIndexes[0]=v1;
 		vertexIndexes[1]=v2;
 		vertexIndexes[2]=v3;
-		texcoord[0]=t1;
-		texcoord[1]=t2;
-		texcoord[2]=t3;
+
+		textureCoords[0]=t1;
+		textureCoords[1]=t2;
+		textureCoords[2]=t3;
+
+		normals[0]=n1;
+		normals[1]=n2;
+		normals[2]=n3;
+
 		mat=m;
+
 		four=false;
 	}
-	face::face(int faceNormal,unsigned int v1,unsigned int v2,unsigned int v3,unsigned int v4,int t1,int t2,int t3,int t4,int m){
-		faceNormalIndex=faceNormal;
+	face::face(int v1, int v2, int v3, int v4, int t1, int t2, int t3, int t4, int n1, int n2, int n3, int n4, int m)
+	{
 		vertexIndexes[0]=v1;
 		vertexIndexes[1]=v2;
 		vertexIndexes[2]=v3;
 		vertexIndexes[3]=v4;
-		texcoord[0]=t1;
-		texcoord[1]=t2;
-		texcoord[2]=t3;
-		texcoord[3]=t4;
+
+		textureCoords[0]=t1;
+		textureCoords[1]=t2;
+		textureCoords[2]=t3;
+		textureCoords[3]=t4;
+
+		normals[0]=n1;
+		normals[1]=n2;
+		normals[2]=n3;
+		normals[3]=n4;
+
 		mat=m;
+
 		four=true;
 	}
 	
@@ -96,56 +111,75 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 		{
 			float tmpx,tmpy,tmpz;
 			sscanf(coord[i]->c_str(),"vn %f %f %f",&tmpx,&tmpy,&tmpz);
-			normals.push_back(new sf::Vector3f(tmpx,tmpy,tmpz));
+			vertexnormals.push_back(new sf::Vector3f(tmpx,tmpy,tmpz));
 		}else if((*coord[i])[0]=='f')
 		{
-			int a,b,c,d,e;
-			
-			
-			/*if(coll && collplane!=NULL)
-			{
-				sscanf(coord[i]->c_str(),"f %d//%d %d//%d %d//%d %d//%d",&a,&b,&c,&b,&d,&b,&e,&b);
-				collplane->push_back(collisionplane(normals[b-1]->x,normals[b-1]->y,normals[b-1]->z,vertex[a-1]->x,vertex[a-1]->y,vertex[a-1]->z,vertex[c-1]->x,vertex[c-1]->y,vertex[c-1]->z,vertex[d-1]->x,vertex[d-1]->y,vertex[d-1]->z,vertex[e-1]->x,vertex[e-1]->y,vertex[e-1]->z));
-			}else*/{
-			
-					
 			if(count(coord[i]->begin(),coord[i]->end(),' ')==4)
 			{
+				// Initializing memory
+				int v[4], vt[4], vn[4];
+				for (int k = 0; k < 4; k++)
+				{
+					v[k] = -1;
+					vt[k] = -1;
+					vn[k] = -1;
+				}
+
+				// Parsing face data
 				if(coord[i]->find("//")!=std::string::npos)
 				{
-					sscanf(coord[i]->c_str(),"f %d//%d %d//%d %d//%d %d//%d",&a,&b,&c,&b,&d,&b,&e,&b);
-					faces.push_back(new face(b,a,c,d,e,0,0,0,0,curmat));
+					sscanf(coord[i]->c_str(),"f %d//%d %d//%d %d//%d %d//%d", &v[0], &vn[0], &v[1], &vn[1], &v[2], &vn[2], &v[3], &vn[3]);
 				}
 				else if(count(*(coord[i]), '/') == 4)
 				{
-					int vt[4];
-					sscanf(coord[i]->c_str(),"f %d/%d %d/%d %d/%d %d/%d",&a,&vt[0],&c,&vt[1],&d,&vt[2],&e,&vt[3]);
-					faces.push_back(new face(-1,a,c,d,e,vt[0],vt[1],vt[2],vt[3],curmat));	// I don't know what to put into facenum, so I put -1 there
+					sscanf(coord[i]->c_str(),"f %d/%d %d/%d %d/%d %d/%d", &v[0], &vt[0], &v[1], &vt[1], &v[2], &vt[2], &v[3], &vt[3]);
 				}
 				else if(coord[i]->find("/")!=std::string::npos)
 				{
-					int t[4];
-					sscanf(coord[i]->c_str(),"f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d",&a,&t[0],&b,&c,&t[1],&b,&d,&t[2],&b,&e,&t[3],&b);
-					faces.push_back(new face(b,a,c,d,e,t[0],t[1],t[2],t[3],curmat));
-				}else{
-					sscanf(coord[i]->c_str(),"f %d %d %d %d",&a,&b,&c,&d);
-					faces.push_back(new face(-1,a,b,c,d,0,0,0,0,curmat));					
+					sscanf(coord[i]->c_str(),"f %d/%d/%d %d/%d/%d %d/%d/%d %d/%d/%d", &v[0], &vt[0], &vn[0],
+					                                                                  &v[1], &vt[1], &vn[1],
+					                                                                  &v[2], &vt[2], &vn[2],
+					                                                                  &v[3], &vt[3], &vn[3]);
 				}
-			}else{
-					if(coord[i]->find("//")!=std::string::npos)
-					{
-						sscanf(coord[i]->c_str(),"f %d//%d %d//%d %d//%d",&a,&b,&c,&b,&d,&b);
-						faces.push_back(new face(b,a,c,d,0,0,0,curmat));
-					}else if(coord[i]->find("/")!=std::string::npos)
-					{
-						int t[3];
-						sscanf(coord[i]->c_str(),"f %d/%d/%d %d/%d/%d %d/%d/%d",&a,&t[0],&b,&c,&t[1],&b,&d,&t[2],&b);
-						faces.push_back(new face(b,a,c,d,t[0],t[1],t[2],curmat));
-					}else{
-						sscanf(coord[i]->c_str(),"f %d %d %d",&a,&b,&c);
-						faces.push_back(new face(-1,a,b,c,0,0,0,curmat));					
-					}
+				else
+				{
+					sscanf(coord[i]->c_str(),"f %d %d %d %d", &v[0], &v[1], &v[2], &v[3]);
+				}
+
+				// Creating the new face
+				faces.push_back(new face(v[0], v[1], v[2], v[3], vt[0], vt[1], vt[2], vt[3], vn[0], vn[1], vn[2], vn[3], curmat));
 			}
+			else
+			{
+				// Initializing memory
+				int v[3], vt[3], vn[3];
+				for (int k = 0; k < 3; k++)
+				{
+					v[k] = -1;
+					vt[k] = -1;
+					vn[k] = -1;
+				}
+
+				// Parsing face data
+				if(coord[i]->find("//")!=std::string::npos)
+				{
+					sscanf(coord[i]->c_str(),"f %d//%d %d//%d %d//%d", &v[0], &vn[0], &v[1], &vn[1], &v[2], &vn[2]);
+				}
+				else if(count(*(coord[i]), '/') == 3)
+				{
+					sscanf(coord[i]->c_str(),"f %d/%d %d/%d %d/%d", &v[0], &vt[0], &v[1], &vt[1], &v[2], &vt[2]);
+				}
+				else if(coord[i]->find("/")!=std::string::npos)
+				{
+					sscanf(coord[i]->c_str(),"f %d/%d/%d %d/%d/%d %d/%d/%d", &v[0], &vt[0], &vn[0], &v[1], &vt[1], &vn[1], &v[2], &vt[2], &vn[2]);
+				}
+				else
+				{
+					sscanf(coord[i]->c_str(),"f %d %d %d", &v[0], &v[1], &v[2]);
+				}
+
+				// Creating the new face
+				faces.push_back(new face(v[0], v[1], v[2], v[3], vt[0], vt[1], vt[2], vt[3], vn[0], vn[1], vn[2], vn[3], curmat));
 		}
 	}else if((*coord[i])[0]=='u' && (*coord[i])[1]=='s' && (*coord[i])[2]=='e')
 	{
@@ -267,7 +301,7 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 		ismaterial=false;
 	else
 		ismaterial=true;
-	std::cout << vertex.size() << " " << normals.size() << " " << faces.size() << " " << materials.size() << std::endl; 
+	std::cout << "[OBJ loader] Loaded: " << vertex.size() << " vertices, " << vertexnormals.size() << " normals, " << faces.size() << " faces, " << materials.size() << " materials" << std::endl;
 	//draw
 	if(isvertexnormal)
 		smoothnormals();
@@ -298,76 +332,53 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 		if(faces[i]->four)
 		{
 			glBegin(GL_QUADS);
-				if (faces[i]->faceNormalIndex > 0 && !isvertexnormal)	// strange case facenum == -1 -- what does it mean??
+
+			for (int k = 0; k < 4; k++)
+			{
+				if (faces[i]->textureCoords[k] > 0)
 				{
-					glNormal3f(normals[faces[i]->faceNormalIndex-1]->x,normals[faces[i]->faceNormalIndex-1]->y,normals[faces[i]->faceNormalIndex-1]->z);
+					glTexCoord2f(texturevector3d[faces[i]->textureCoords[k] - 1]->u,
+								 texturevector3d[faces[i]->textureCoords[k] - 1]->v);
 				}
-				
-				if(istexture && materials[faces[i]->mat]->texture!=-1)
-					glTexCoord2f(texturevector3d[faces[i]->texcoord[0]-1]->u,texturevector3d[faces[i]->texcoord[0]-1]->v);
 
-				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->vertexIndexes[0]-1]->x,vertexnormals[faces[i]->vertexIndexes[0]-1]->y,vertexnormals[faces[i]->vertexIndexes[0]-1]->z);
+				if (faces[i]->normals[k] != -1)
+				{
+					glNormal3f(vertexnormals[faces[i]->normals[k] - 1]->x,
+							   vertexnormals[faces[i]->normals[k] - 1]->y,
+							   vertexnormals[faces[i]->normals[k] - 1]->z);
+				}
 
-				
-				glVertex3f(vertex[faces[i]->vertexIndexes[0]-1]->x,vertex[faces[i]->vertexIndexes[0]-1]->y,vertex[faces[i]->vertexIndexes[0]-1]->z);
-				
-				if(istexture && materials[faces[i]->mat]->texture!=-1)
-					glTexCoord2f(texturevector3d[faces[i]->texcoord[1]-1]->u,texturevector3d[faces[i]->texcoord[1]-1]->v);
+				glVertex3f(vertex[faces[i]->vertexIndexes[k] - 1]->x,
+						   vertex[faces[i]->vertexIndexes[k] - 1]->y,
+						   vertex[faces[i]->vertexIndexes[k] - 1]->z);
+			}
 
-
-				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->vertexIndexes[1]-1]->x,vertexnormals[faces[i]->vertexIndexes[1]-1]->y,vertexnormals[faces[i]->vertexIndexes[1]-1]->z);
-				
-				glVertex3f(vertex[faces[i]->vertexIndexes[1]-1]->x,vertex[faces[i]->vertexIndexes[1]-1]->y,vertex[faces[i]->vertexIndexes[1]-1]->z);
-				
-				if(istexture && materials[faces[i]->mat]->texture!=-1)
-					glTexCoord2f(texturevector3d[faces[i]->texcoord[2]-1]->u,texturevector3d[faces[i]->texcoord[2]-1]->v);
-
-				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->vertexIndexes[2]-1]->x,vertexnormals[faces[i]->vertexIndexes[2]-1]->y,vertexnormals[faces[i]->vertexIndexes[2]-1]->z);
-
-				glVertex3f(vertex[faces[i]->vertexIndexes[2]-1]->x,vertex[faces[i]->vertexIndexes[2]-1]->y,vertex[faces[i]->vertexIndexes[2]-1]->z);
-				
-				if(istexture && materials[faces[i]->mat]->texture!=-1)
-					glTexCoord2f(texturevector3d[faces[i]->texcoord[3]-1]->u,texturevector3d[faces[i]->texcoord[3]-1]->v);
-
-				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->vertexIndexes[3]-1]->x,vertexnormals[faces[i]->vertexIndexes[3]-1]->y,vertexnormals[faces[i]->vertexIndexes[3]-1]->z);
-			
-				glVertex3f(vertex[faces[i]->vertexIndexes[3]-1]->x,vertex[faces[i]->vertexIndexes[3]-1]->y,vertex[faces[i]->vertexIndexes[3]-1]->z);
 			glEnd();
-		}else{
+		}
+		else
+		{
 			glBegin(GL_TRIANGLES);
-				glNormal3f(normals[faces[i]->faceNormalIndex-1]->x,normals[faces[i]->faceNormalIndex-1]->y,normals[faces[i]->faceNormalIndex-1]->z);
 
-				if(istexture && materials[faces[i]->mat]->texture!=-1)
-					glTexCoord2f(texturevector3d[faces[i]->texcoord[0]-1]->u,texturevector3d[faces[i]->texcoord[0]-1]->v);
+			for (int k = 0; k < 3; k++)
+			{
+				if (faces[i]->textureCoords[k] != -1)
+				{
+					glTexCoord2f(texturevector3d[faces[i]->textureCoords[k] - 1]->u,
+								 texturevector3d[faces[i]->textureCoords[k] - 1]->v);
+				}
 
-				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->vertexIndexes[0]-1]->x,vertexnormals[faces[i]->vertexIndexes[0]-1]->y,vertexnormals[faces[i]->vertexIndexes[0]-1]->z);
+				if (faces[i]->normals[k] != -1)
+				{
+					glNormal3f(vertexnormals[faces[i]->normals[k] - 1]->x,
+							   vertexnormals[faces[i]->normals[k] - 1]->y,
+							   vertexnormals[faces[i]->normals[k] - 1]->z);
+				}
 
+				glVertex3f(vertex[faces[i]->vertexIndexes[k] - 1]->x,
+						   vertex[faces[i]->vertexIndexes[k] - 1]->y,
+						   vertex[faces[i]->vertexIndexes[k] - 1]->z);
+			}
 
-				glVertex3f(vertex[faces[i]->vertexIndexes[0]-1]->x,vertex[faces[i]->vertexIndexes[0]-1]->y,vertex[faces[i]->vertexIndexes[0]-1]->z);
-				
-				if(istexture && materials[faces[i]->mat]->texture!=-1)
-					glTexCoord2f(texturevector3d[faces[i]->texcoord[1]-1]->u,texturevector3d[faces[i]->texcoord[1]-1]->v);
-				
-				
-				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->vertexIndexes[1]-1]->x,vertexnormals[faces[i]->vertexIndexes[1]-1]->y,vertexnormals[faces[i]->vertexIndexes[1]-1]->z);
-				
-				glVertex3f(vertex[faces[i]->vertexIndexes[1]-1]->x,vertex[faces[i]->vertexIndexes[1]-1]->y,vertex[faces[i]->vertexIndexes[1]-1]->z);
-				
-				
-				if(istexture && materials[faces[i]->mat]->texture!=-1)
-					glTexCoord2f(texturevector3d[faces[i]->texcoord[2]-1]->u,texturevector3d[faces[i]->texcoord[2]-1]->v);
-
-
-				if(isvertexnormal)
-					glNormal3f(vertexnormals[faces[i]->vertexIndexes[2]-1]->x,vertexnormals[faces[i]->vertexIndexes[2]-1]->y,vertexnormals[faces[i]->vertexIndexes[2]-1]->z);
-		
-				glVertex3f(vertex[faces[i]->vertexIndexes[2]-1]->x,vertex[faces[i]->vertexIndexes[2]-1]->y,vertex[faces[i]->vertexIndexes[2]-1]->z);
 			glEnd();
 		}
 	}
@@ -383,8 +394,6 @@ void objloader::clean()
 		delete coord[i];
 	for(unsigned int i=0;i<faces.size();i++)
 		delete faces[i];
-	for(unsigned int i=0;i<normals.size();i++)
-		delete normals[i];
 	for(unsigned int i=0;i<vertex.size();i++)
 		delete vertex[i];
 	for(unsigned int i=0;i<materials.size();i++)
@@ -396,7 +405,6 @@ void objloader::clean()
 		
 	coord.clear();
 	faces.clear();
-	normals.clear();
 	vertex.clear();
 	materials.clear();
 	texturevector3d.clear();
@@ -443,7 +451,7 @@ objloader::objloader()
 
 void objloader::smoothnormals()
 {
-	for(unsigned int i=1;i<vertex.size()+1;i++)
+	/*for(unsigned int i=1;i<vertex.size()+1;i++)
 	{
 		float vecX=0.0,vecY=0.0,vecZ=0.0;
 		int num=0;
@@ -474,5 +482,5 @@ void objloader::smoothnormals()
 		//	vecZ/=d;
 		}
 		vertexnormals.push_back(new sf::Vector3f(vecX,vecY,vecZ));
-	}
+	}*/
 }

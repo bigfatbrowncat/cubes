@@ -21,14 +21,16 @@
 #endif
 
 
-struct face{
-	int faceNormalIndex;
+struct face
+{
 	bool four;
-	unsigned int vertexIndexes[4];
-	int texcoord[4];
+	int vertexIndexes[4];
+	int textureCoords[4];
+	int normals[4];
 	int mat;
-	face(int facen,unsigned int f1,unsigned int f2,unsigned int f3,int t1,int t2,int t3,int m);
-	face(int facen,unsigned int f1,unsigned int f2,unsigned int f3, unsigned int f4,int t1,int t2,int t3,int t4,int m);
+
+	face(int v1, int v2, int v3, int t1, int t2, int t3, int n1, int n2, int n3, int m);
+	face(int v1, int v2, int v3, int v4, int t1, int t2, int t3, int t4, int n1, int n2, int n3, int n4, int m);
 };
 
 struct material{
@@ -49,7 +51,7 @@ class objloader{
 	std::vector<std::string*> coord;
 	std::vector<sf::Vector3f*> vertex;
 	std::vector<face*> faces;
-	std::vector<sf::Vector3f*> normals;
+	//std::vector<sf::Vector3f*> normals;
 	std::vector<unsigned int> texture;
 	std::vector<unsigned int> lists;
 	std::vector<material*> materials;

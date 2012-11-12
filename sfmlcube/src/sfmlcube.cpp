@@ -23,9 +23,10 @@ void prepareShaders(sf::Shader& shad)
 		printf("Can't load the shader. Sorry...");
 	}
 	shad.setParameter("texture", sf::Shader::CurrentTexture);
-	shad.setParameter("lightpos", sf::Vector3f(100, 100, -200));
+	shad.setParameter("lightpos", 50, 50, -100, 1);
+	shad.setParameter("specular", 10);
 	shad.setParameter("shininess", 3);
-	shad.setParameter("ambient", 0.2, 0.2, 0.2, 1);
+	shad.setParameter("ambient", 0.4, 0.4, 0.4, 1);
 }
 
 void drawList(int num, const sf::Shader& shad, const sf::Window& win, float xangle, float yangle, float zangle)
@@ -124,8 +125,6 @@ sf::Text createText(sf::RenderWindow& win, const sf::Font& font)
 void updateView(sf::RenderWindow& win)
 {
 	sf::View view(sf::FloatRect(0, 0, win.getSize().x, win.getSize().y));
-	//view.setCenter(win.getSize().x / 2, win.getSize().y / 2);
-    //view.setSize(win.getSize().x, win.getSize().y);
     win.setView(view);
 }
 
