@@ -16,17 +16,46 @@ void setPerspective(const sf::Window& win)
     gluPerspective(50.f, (float)win.getSize().x / win.getSize().y, 1.f, 1000.f);
 }
 
-void prepareShaders(sf::Shader& shad)
+void prepareShaders(sf::Shader& shad, sf::Texture& dispTex, sf::Texture& dispNormalDeltaTex)
 {
 	if (!shad.loadFromFile("res/minimal.vert", "res/minimal.frag"))
 	{
 		printf("Can't load the shader. Sorry...");
 	}
+
+	//dispTex.loadFromFile("res/monkey-disp.png", sf::IntRect(0, 0, 1024, 1024));
+	//dispTex.bind(sf::Texture::Normalized);
+
+/*	dispNormalDeltaTex.create(dispTex.getSize().x, dispTex.getSize().y);
+
+	sf::Uint8* dndt = new sf::Uint8[dispTex.getSize().x * dispTex.getSize().y * 4];
+	for (int i = 0; i < dispNormalDeltaTex.getSize().x; i++)
+	for (int j = 0; j < dispNormalDeltaTex.getSize().y; j++)
+	{
+		sf::Uint8 b = dndt[(dispTex.getSize().y * j + i) * 4 + 0];
+		sf::Uint8 g = dndt[(dispTex.getSize().y * j + i) * 4 + 1];
+		sf::Uint8 r = dndt[(dispTex.getSize().y * j + i) * 4 + 2];
+		sf::Uint8 a = dndt[(dispTex.getSize().y * j + i) * 4 + 3];
+
+
+
+		dndt[(dispTex.getSize().y * j + i) * 4 + 0] = b;
+		dndt[(dispTex.getSize().y * j + i) * 4 + 1] = g;
+		dndt[(dispTex.getSize().y * j + i) * 4 + 2] = r;
+		dndt[(dispTex.getSize().y * j + i) * 4 + 3] = a;
+
+	}
+	dispNormalDeltaTex.update(dndt);
+	delete [] dndt;*/
+
 	shad.setParameter("texture", sf::Shader::CurrentTexture);
+	//shad.setParameter("displacement", dispTex);
+
 	shad.setParameter("lightpos", 50, 50, -100, 1);
-	shad.setParameter("specular", 10);
+	/*shad.setParameter("specular", 10);
 	shad.setParameter("shininess", 3);
-	shad.setParameter("ambient", 0.4, 0.4, 0.4, 1);
+	shad.setParameter("ambient", 0.4, 0.4, 0.4, 1);*/
+
 }
 
 void drawList(int num, const sf::Shader& shad, const sf::Window& win, float xangle, float yangle, float zangle)
@@ -161,10 +190,11 @@ int main()
 
     objloader ol;
     int num = ol.load("res/monkey.obj", "res");
-    //ol.smoothnormals();
 
     sf::Shader shad;
-    prepareShaders(shad);
+    sf::Texture dispTex;
+    sf::Texture dispNormalDeltaTex;
+    prepareShaders(shad, dispTex, dispNormalDeltaTex);
 
     // Setup a perspective projection
     setPerspective(mainWindow);
