@@ -1,55 +1,30 @@
-/*#version 120
-
 uniform sampler2D texture;
 
-uniform vec4 lightpos;
-uniform vec4 specular;
-uniform vec4 ambient;
-uniform float shininess;
+varying vec3  vNormal;
+varying vec3  vLight1;
 
-varying vec3 v_V;
-varying vec3 N;
+varying vec3  vView;
+varying vec2  textureCoords;
 
-void main() {
-	vec3 V = normalize(v_V);
-	vec3 R = reflect(V, N);
-	
-	vec3 L = normalize((gl_ProjectionMatrix * gl_ModelViewMatrix * lightpos).xyz);
-
-	float diffuse = max(dot(L, N), 0.0);
-	vec4 spec = specular * pow(max(dot(R, L), 0.0), shininess);
-
-	gl_FragColor = (ambient + diffuse + spec) * texture2D( texture, gl_TexCoord[0].st);
-}
-*/
-
-uniform sampler2D texture;
-varying vec3 lightDir;
-varying vec3 V, N;
-
-void main()
+void main(void)
 {
-	vec4 ambient = vec4(0.2, 0.2, 0.2, 1);
-	vec4 diffuse = vec4(0.8, 0.8, 0.8, 1);
+   float glossyA = 10;
+   float glossyD = 0.02;
+   vec4 ambient = 0.4; 
+   vec4 diffuse = 0.6;
 
-	float intensity;
-	vec4 color;
-	
-	// normalizing the lights position to be on the safe side
-	
-	//intensity = dot(lightDir, N);												// clay
-	intensity = abs(3 * pow(dot(lightDir, N), 3) - 0.3 * length(cross(V, N)));		// glance metal
-	//intensity = 0.2 * pow(4 * pow(dot(lightDir, N), 3) + 0.5 * pow(length(cross(V, N)), 3), 2);		// matte metal
-
-	//int toonShaderK = 2;
-	//intensity = round(toonShaderK * intensity) / toonShaderK;	// for toon shading
-	
-	
-	color = texture2D( texture, gl_TexCoord[0].st) * (ambient + diffuse * intensity);
-	color.r = clamp(color.r, 0, 1);
-	color.g = clamp(color.g, 0, 1);
-	color.b = clamp(color.b, 0, 1);
-
-	
-	gl_FragColor = color;
-} 
+   float shade = dot(vNormal, vView);
+   
+   float lighting = dot(vLight1, vNormal);
+   
+   float gloss = 1 + glossyA * exp(-(lighting - 1) * (lighting - 1) / glossyD / glossyD);
+   
+   //lighting = 0.5 + round(lighting * 2) / 3;
+   //lighting = 0.7 + 0.3 * lighting;
+   
+   float D = 0.1;
+   float outline = 1 - clamp(1000 * exp(-shade * shade / D / D), 0, 1);
+ 
+   gl_FragColor = (ambient + lighting * diffuse) * outline * gloss * (texture2D(texture, textureCoords));
+   gl_FragColor.a = 1; 
+}   

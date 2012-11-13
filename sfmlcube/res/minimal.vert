@@ -1,17 +1,21 @@
-varying vec3 lightDir;
-varying vec3 V, N;
+uniform vec4 view_position;
+uniform vec4 light0;
 
-void main()
-{	// Vertex position
-	gl_Position = gl_ProjectionMatrix * gl_ModelViewMatrix * gl_Vertex;
+varying vec3  vNormal;
+varying vec3  vView;
 
-	// Texture coords
-	gl_TexCoord[0] = gl_MultiTexCoord0;
+varying vec3  vLight1;
 
-	// Direction to the light	
-	lightDir = normalize((gl_ProjectionMatrix * gl_LightSource[0].position).xyz);
-	// Vertex vector and normal
-	V = normalize((gl_ModelViewMatrix * gl_Vertex).xyz);
-	N = gl_Normal;
-	
-} 
+varying vec2 textureCoords;
+
+void main(void)
+{
+   // Output transformed vertex position: 
+   gl_Position = gl_ModelViewProjectionMatrix * gl_Vertex;
+
+   textureCoords = gl_MultiTexCoord0.st;
+   vNormal = normalize(gl_NormalMatrix * gl_Normal);
+   vLight1 = normalize(light0.xyz - gl_Vertex.xyz);
+   vView = normalize(vec3(0, 0, 1000) - gl_Vertex.xyz);
+   
+}
