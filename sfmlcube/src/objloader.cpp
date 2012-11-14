@@ -179,7 +179,7 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 				}
 
 				// Creating the new face
-				faces.push_back(new face(v[0], v[1], v[2], v[3], vt[0], vt[1], vt[2], vt[3], vn[0], vn[1], vn[2], vn[3], curmat));
+				faces.push_back(new face(v[0], v[1], v[2], vt[0], vt[1], vt[2], vn[0], vn[1], vn[2], curmat));
 		}
 	}else if((*coord[i])[0]=='u' && (*coord[i])[1]=='s' && (*coord[i])[2]=='e')
 	{
