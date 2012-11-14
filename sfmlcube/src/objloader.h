@@ -60,11 +60,12 @@ class objloader{
 	bool ismaterial,isnormals,istexture,isvertexnormal;
 	unsigned int loadTexture(const char* filename);
 	void clean();
-	void smoothnormals();
-	public:
+public:
 	objloader();
 	~objloader();
-	int load(std::string, std::string texturesPath /*,std::vector<collisionplane>* collplane=NULL*/);
+	int load(std::string, std::string texturesPath);
+	void draw(int listIndex);
+
 };
 
 #endif

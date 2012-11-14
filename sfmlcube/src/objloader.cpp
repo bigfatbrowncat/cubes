@@ -303,8 +303,8 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 		ismaterial=true;
 	std::cout << "[OBJ loader] Loaded: " << vertex.size() << " vertices, " << vertexnormals.size() << " normals, " << faces.size() << " faces, " << materials.size() << " materials" << std::endl;
 	//draw
-	if(isvertexnormal)
-		smoothnormals();
+//	if(isvertexnormal)
+//		smoothnormals();
 	int num;
 	num=glGenLists(1);
 	glNewList(num,GL_COMPILE);
@@ -385,7 +385,12 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 	glEndList();
 	clean();
 	lists.push_back(num);
-	return num;
+	return lists.size() - 1;
+}
+
+void objloader::draw(int listIndex)
+{
+	glCallList(lists[listIndex]);
 }
 
 void objloader::clean()
@@ -449,38 +454,3 @@ objloader::objloader()
 	isvertexnormal=true;
 }
 
-void objloader::smoothnormals()
-{
-	/*for(unsigned int i=1;i<vertex.size()+1;i++)
-	{
-		float vecX=0.0,vecY=0.0,vecZ=0.0;
-		int num=0;
-		for(unsigned int j=0;j<faces.size();j++)
-		{
-			for (int k = 0; k < 4; k++)
-			{
-				if(faces[j]->vertexIndexes[k]==i)
-				{
-					vecX+=normals[faces[j]->faceNormalIndex - 1]->x;
-					vecY+=normals[faces[j]->faceNormalIndex - 1]->y;
-					vecZ+=normals[faces[j]->faceNormalIndex - 1]->z;
-					num++;
-				}
-			}
-		}
-		if(num)
-		{
-			vecX/=num;
-			vecY/=num;
-			vecZ/=num;
-		}
-		float d=sqrt(vecX*vecX+vecY*vecY+vecZ*vecZ);
-		if(d)
-		{
-		//	vecX/=d;
-		//	vecY/=d;
-		//	vecZ/=d;
-		}
-		vertexnormals.push_back(new sf::Vector3f(vecX,vecY,vecZ));
-	}*/
-}
