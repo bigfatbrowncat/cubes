@@ -13,12 +13,6 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	struct XY
-	{
-		int x, y;
-		XY(int x, int y): x(x), y(y) {}
-	};
-
 	CubesField::CubesField(int width, int height): width(width), height(height)
 	{
 		cubesData = new Cube[width * height];
@@ -29,7 +23,7 @@ namespace sfmlcubes
 		delete [] cubesData;
 	}
 
-	const Cube& CubesField::getCube(int i, int j)
+	Cube& CubesField::getCube(int i, int j)
 	{
 		return cubesData[width * j + i];
 	}
@@ -39,24 +33,13 @@ namespace sfmlcubes
 		cubesData[width * j + i] = value;
 	}
 
-	void CubesField::resetAnimations()
+	bool CubesField::calculateFalling(CubesSlidingType cst)
 	{
-		for (int i = 0; i < width; i++)
-		for (int j = 0; j < height; j++)
-		{
-			cubesData[j * width + i].slidingDirection = csdNone;
-			cubesData[j * width + i].rotatingDirection = crdNone;
-		}
-	}
-
-	bool CubesField::calculateSliding(CubesSlidingType cst)
-	{
-		// Enumerating falling cubes
 		vector<XY> falling_cube_coords;
 		for (int i = 0; i < width; i++)
 		for (int j = height - 1; j >= 0; j--)
 		{
-			if (!cubesData[j * width + i].empty && cubesData[j * width + i].falling)
+			if ((!cubesData[j * width + i].empty) && cubesData[j * width + i].freeMoving)
 			{
 				falling_cube_coords.push_back(XY(i, j));
 			}
@@ -80,7 +63,7 @@ namespace sfmlcubes
 					break;
 				}
 				else if (!(cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].empty) &&
-						 !(cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].falling))
+						 !(cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].freeMoving))
 				{
 					// It's on another cube
 					canFall = false;
@@ -90,14 +73,15 @@ namespace sfmlcubes
 		}
 
 		// Do the sliding
-		resetAnimations();
 		if (canFall)
 		{
 			if (cst == cstSlidingAnimation)
 			{
 				for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
 				{
-					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].slidingDirection = csdDown;
+					// Starting sliding animation
+					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].verticalSlidingDirection = cvsdDown;
+					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].verticalSlidingPhase = 0;
 				}
 			}
 			else
@@ -108,6 +92,8 @@ namespace sfmlcubes
 							cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x];
 
 					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].empty = true;
+					cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].verticalSlidingPhase = 0;
+					cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].verticalSlidingDirection = cvsdNone;
 				}
 			}
 		}
@@ -117,10 +103,83 @@ namespace sfmlcubes
 			for (int i = 0; i < width; i++)
 			for (int j = 0; j < height; j++)
 			{
-				cubesData[j * width + i].falling = false;
+				cubesData[j * width + i].freeMoving = false;
+				cubesData[j * width + i].verticalSlidingDirection = cvsdNone;
 			}
 		}
 
 		return canFall;
+	}
+
+	bool CubesField::tryMoveRight(CubesSlidingType cst)
+	{
+		vector<XY> falling_cube_coords;
+		for (int i = width - 1; i >= 0; i--)
+		for (int j = 0; j < height; j++)
+		{
+			if ((!cubesData[j * width + i].empty) && cubesData[j * width + i].freeMoving)
+			{
+				falling_cube_coords.push_back(XY(i, j));
+			}
+		}
+
+		bool can_move = true;
+
+		if (falling_cube_coords.size() == 0)
+		{
+			can_move = false;
+		}
+		else
+		{
+			for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
+			{
+				if (falling_cube_coords[k].x == width - 1)
+				{
+					// It's near the wall
+					can_move = false;
+					break;
+				}
+				else if (!(cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1].empty) &&
+						 !(cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1].freeMoving))
+
+				{
+					// It's on another cube
+					can_move = false;
+					break;
+				}
+			}
+
+		}
+
+		// Do the sliding
+		if (can_move)
+		{
+			if (cst == cstSlidingAnimation)
+			{
+				for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
+				{
+					if (cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].horizontalSlidingDirection == chsdNone)
+					{
+						// Starting sliding animation
+						cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].horizontalSlidingDirection = chsdRight;
+						cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].horizontalSlidingPhase = 0;
+					}
+				}
+			}
+			else
+			{
+				for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
+				{
+					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1] =
+							cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x];
+
+					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].empty = true;
+					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1].horizontalSlidingPhase = 0;
+					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1].horizontalSlidingDirection = chsdNone;
+				}
+			}
+		}
+
+		return can_move;
 	}
 }

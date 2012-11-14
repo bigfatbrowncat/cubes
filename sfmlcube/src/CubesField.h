@@ -5,6 +5,10 @@
  *      Author: imizus
  */
 
+#include <vector>
+
+using namespace std;
+
 #ifndef CUBESFIELD_H_
 #define CUBESFIELD_H_
 
@@ -12,9 +16,13 @@
 
 namespace sfmlcubes
 {
-	enum CubeSlidingDirection
+	enum CubeVerticalSlidingDirection
 	{
-		csdNone = 0, csdUp = 1, csdDown = 2, csdLeft = 3, csdRight = 4
+		cvsdNone = 0, cvsdUp = 1, cvsdDown = 2
+	};
+	enum CubeHorizontalSlidingDirection
+	{
+		chsdNone = 0, chsdLeft = 1, chsdRight = 2
 	};
 	enum CubeRotatingDirection
 	{
@@ -29,28 +37,36 @@ namespace sfmlcubes
 	{
 		bool empty;
 		sf::Color color;
-		bool falling;
-		CubeSlidingDirection slidingDirection;
+		bool freeMoving;
+
+		// Vertical sliding animation
+		CubeVerticalSlidingDirection verticalSlidingDirection;
+		float verticalSlidingPhase;
+
+		// Horizontal sliding animation
+		CubeHorizontalSlidingDirection horizontalSlidingDirection;
+		float horizontalSlidingPhase;
+
+		// Rotating animation
 		CubeRotatingDirection rotatingDirection;
 		CubeRotatingCenterType rotatingCenterType;
-
 		int rotatingCenterX, rotatingCenterY;
+		float rotatingPhase;
 
 		// Constructs non-empty cube
-		Cube(sf::Color color,
-		     bool falling,
-		     CubeSlidingDirection slidingDirection = csdNone,
-		     CubeRotatingDirection rotatingDirection = crdNone,
-		     CubeRotatingCenterType rotatingCenterType = crctCenterOfCube,
-		     int rotatingCenterX = 0, int rotatingCenterY = 0):
+		Cube(sf::Color color, bool falling):
 		     empty(false),
 		     color(color),
-		     falling(falling),
-		     slidingDirection(slidingDirection),
-		     rotatingDirection(rotatingDirection),
-		     rotatingCenterType(rotatingCenterType),
-		     rotatingCenterX(rotatingCenterX),
-		     rotatingCenterY(rotatingCenterY)
+		     freeMoving(falling),
+
+		     verticalSlidingDirection(cvsdNone),
+		     verticalSlidingPhase(0),
+
+		     horizontalSlidingDirection(chsdNone),
+		     horizontalSlidingPhase(0),
+
+		     rotatingCenterX(0),
+		     rotatingCenterY(0)
 		{
 
 		}
@@ -68,20 +84,27 @@ namespace sfmlcubes
 	class CubesField
 	{
 	private:
+		struct XY
+		{
+			int x, y;
+			XY(int x, int y): x(x), y(y) {}
+		};
+
 		Cube* cubesData;
 		int width, height;
+
 	public:
 		CubesField(int width, int height);
 		virtual ~CubesField();
 
-		const Cube& getCube(int i, int j);
+		Cube& getCube(int i, int j);
 		void setCube(int i, int j, const Cube& value);
 
 		int getWidth() { return width; }
 		int getHeight() { return height; }
 
-		void resetAnimations();
-		bool calculateSliding(CubesSlidingType cst);
+		bool calculateFalling(CubesSlidingType cst);
+		bool tryMoveRight(CubesSlidingType cst);
 	};
 
 }

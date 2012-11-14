@@ -13,8 +13,9 @@ namespace sfmlcubes
 	{
 		dsStatic, dsMoving
 	};
-	static float staticStateDuration = 0.3;	// seconds
-	static float movingStateDuration = 0.1;
+	static float staticStateDuration = 0.8;	// seconds
+	static float movingStateDuration = 0.3;
+	static float horizontalMovingDuration = 0.3;
 
 	// Global application-level singletones
 	static sf::RenderWindow mainWindow;
@@ -29,6 +30,10 @@ namespace sfmlcubes
 	static CubesField board(8, 14);
 	static DrawingState state = dsStatic;
 	static float momentWhenDrawingStateChanged = 0;
+
+	static bool movingRightIssued = false;
+	static bool movingRightInProgress = false;
+	static float momentWhenHorizontalMovingStarted = 0;
 
 	// Global application-level functions
 	void initMainWindow(const string& title = "Cubes", unsigned int width = 800, unsigned int height = 600, unsigned int antialias = 8)
@@ -99,28 +104,36 @@ namespace sfmlcubes
 	    setView();
 	}
 
-	void drawCube(int i, int j, const Cube& cube, double animationPhase)
+	void drawCube(int i, int j, const Cube& cube)
 	{
 		glPushMatrix();
 
 		cubeShader.setParameter("color", (float)cube.color.r / 255, (float)cube.color.g / 255, (float)cube.color.b / 255, (float)cube.color.a / 255);
 		cubeShader.bind();
 
-		// Applying sliding
-		double distance = cubesize * animationPhase;
-		switch (cube.slidingDirection)
+		// Applying horizontal sliding
+		double hdistance = cubesize * cube.horizontalSlidingPhase;
+		switch (cube.horizontalSlidingDirection)
 		{
-		case csdDown:
-			glTranslatef(0.f, -distance, 0.f);
+		case chsdLeft:
+			glTranslatef(-hdistance, 0.f, 0.f);
 			break;
-		case csdUp:
-			glTranslatef(0.f, distance, 0.f);
+		case chsdRight:
+			glTranslatef(hdistance, 0.f, 0.f);
 			break;
-		case csdLeft:
-			glTranslatef(-distance, 0.f, 0.f);
+		default:
 			break;
-		case csdRight:
-			glTranslatef(distance, 0.f, 0.f);
+		}
+
+		// Applying vertical sliding
+		double vdistance = cubesize * cube.verticalSlidingPhase;
+		switch (cube.verticalSlidingDirection)
+		{
+		case cvsdDown:
+			glTranslatef(0.f, -vdistance, 0.f);
+			break;
+		case cvsdUp:
+			glTranslatef(0.f, vdistance, 0.f);
 			break;
 		default:
 			break;
@@ -128,32 +141,35 @@ namespace sfmlcubes
 
 		glTranslatef(i * cubesize, -j * cubesize, 0.f);			// Translating the cube
 
-		// Moving it back from rotating center
-		glTranslatef(cubesize * (cube.rotatingCenterX - i), -cubesize * (cube.rotatingCenterY - j), 0.f);
-		if (cube.rotatingCenterType == crctCornerOfCube)
+		if (cube.rotatingDirection != crdNone)
 		{
-			glTranslatef(-cubesize / 2, cubesize / 2, 0.f);
-		}
+			// Moving it back from rotating center
+			if (cube.rotatingCenterType == crctCornerOfCube)
+			{
+				glTranslatef(-cubesize / 2, cubesize / 2, 0.f);
+			}
+			glTranslatef(cubesize * (cube.rotatingCenterX - i), -cubesize * (cube.rotatingCenterY - j), 0.f);
 
-		// Applying rotation
-		double angle = 90 * animationPhase;
-		switch (cube.rotatingDirection)
-		{
-		case crdCW:
-			glRotatef(angle, 0.f, 0.f, -1.f);
-			break;
-		case crdCCW:
-			glRotatef(angle, 0.f, 0.f, 1.f);
-			break;
-		default:
-			break;
-		}
+			// Applying rotation
+			double angle = 90 * cube.rotatingPhase;
+			switch (cube.rotatingDirection)
+			{
+			case crdCW:
+				glRotatef(angle, 0.f, 0.f, -1.f);
+				break;
+			case crdCCW:
+				glRotatef(angle, 0.f, 0.f, 1.f);
+				break;
+			default:
+				break;
+			}
 
-		// Moving the cube to it's rotating center
-		glTranslatef(-cubesize * (cube.rotatingCenterX - i), cubesize * (cube.rotatingCenterY - j), 0.f);
-		if (cube.rotatingCenterType == crctCornerOfCube)
-		{
-			glTranslatef(cubesize / 2, -cubesize / 2, 0.f);
+			// Moving the cube to it's rotating center
+			glTranslatef(-cubesize * (cube.rotatingCenterX - i), cubesize * (cube.rotatingCenterY - j), 0.f);
+			if (cube.rotatingCenterType == crctCornerOfCube)
+			{
+				glTranslatef(cubesize / 2, -cubesize / 2, 0.f);
+		}
 		}
 
 	    glRotatef(90, 1.f, 0.f, 0.f);								// Rotating the cube face to viewer
@@ -173,25 +189,45 @@ namespace sfmlcubes
 		{
 			if (!board.getCube(i, j).empty)
 			{
+				if (movingRightInProgress)
+				{
+					float horizontalPhase = (clock.getElapsedTime().asSeconds() - momentWhenHorizontalMovingStarted) / horizontalMovingDuration;
+					float slope = 1.5;
+					float frame = atan(slope * (horizontalPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
+
+					// Drawing the current frame
+					board.getCube(i, j).horizontalSlidingPhase = frame;
+				}
+
+
+				// Vertical freeMoving
 				if (state == dsStatic)
 				{
 					// Drawing the first, unchanged frame
-					drawCube(i, j, board.getCube(i, j), 0);
+					board.getCube(i, j).verticalSlidingPhase = 0;
 				}
 				else
 				{
-					float animationPhase = (clock.getElapsedTime().asSeconds() - momentWhenDrawingStateChanged) / movingStateDuration;
+					float verticalPhase = (clock.getElapsedTime().asSeconds() - momentWhenDrawingStateChanged) / movingStateDuration;
 
 					float slope = 1.5;
-					float frame = atan(slope * (animationPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
+					float frame = atan(slope * (verticalPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
 
 					// Drawing the current frame
-					drawCube(i, j, board.getCube(i, j), frame);
-
+					board.getCube(i, j).verticalSlidingPhase = frame;
 				}
 			}
 		}
 
+		// Drawing the cubes
+		for (int i = 0; i < board.getWidth(); i++)
+		for (int j = 0; j < board.getHeight(); j++)
+		{
+			if (!board.getCube(i, j).empty)
+			{
+				drawCube(i, j, board.getCube(i, j));
+			}
+		}
 	}
 
 	void drawScene(const sf::RenderTarget& win, float xangle, float yangle, float zangle)
@@ -219,7 +255,7 @@ namespace sfmlcubes
 	}
 
 
-	void handleKeyboardEvents(sf::Event::KeyEvent key)
+	void handleKeyPressed(sf::Event::KeyEvent key)
 	{
     	switch (key.code)
     	{
@@ -227,6 +263,8 @@ namespace sfmlcubes
     		mainWindow.close();
     		break;
     	case sf::Keyboard::Right:
+    		movingRightIssued = true;
+    		printf("[LOG] Right key down\n");
     		break;
     	case sf::Keyboard::Left:
     		break;
@@ -235,6 +273,21 @@ namespace sfmlcubes
     	case sf::Keyboard::Down:
     		break;
     	case sf::Keyboard::Space:
+    		break;
+    	default:
+    		break;
+    	}
+	}
+
+	void handleKeyReleased(sf::Event::KeyEvent key)
+	{
+    	switch (key.code)
+    	{
+    	case sf::Keyboard::Right:
+    		movingRightIssued = false;
+    		printf("[LOG] Right key up\n");
+    		break;
+    	case sf::Keyboard::Left:
     		break;
     	default:
     		break;
@@ -254,8 +307,12 @@ namespace sfmlcubes
         		break;
 
         	case sf::Event::KeyPressed:
-        		handleKeyboardEvents(Event.key);
+        		handleKeyPressed(Event.key);
             	break;
+
+        	case sf::Event::KeyReleased:
+        		handleKeyReleased(Event.key);
+        		break;
 
            	case sf::Event::Resized:
             	break;
@@ -274,18 +331,31 @@ namespace sfmlcubes
 
 	void createNewBlock()
 	{
-		Cube c = sfmlcubes::Cube(sf::Color::Green, true, sfmlcubes::csdNone, sfmlcubes::crdCW, sfmlcubes::crctCenterOfCube, 0, 1);
-		sfmlcubes::board.setCube(0, 0, c);
-		sfmlcubes::board.setCube(0, 1, sfmlcubes::Cube(sf::Color::Red, true, sfmlcubes::csdNone, sfmlcubes::crdCW, sfmlcubes::crctCenterOfCube, 0, 1));
-		sfmlcubes::board.setCube(0, 2, sfmlcubes::Cube(sf::Color::Red, true, sfmlcubes::csdNone, sfmlcubes::crdCW, sfmlcubes::crctCenterOfCube, 0, 1));
-		sfmlcubes::board.setCube(1, 1, sfmlcubes::Cube(sf::Color::Red, true, sfmlcubes::csdNone, sfmlcubes::crdCW, sfmlcubes::crctCenterOfCube, 0, 1));
+		sfmlcubes::board.setCube(0, 0, sfmlcubes::Cube(sf::Color::Red, true));
+		sfmlcubes::board.setCube(0, 1, sfmlcubes::Cube(sf::Color::Red, true));
+		sfmlcubes::board.setCube(0, 2, sfmlcubes::Cube(sf::Color::Red, true));
+		sfmlcubes::board.setCube(1, 1, sfmlcubes::Cube(sf::Color::Red, true));
 	}
 
 	void updateStatesAndTiming()
 	{
 		float curTime = clock.getElapsedTime().asSeconds();
 		float timeSinceDrawingStateChanged = curTime - momentWhenDrawingStateChanged;
-		//printf("[LOG] since changed %f\n", timeSinceDrawingStateChanged);
+
+		if (movingRightIssued && !movingRightInProgress)
+		{
+			momentWhenHorizontalMovingStarted = curTime;
+			if (board.tryMoveRight(cstSlidingAnimation))
+			{
+				movingRightInProgress = true;
+			}
+		}
+		else if (movingRightInProgress && (curTime - momentWhenHorizontalMovingStarted > horizontalMovingDuration))
+		{
+			board.tryMoveRight(cstTrueSliding);
+			movingRightInProgress = false;
+		}
+
 		if (state == dsStatic)
 		{
 			if (timeSinceDrawingStateChanged > staticStateDuration)
@@ -293,7 +363,7 @@ namespace sfmlcubes
 				state = dsMoving;
 				momentWhenDrawingStateChanged = curTime;
 				printf("[LOG] changed to dsMoving\n");
-				board.calculateSliding(cstSlidingAnimation);
+				board.calculateFalling(cstSlidingAnimation);
 			}
 		}
 		else if (state == dsMoving)
@@ -303,7 +373,7 @@ namespace sfmlcubes
 				state = dsStatic;
 				momentWhenDrawingStateChanged = curTime;
 				printf("[LOG] changed to dsStatic\n");
-				if (!board.calculateSliding(cstTrueSliding))
+				if (!board.calculateFalling(cstTrueSliding))
 				{
 					createNewBlock();
 				}
