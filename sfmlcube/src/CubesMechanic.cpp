@@ -6,16 +6,29 @@
  */
 
 #include <math.h>
+#include <stdio.h>
 
 #include "CubesMechanic.h"
 
 namespace sfmlcubes
 {
+	float CubesMechanic::ROTATION_LONGITUDE = 0.3;
 	float CubesMechanic::FALLING_DOWN_LONGITUDE = 0.3;
 	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.1;
 	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.2;
 
-	CubesMechanic::CubesMechanic(int width, int height): field(width, height) {	}
+	CubesMechanic::CubesMechanic(int width, int height):
+			field(width, height),
+
+			verticalMovingDirection(cmvdNone),
+			verticalMovingPhase(0),
+
+			horizontalMovingDirection(cmhdNone),
+			horizontalMovingPhase(0)
+	{
+
+	}
+
 	CubesMechanic::~CubesMechanic() { }
 
 	bool CubesMechanic::cubeIsEmptyOrFreeAt(int i, int j)
@@ -104,6 +117,116 @@ namespace sfmlcubes
 		return true;
 	}
 
+	CubesMechanic::RotationData CubesMechanic::findCenter()
+	{
+		// Calculating the center of the falling cubes
+		float centerX = 0, centerY = 0;
+		int k = 0;
+		for (int i = 0; i < field.getWidth(); i++)
+		for (int j = 0; j < field.getHeight(); j++)
+		{
+			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
+			{
+				centerX += i + 0.5;
+				centerY += j + 0.5;
+				k ++;
+			}
+		}
+		centerX /= k; centerY /= k;
+		int dblX = round(2 * centerX);
+		int dblY = round(2 * centerY);
+
+		int rotationCenterX, rotationCenterY;
+		CubeRotatingCenterType crct;
+
+		if (dblX % 2 == 0)
+		{
+			crct = crctCenterOfCube;
+			rotationCenterX = dblX / 2;
+			rotationCenterY = dblY / 2;
+		}
+		else
+		{
+			crct = crctCornerOfCube;
+			rotationCenterX = (dblX + 1) / 2;
+			rotationCenterY = (dblY + 1) / 2;
+
+		}
+
+		// Finding the radius of the falling cubes
+		float R = 0;
+
+		float cx = rotationCenterX - (crct == crctCornerOfCube ? 0.5 : 0);
+		float cy = rotationCenterY - (crct == crctCornerOfCube ? 0.5 : 0);
+
+		for (int i = 0; i < field.getWidth(); i++)
+		for (int j = 0; j < field.getHeight(); j++)
+		{
+			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
+			{
+				double r = sqrt((cx - i)*(cx - i) + (cy - j)*(cy - j));
+				if (R < r) R = r;
+			}
+		}
+		RotationData res;
+
+		res.R = round(ceil(R));
+		if (crct == crctCenterOfCube) res.R++;
+		printf("R = %d\n", res.R);
+		fflush(stdout);
+
+		res.crct = crct;
+		res.x = rotationCenterX;
+		res.y = rotationCenterY;
+		return res;
+	}
+
+	bool CubesMechanic::canRotate()
+	{
+		RotationData rd = findCenter();
+
+		//float cx = rd.x - (rd.crct == crctCornerOfCube ? 0.5 : 0);
+		//float cy = rd.y - (rd.crct == crctCornerOfCube ? 0.5 : 0);
+
+		if (rd.crct == crctCenterOfCube)
+		{
+			for (int i = rd.x - rd.R + 1; i < rd.x + rd.R; i++)
+			for (int j = rd.y - rd.R + 1; j < rd.y + rd.R; j++)
+			{
+				if (i < 0 || j < 0 || i >= field.getWidth() || j >= field.getHeight())
+				{
+					// We are out of the field
+					return false;
+				}
+				if (!cubeIsEmptyOrFreeAt(i, j))
+				{
+					// Some obstacle found
+					return false;
+				}
+			}
+		}
+		else if (rd.crct == crctCornerOfCube)
+		{
+			for (int i = rd.x - rd.R; i < rd.x + rd.R; i++)
+			for (int j = rd.y - rd.R; j < rd.y + rd.R; j++)
+			{
+				if (i < 0 || j < 0 || i >= field.getWidth() || j >= field.getHeight())
+				{
+					// We are out of the field
+					return false;
+				}
+				if (!cubeIsEmptyOrFreeAt(i, j))
+				{
+					// Some obstacle found
+					return false;
+				}
+			}
+		}
+		else { printf("[LOG] Error: strange case!"); }
+
+		return true;
+	}
+
 	void CubesMechanic::moveDown()
 	{
 		for (int i = 0; i < field.getWidth(); i++)
@@ -139,6 +262,87 @@ namespace sfmlcubes
 			{
 				field.cubeAt(i - 1, j) = field.cubeAt(i, j);
 				field.cubeAt(i, j).empty = true;
+			}
+		}
+	}
+
+	void CubesMechanic::rotate(int angle)
+	{
+		RotationData rd = findCenter();
+
+		if (rd.crct == crctCenterOfCube)
+		{
+			// Searching for anything in our radius
+			for (int i = rd.x - rd.R + 1; i <= rd.x; i++)
+			for (int j = rd.y - rd.R + 1; j < rd.y; j++)
+			{
+				{
+					// Calculating 3 images for our position
+					int ik[4], jk[4];
+					int i0 = rd.x, j0 = rd.y;
+
+					// Making the 90 degrees rotating group
+					ik[0] = i;
+					jk[0] = j;
+					for (int k = 1; k < 4; k++)
+					{
+						ik[k] = i0 - jk[k - 1] + j0;
+						jk[k] = j0 + ik[k - 1] - i0;
+					}
+
+					// Making the group array
+					Cube group[4];
+					for (int k = 0; k < 4; k++)
+					{
+						group[k] = field.cubeAt(ik[k], jk[k]);
+					}
+
+					// Rotating the group
+					for (int k = 0; k < 4; k++)
+					{
+						int kold = (k + 4 - angle) % 4;
+
+						field.cubeAt(ik[k], jk[k]) = group[kold];
+					}
+				}
+			}
+		}
+		else if (rd.crct == crctCornerOfCube)
+		{
+			// Searching for anything in our radius
+			for (int i = rd.x - rd.R; i < rd.x; i++)
+			for (int j = rd.y - rd.R; j < rd.y; j++)
+			{
+				/*if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)*/
+				{
+					// Calculating 3 images for our position
+					int ik[4], jk[4];
+					int i0 = rd.x, j0 = rd.y;
+
+					// Making the 90 degrees rotating group
+					ik[0] = i;
+					jk[0] = j;
+					for (int k = 1; k < 4; k++)
+					{
+						ik[k] = i0 - jk[k - 1] + j0 - 1;
+						jk[k] = j0 + ik[k - 1] - i0;
+					}
+
+					// Making the group array
+					Cube group[4];
+					for (int k = 0; k < 4; k++)
+					{
+						group[k] = field.cubeAt(ik[k], jk[k]);
+					}
+
+					// Rotating the group
+					for (int k = 0; k < 4; k++)
+					{
+						int kold = (k + 4 - angle) % 4;
+
+						field.cubeAt(ik[k], jk[k]) = group[kold];
+					}
+				}
 			}
 		}
 	}
@@ -216,6 +420,24 @@ namespace sfmlcubes
 		}
 	}
 
+	CubesMechanicIssueResponse CubesMechanic::issueRotatingCW()
+	{
+		if (!canRotate() || rotationDirection == cmrdCCW)
+		{
+			return cmirCantBecauseObstacle;
+		}
+		else if (rotationDirection == cmrdCW)
+		{
+			return cmirAlreadyInProgress;
+		}
+		else
+		{
+			rotationDirection = cmrdCW;
+			rotationPhase = 0;
+			return cmirSuccess;
+		}
+	}
+
 	void CubesMechanic::setSliding(float slidingX, float slidingY)
 	{
 		for (int i = 0; i < field.getWidth(); i++)
@@ -229,10 +451,52 @@ namespace sfmlcubes
 		}
 	}
 
+	void CubesMechanic::setRotation(int centerX, int centerY, CubeRotatingCenterType crct, float angle)
+	{
+		for (int i = 0; i < field.getWidth(); i++)
+		for (int j = 0; j < field.getHeight(); j++)
+		{
+			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
+			{
+				field.cubeAt(i, j).rotatingCenterX = centerX;
+				field.cubeAt(i, j).rotatingCenterY = centerY;
+				field.cubeAt(i, j).rotatingCenterType = crct;
+				field.cubeAt(i, j).rotatingAngle = angle;
+			}
+		}
+	}
+
+
 	void CubesMechanic::processTimeStep(float dt)
 	{
-		float slidingX = 0, slidingY = 0;
+		// ** Rotation **
+		RotationData rd = findCenter();
 
+		float rotationAngle = 0;
+
+		if (rotationDirection == cmrdCW)
+		{
+			rotationPhase += dt / ROTATION_LONGITUDE;
+
+			if (rotationPhase < 1)
+			{
+				float slope = 1.5f;
+				rotationAngle = atan(slope * (rotationPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
+			}
+			else
+			{
+				rotationPhase = 0;
+				rotate(1);
+				rotationAngle = 0;
+				rotationDirection = cmrdNone;
+			}
+		}
+
+		setRotation(rd.x, rd.y, rd.crct, rotationAngle);
+
+		// ** Sliding **
+
+		float slidingX = 0, slidingY = 0;
 		// Vertical movement
 		if (verticalMovingDirection == cmvdDown)
 		{
@@ -319,18 +583,18 @@ namespace sfmlcubes
 		*/
 
 		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(0, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(0, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(0, 2) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(1, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
 	}
 
 	void CubesMechanic::test_createBlueCube()
 	{
-		field.cubeAt(0, 7) = sfmlcubes::Cube(sf::Color::Blue, false);
+		/*field.cubeAt(0, 7) = sfmlcubes::Cube(sf::Color::Blue, false);
 		field.cubeAt(2, 2) = sfmlcubes::Cube(sf::Color::Blue, false);
 		field.cubeAt(2, 3) = sfmlcubes::Cube(sf::Color::Blue, false);
-		field.cubeAt(2, 4) = sfmlcubes::Cube(sf::Color::Blue, false);
+		field.cubeAt(2, 4) = sfmlcubes::Cube(sf::Color::Blue, false);*/
 
 	}
 }

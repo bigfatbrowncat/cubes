@@ -32,9 +32,23 @@ namespace sfmlcubes
 		cmvdDown,
 		cmvdDownFast
 	};
+	enum CubesMechanicRotationDirection
+	{
+		cmrdNone,
+		cmrdCW,
+		cmrdCCW
+	};
 
 	class CubesMechanic
 	{
+		struct RotationData
+		{
+			int x, y;
+			int R;
+			CubeRotatingCenterType crct;
+		};
+
+		static float ROTATION_LONGITUDE;
 		static float FALLING_DOWN_LONGITUDE;
 		static float FALLING_DOWN_FAST_LONGITUDE;
 		static float HORIZONTAL_MOVING_LONGITUDE;
@@ -47,8 +61,11 @@ namespace sfmlcubes
 		CubesMechanicHorizontalDirection horizontalMovingDirection;
 		float horizontalMovingPhase;
 
-		bool cubeIsEmptyOrFreeAt(int i, int j);
+		CubesMechanicRotationDirection rotationDirection;
+		float rotationPhase;
 
+		bool cubeIsEmptyOrFreeAt(int i, int j);
+		RotationData findCenter();
 	public:
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();
@@ -56,22 +73,29 @@ namespace sfmlcubes
 		bool canMoveDown();
 		bool canMoveRight();
 		bool canMoveLeft();
+		bool canRotate();
+
 		void moveDown();
 		void moveRight();
 		void moveLeft();
+		void rotate(int angle);
 
 		CubesMechanicIssueResponse issueMovingDown(bool fast);
 		CubesMechanicIssueResponse issueMovingRight();
 		CubesMechanicIssueResponse issueMovingLeft();
+		CubesMechanicIssueResponse issueRotatingCW();
 
 		void processTimeStep(float dt);
-		void setSliding(float slidingX, float slidingY);
-		void cleanFrees();
 
+		void setSliding(float slidingX, float slidingY);
+		void setRotation(int centerX, int centerY, CubeRotatingCenterType crct, float angle);
+
+		void cleanFrees();
 		void createNewBlock();
 
 		const CubesField& getField() const { return field; }
 		CubesMechanicHorizontalDirection getHorizontalDirection() const { return horizontalMovingDirection; }
+		CubesMechanicRotationDirection getRotationDirection() const { return rotationDirection; }
 
 
 		// ***************

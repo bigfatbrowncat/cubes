@@ -58,6 +58,7 @@ namespace sfmlcubes
 		     slidingX(0),
 		     slidingY(0),
 
+		     rotatingCenterType(crctCenterOfCube),
 		     rotatingCenterX(0),
 		     rotatingCenterY(0),
 		     rotatingAngle(0)
@@ -66,7 +67,21 @@ namespace sfmlcubes
 		}
 
 		// Constructs empty cube
-		Cube(): empty(true) {}
+		Cube():
+			empty(true),
+			color(color),
+			freeMoving(false),
+
+			slidingX(0),
+			slidingY(0),
+
+			rotatingCenterType(crctCenterOfCube),
+			rotatingCenterX(0),
+			rotatingCenterY(0),
+			rotatingAngle(0)
+		{
+
+		}
 
 	};
 

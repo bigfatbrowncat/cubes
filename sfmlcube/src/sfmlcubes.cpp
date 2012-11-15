@@ -20,7 +20,7 @@ namespace sfmlcubes
 
 	static float recentMoment = 0;
 
-	static bool wantMoveRight = false, wantMoveLeft = false, wantMoveDown = false;
+	static bool wantMoveRight = false, wantMoveLeft = false, wantMoveDown = false, wantRotateCW = false;
 	static bool movingBonusUsed = false;
 
 	// Global application-level functions
@@ -118,10 +118,11 @@ namespace sfmlcubes
     	case sf::Keyboard::Left:
     		wantMoveLeft = true;
     		break;
-    	case sf::Keyboard::Up:
-    		break;
     	case sf::Keyboard::Down:
     		wantMoveDown = true;
+    		break;
+    	case sf::Keyboard::Up:
+    		wantRotateCW = true;
     		break;
     	case sf::Keyboard::Space:
     		break;
@@ -143,6 +144,9 @@ namespace sfmlcubes
     		break;
     	case sf::Keyboard::Down:
     		wantMoveDown = false;
+    		break;
+    	case sf::Keyboard::Up:
+    		wantRotateCW = false;
     		break;
     	default:
     		break;
@@ -207,13 +211,18 @@ namespace sfmlcubes
 			{
 				board.issueMovingDown(true);
 			}
+			else if (wantRotateCW)
+			{
+				board.issueRotatingCW();
+			}
 		}
 
 		if (timeSinceFallIssued > fallingPeriod)
 		{
-			if (board.issueMovingDown(false) == cmirCantBecauseObstacle)
+			if (/*board.issueMovingDown(false) == cmirCantBecauseObstacle*/false)
 			{
-				if (board.getHorizontalDirection() == cmhdNone)
+				if (board.getHorizontalDirection() == cmhdNone &&
+				    board.getRotationDirection() == cmrdNone)	// This means that no horizontal movement and no rotation is in progress
 				{
 					board.cleanFrees();
 					board.createNewBlock();
