@@ -7,12 +7,82 @@
 
 #include <vector>
 
+#include <SFML/Graphics.hpp>
+
+#include "sfmlcubes.h"
 #include "CubesField.h"
 
 using namespace std;
 
+
 namespace sfmlcubes
 {
+	int Cube::cubesize = 40;
+	int Cube::OBJECT_INDEX = -1;
+	sf::Shader Cube::cubeShader;
+
+	void Cube::initGlobal()
+	{
+		// Loading the cube model
+		OBJECT_INDEX = objLoader.load("res/cube-subdivided.obj", "res");
+
+		// Loading the cube shader
+		if (!cubeShader.loadFromFile("res/cube.vert", "res/cube.frag"))
+		{
+			printf("Can't load the shader. Sorry...");
+		}
+
+		cubeShader.setParameter("texture", sf::Shader::CurrentTexture);
+		cubeShader.setParameter("light0", 200, 300, 200, 1);
+	}
+
+	void Cube::glDraw(int i, int j)
+	{
+		glPushMatrix();
+		glTranslatef(i * Cube::cubesize, -j * Cube::cubesize, 0.f);			// Translating the cube
+
+		cubeShader.setParameter("color", (float)color.r / 255, (float)color.g / 255, (float)color.b / 255, (float)color.a / 255);
+		cubeShader.bind();
+
+		// ** Sliding **
+
+		double hdistance = cubesize * slidingX;
+		double vdistance = cubesize * slidingY;
+		glTranslatef(hdistance, -vdistance, 0.f);
+
+		// ** Rotating **
+
+		// Moving it back from rotating center
+		if (rotatingCenterType == crctCornerOfCube)
+		{
+			glTranslatef(-cubesize / 2, cubesize / 2, 0.f);
+		}
+		glTranslatef(cubesize * (rotatingCenterX - i), -cubesize * (rotatingCenterY - j), 0.f);
+
+		// Applying rotation
+		double angle = 90 * rotatingAngle;
+		glRotatef(angle, 0.f, 0.f, -1.f);
+
+		// Moving the cube to it's rotating center
+		glTranslatef(-cubesize * (rotatingCenterX - i), cubesize * (rotatingCenterY - j), 0.f);
+		if (rotatingCenterType == crctCornerOfCube)
+		{
+			glTranslatef(cubesize / 2, -cubesize / 2, 0.f);
+		}
+
+		// ** Drawing the cube **
+
+	    glRotatef(90, 1.f, 0.f, 0.f);								// Rotating the cube face to viewer
+	    glScalef(cubesize / 2, cubesize / 2, cubesize / 2);			// Scaling the cube
+
+	    // Drawing the cube
+	    sfmlcubes::objLoader.draw(Cube::OBJECT_INDEX);
+
+	    glPopMatrix();
+	}
+
+
+
 	CubesField::CubesField(int width, int height): width(width), height(height)
 	{
 		cubesData = new Cube[width * height];
@@ -33,153 +103,17 @@ namespace sfmlcubes
 		cubesData[width * j + i] = value;
 	}
 
-	bool CubesField::calculateFalling(CubesSlidingType cst)
+	void CubesField::glDraw()
 	{
-		vector<XY> falling_cube_coords;
+		// Drawing the cubes
 		for (int i = 0; i < width; i++)
-		for (int j = height - 1; j >= 0; j--)
-		{
-			if ((!cubesData[j * width + i].empty) && cubesData[j * width + i].freeMoving)
-			{
-				falling_cube_coords.push_back(XY(i, j));
-			}
-		}
-
-		// Checking if they can fall
-		bool canFall = true;
-
-		if (falling_cube_coords.size() == 0)
-		{
-			canFall = false;
-		}
-		else
-		{
-			for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
-			{
-				if (falling_cube_coords[k].y == height - 1)
-				{
-					// It's on the floor
-					canFall = false;
-					break;
-				}
-				else if (!(cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].empty) &&
-						 !(cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].freeMoving))
-				{
-					// It's on another cube
-					canFall = false;
-					break;
-				}
-			}
-		}
-
-		// Do the sliding
-		if (canFall)
-		{
-			if (cst == cstSlidingAnimation)
-			{
-				for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
-				{
-					// Starting sliding animation
-					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].verticalSlidingDirection = cvsdDown;
-					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].verticalSlidingPhase = 0;
-				}
-			}
-			else
-			{
-				for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
-				{
-					cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x] =
-							cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x];
-
-					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].empty = true;
-					cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].verticalSlidingPhase = 0;
-					cubesData[(falling_cube_coords[k].y + 1) * width + falling_cube_coords[k].x].verticalSlidingDirection = cvsdNone;
-				}
-			}
-		}
-		else
-		{
-			// Stop falling
-			for (int i = 0; i < width; i++)
-			for (int j = 0; j < height; j++)
-			{
-				cubesData[j * width + i].freeMoving = false;
-				cubesData[j * width + i].verticalSlidingDirection = cvsdNone;
-			}
-		}
-
-		return canFall;
-	}
-
-	bool CubesField::tryMoveRight(CubesSlidingType cst)
-	{
-		vector<XY> falling_cube_coords;
-		for (int i = width - 1; i >= 0; i--)
 		for (int j = 0; j < height; j++)
 		{
-			if ((!cubesData[j * width + i].empty) && cubesData[j * width + i].freeMoving)
+			if (!cubesData[width * j + i].empty)
 			{
-				falling_cube_coords.push_back(XY(i, j));
+				cubesData[width * j + i].glDraw(i, j);
 			}
 		}
-
-		bool can_move = true;
-
-		if (falling_cube_coords.size() == 0)
-		{
-			can_move = false;
-		}
-		else
-		{
-			for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
-			{
-				if (falling_cube_coords[k].x == width - 1)
-				{
-					// It's near the wall
-					can_move = false;
-					break;
-				}
-				else if (!(cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1].empty) &&
-						 !(cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1].freeMoving))
-
-				{
-					// It's on another cube
-					can_move = false;
-					break;
-				}
-			}
-
-		}
-
-		// Do the sliding
-		if (can_move)
-		{
-			if (cst == cstSlidingAnimation)
-			{
-				for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
-				{
-					if (cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].horizontalSlidingDirection == chsdNone)
-					{
-						// Starting sliding animation
-						cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].horizontalSlidingDirection = chsdRight;
-						cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].horizontalSlidingPhase = 0;
-					}
-				}
-			}
-			else
-			{
-				for (unsigned int k = 0; k < falling_cube_coords.size(); k++)
-				{
-					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1] =
-							cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x];
-
-					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x].empty = true;
-					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1].horizontalSlidingPhase = 0;
-					cubesData[falling_cube_coords[k].y * width + falling_cube_coords[k].x + 1].horizontalSlidingDirection = chsdNone;
-				}
-			}
-		}
-
-		return can_move;
 	}
+
 }

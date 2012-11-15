@@ -7,6 +7,8 @@
 
 #include <vector>
 
+#include <SFML/Graphics/Shader.hpp>
+
 using namespace std;
 
 #ifndef CUBESFIELD_H_
@@ -16,18 +18,8 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	enum CubeVerticalSlidingDirection
-	{
-		cvsdNone = 0, cvsdUp = 1, cvsdDown = 2
-	};
-	enum CubeHorizontalSlidingDirection
-	{
-		chsdNone = 0, chsdLeft = 1, chsdRight = 2
-	};
-	enum CubeRotatingDirection
-	{
-		crdNone, crdCW, crdCCW
-	};
+	class CubesField;
+
 	enum CubeRotatingCenterType
 	{
 		crctCenterOfCube, crctCornerOfCube
@@ -35,23 +27,27 @@ namespace sfmlcubes
 
 	struct Cube
 	{
+		friend class CubesField;
+	protected:
+		void glDraw(int i, int j);
+	public:
+		static int cubesize;
+		static int OBJECT_INDEX;
+		static sf::Shader cubeShader;
+
+		static void initGlobal();
+
 		bool empty;
 		sf::Color color;
 		bool freeMoving;
 
-		// Vertical sliding animation
-		CubeVerticalSlidingDirection verticalSlidingDirection;
-		float verticalSlidingPhase;
-
-		// Horizontal sliding animation
-		CubeHorizontalSlidingDirection horizontalSlidingDirection;
-		float horizontalSlidingPhase;
+		// Sliding
+		float slidingX, slidingY;
 
 		// Rotating animation
-		CubeRotatingDirection rotatingDirection;
 		CubeRotatingCenterType rotatingCenterType;
 		int rotatingCenterX, rotatingCenterY;
-		float rotatingPhase;
+		float rotatingAngle;	// 1 = 90 degrees
 
 		// Constructs non-empty cube
 		Cube(sf::Color color, bool falling):
@@ -59,20 +55,19 @@ namespace sfmlcubes
 		     color(color),
 		     freeMoving(falling),
 
-		     verticalSlidingDirection(cvsdNone),
-		     verticalSlidingPhase(0),
-
-		     horizontalSlidingDirection(chsdNone),
-		     horizontalSlidingPhase(0),
+		     slidingX(0),
+		     slidingY(0),
 
 		     rotatingCenterX(0),
-		     rotatingCenterY(0)
+		     rotatingCenterY(0),
+		     rotatingAngle(0)
 		{
 
 		}
 
 		// Constructs empty cube
 		Cube(): empty(true) {}
+
 	};
 
 	enum CubesSlidingType
@@ -103,8 +98,7 @@ namespace sfmlcubes
 		int getWidth() { return width; }
 		int getHeight() { return height; }
 
-		bool calculateFalling(CubesSlidingType cst);
-		bool tryMoveRight(CubesSlidingType cst);
+		void glDraw();
 	};
 
 }
