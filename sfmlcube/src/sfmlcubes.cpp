@@ -20,7 +20,7 @@ namespace sfmlcubes
 
 	static float recentMoment = 0;
 
-	static bool wantMoveRight = false, wantMoveLeft = false;
+	static bool wantMoveRight = false, wantMoveLeft = false, wantMoveDown = false;
 	static bool movingBonusUsed = false;
 
 	// Global application-level functions
@@ -121,6 +121,7 @@ namespace sfmlcubes
     	case sf::Keyboard::Up:
     		break;
     	case sf::Keyboard::Down:
+    		wantMoveDown = true;
     		break;
     	case sf::Keyboard::Space:
     		break;
@@ -139,6 +140,9 @@ namespace sfmlcubes
     		break;
     	case sf::Keyboard::Left:
     		wantMoveLeft = false;
+    		break;
+    	case sf::Keyboard::Down:
+    		wantMoveDown = false;
     		break;
     	default:
     		break;
@@ -199,11 +203,15 @@ namespace sfmlcubes
 			{
 				board.issueMovingLeft();
 			}
+			else if (wantMoveDown)
+			{
+				board.issueMovingDown(true);
+			}
 		}
 
 		if (timeSinceFallIssued > fallingPeriod)
 		{
-			if (board.issueMovingDown() == cmirCantBecauseObstacle)
+			if (board.issueMovingDown(false) == cmirCantBecauseObstacle)
 			{
 				if (board.getHorizontalDirection() == cmhdNone)
 				{

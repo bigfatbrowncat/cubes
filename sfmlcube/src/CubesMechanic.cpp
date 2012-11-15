@@ -12,6 +12,7 @@
 namespace sfmlcubes
 {
 	float CubesMechanic::FALLING_DOWN_LONGITUDE = 0.3;
+	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.1;
 	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.2;
 
 	CubesMechanic::CubesMechanic(int width, int height): field(width, height) {	}
@@ -63,7 +64,7 @@ namespace sfmlcubes
 				if (!cubeIsEmptyOrFreeAt(i - 1, j)) return false;
 
 				// Check if the cube is moved vertically
-				if (verticalMovingDirection == cmvdDown && j < field.getHeight() - 1)
+				if ((verticalMovingDirection == cmvdDown || verticalMovingDirection == cmvdDownFast) && j < field.getHeight() - 1)
 				{
 					if (!cubeIsEmptyOrFreeAt(i - 1, j + 1)) return false;
 				}
@@ -90,7 +91,7 @@ namespace sfmlcubes
 				if (!cubeIsEmptyOrFreeAt(i + 1, j)) return false;
 
 				// Check if the cube is moved vertically
-				if (verticalMovingDirection == cmvdDown && j < field.getHeight() - 1)
+				if ((verticalMovingDirection == cmvdDown || verticalMovingDirection == cmvdDownFast) && j < field.getHeight() - 1)
 				{
 					if (!cubeIsEmptyOrFreeAt(i + 1, j + 1)) return false;
 				}
@@ -154,19 +155,26 @@ namespace sfmlcubes
 		}
 	}
 
-	CubesMechanicIssueResponse CubesMechanic::issueMovingDown()
+	CubesMechanicIssueResponse CubesMechanic::issueMovingDown(bool fast)
 	{
 		if (!canMoveDown())
 		{
 			return cmirCantBecauseObstacle;
 		}
-		else if (verticalMovingDirection == cmvdDown)
+		else if (verticalMovingDirection == cmvdDown || verticalMovingDirection == cmvdDownFast)
 		{
 			return cmirAlreadyInProgress;
 		}
 		else
 		{
-			verticalMovingDirection = cmvdDown;
+			if (fast)
+			{
+				verticalMovingDirection = cmvdDownFast;
+			}
+			else
+			{
+				verticalMovingDirection = cmvdDown;
+			}
 			verticalMovingPhase = 0;
 			return cmirSuccess;
 		}
@@ -240,9 +248,26 @@ namespace sfmlcubes
 				verticalMovingPhase = 0;
 				moveDown();
 				slidingY = 0;
-				verticalMovingDirection = cmvdNone;;
+				verticalMovingDirection = cmvdNone;
 			}
 		}
+		else if (verticalMovingDirection == cmvdDownFast)
+		{
+			verticalMovingPhase += dt / FALLING_DOWN_FAST_LONGITUDE;
+
+			if (verticalMovingPhase < 1)
+			{
+				slidingY = verticalMovingPhase;
+			}
+			else
+			{
+				verticalMovingPhase = 0;
+				moveDown();
+				slidingY = 0;
+				verticalMovingDirection = cmvdNone;
+			}
+		}
+
 
 		// Horizontal movement
 		if (horizontalMovingDirection == cmhdRight)

@@ -29,12 +29,14 @@ namespace sfmlcubes
 	{
 		cmvdNone,
 		cmvdUp,
-		cmvdDown
+		cmvdDown,
+		cmvdDownFast
 	};
 
 	class CubesMechanic
 	{
 		static float FALLING_DOWN_LONGITUDE;
+		static float FALLING_DOWN_FAST_LONGITUDE;
 		static float HORIZONTAL_MOVING_LONGITUDE;
 
 		CubesField field;
@@ -58,7 +60,7 @@ namespace sfmlcubes
 		void moveRight();
 		void moveLeft();
 
-		CubesMechanicIssueResponse issueMovingDown();
+		CubesMechanicIssueResponse issueMovingDown(bool fast);
 		CubesMechanicIssueResponse issueMovingRight();
 		CubesMechanicIssueResponse issueMovingLeft();
 
