@@ -17,7 +17,7 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	int Cube::cubesize = 40;
+	int Cube::cubesize = 30;
 	int Cube::OBJECT_INDEX = -1;
 	sf::Shader Cube::cubeShader;
 
@@ -93,17 +93,12 @@ namespace sfmlcubes
 		delete [] cubesData;
 	}
 
-	Cube& CubesField::getCube(int i, int j)
+	Cube& CubesField::cubeAt(int i, int j)
 	{
 		return cubesData[width * j + i];
 	}
 
-	void CubesField::setCube(int i, int j, const Cube& value)
-	{
-		cubesData[width * j + i] = value;
-	}
-
-	void CubesField::glDraw()
+	void CubesField::glDraw() const
 	{
 		// Drawing the cubes
 		for (int i = 0; i < width; i++)

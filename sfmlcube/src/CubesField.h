@@ -92,13 +92,12 @@ namespace sfmlcubes
 		CubesField(int width, int height);
 		virtual ~CubesField();
 
-		Cube& getCube(int i, int j);
-		void setCube(int i, int j, const Cube& value);
+		Cube& cubeAt(int i, int j);
 
-		int getWidth() { return width; }
-		int getHeight() { return height; }
+		int getWidth() const { return width; }
+		int getHeight() const { return height; }
 
-		void glDraw();
+		void glDraw() const;
 	};
 
 }

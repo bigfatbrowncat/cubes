@@ -1,32 +1,27 @@
 #include <string>
 
 #include "CubesField.h"
+#include "CubesMechanic.h"
 #include "sfmlcubes.h"
 
 using namespace std;
 
 namespace sfmlcubes
 {
-	enum DrawingState
-	{
-		dsStatic, dsMoving
-	};
-	static float staticStateDuration = 0.8;	// seconds
-	static float movingStateDuration = 0.3;
-	static float horizontalMovingDuration = 0.3;
+	static float fallingPeriod = 1;	// seconds
 
 	// Global application-level singletones
 	static sf::RenderWindow mainWindow;
 	static sf::Font mainFont;
 	static sf::Clock clock;
 
-	static CubesField board(8, 14);
-	static DrawingState state = dsStatic;
-	static float momentWhenDrawingStateChanged = 0;
+	static CubesMechanic board(12, 18);
+	static float momentWhenFallIssued = 0;
 
-	static bool movingRightIssued = false;
-	static bool movingRightInProgress = false;
-	static float momentWhenHorizontalMovingStarted = 0;
+	static float recentMoment = 0;
+
+	static bool wantMoveRight = false, wantMoveLeft = false;
+	static bool movingBonusUsed = false;
 
 	// Global application-level functions
 	void initMainWindow(const string& title = "Cubes", unsigned int width = 800, unsigned int height = 600, unsigned int antialias = 8)
@@ -77,11 +72,11 @@ namespace sfmlcubes
 	void drawBoard()
 	{
 		// Translating the board center to the center of the screen
-		int delta_x = board.getWidth() / 2;
-		int delta_y = board.getHeight() / 2;
+		int delta_x = board.getField().getWidth() / 2;
+		int delta_y = board.getField().getHeight() / 2;
 		glTranslatef(-delta_x * Cube::cubesize, delta_y * Cube::cubesize, 0.f);
 
-		board.glDraw();
+		board.getField().glDraw();
 	}
 
 	void drawScene(const sf::RenderTarget& win, float xangle, float yangle, float zangle)
@@ -117,10 +112,11 @@ namespace sfmlcubes
     		mainWindow.close();
     		break;
     	case sf::Keyboard::Right:
-    		movingRightIssued = true;
+    		wantMoveRight = true;
     		printf("[LOG] Right key down\n");
     		break;
     	case sf::Keyboard::Left:
+    		wantMoveLeft = true;
     		break;
     	case sf::Keyboard::Up:
     		break;
@@ -138,10 +134,11 @@ namespace sfmlcubes
     	switch (key.code)
     	{
     	case sf::Keyboard::Right:
-    		movingRightIssued = false;
+    		wantMoveRight = false;
     		printf("[LOG] Right key up\n");
     		break;
     	case sf::Keyboard::Left:
+    		wantMoveLeft = false;
     		break;
     	default:
     		break;
@@ -183,60 +180,51 @@ namespace sfmlcubes
 		mainWindow.display();
 	}
 
-	void createNewBlock()
-	{
-		Cube c = sfmlcubes::Cube(sf::Color::Red, true);
-		c.slidingX = -0.5;
-		c.slidingY = -0.2;
-		c.rotatingAngle = 0.3;
-		sfmlcubes::board.setCube(0, 0, c);
-		sfmlcubes::board.setCube(0, 1, sfmlcubes::Cube(sf::Color::Green, true));
-		sfmlcubes::board.setCube(0, 2, sfmlcubes::Cube(sf::Color::Blue, true));
-		sfmlcubes::board.setCube(1, 1, sfmlcubes::Cube(sf::Color::White, true));
-	}
-
 	void updateStatesAndTiming()
 	{
 		float curTime = clock.getElapsedTime().asSeconds();
-		float timeSinceDrawingStateChanged = curTime - momentWhenDrawingStateChanged;
+		float timeSinceFallIssued = curTime - momentWhenFallIssued;
 
-		if (movingRightIssued && !movingRightInProgress)
-		{
-			momentWhenHorizontalMovingStarted = curTime;
-			/*if (board.tryMoveRight(cstSlidingAnimation))
-			{
-				movingRightInProgress = true;
-			}*/
-		}
-		else if (movingRightInProgress && (curTime - momentWhenHorizontalMovingStarted > horizontalMovingDuration))
-		{
-			//board.tryMoveRight(cstTrueSliding);
-			movingRightInProgress = false;
-		}
+		float dt = curTime - recentMoment;
+		board.processTimeStep(dt);
+		recentMoment = curTime;
 
-		if (state == dsStatic)
+		if (!movingBonusUsed)
 		{
-			if (timeSinceDrawingStateChanged > staticStateDuration)
+			if (wantMoveRight)
 			{
-				state = dsMoving;
-				momentWhenDrawingStateChanged = curTime;
-				printf("[LOG] changed to dsMoving\n");
-				//board.calculateFalling(cstSlidingAnimation);
+				board.issueMovingRight();
+			}
+			else if (wantMoveLeft)
+			{
+				board.issueMovingLeft();
 			}
 		}
-		else if (state == dsMoving)
+
+		if (timeSinceFallIssued > fallingPeriod)
 		{
-			if (timeSinceDrawingStateChanged > movingStateDuration)
+			if (board.issueMovingDown() == cmirCantBecauseObstacle)
 			{
-				state = dsStatic;
-				momentWhenDrawingStateChanged = curTime;
-				printf("[LOG] changed to dsStatic\n");
-				/*if (!board.calculateFalling(cstTrueSliding))
+				if (board.getHorizontalDirection() == cmhdNone)
 				{
-					createNewBlock();
-				}*/
+					board.cleanFrees();
+					board.createNewBlock();
+					momentWhenFallIssued = curTime;
+
+				}
+				else
+				{
+					// Don't pause. Just wait for the player to position the block
+					movingBonusUsed = true;
+				}
+			}
+			else
+			{
+				momentWhenFallIssued = curTime;
+				movingBonusUsed = false;
 			}
 		}
+
 	}
 
 	void run()
@@ -260,9 +248,8 @@ int main()
 	sfmlcubes::initMainFont();
 	sfmlcubes::prepareScene();
 
-	sfmlcubes::createNewBlock();
-
-	sfmlcubes::board.setCube(4, 7, sfmlcubes::Cube(sf::Color::Blue, false));
+	sfmlcubes::board.test_createBlueCube();
+	sfmlcubes::board.createNewBlock();
 
 	sfmlcubes::run();
 
