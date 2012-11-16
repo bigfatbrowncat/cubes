@@ -5,10 +5,13 @@
  *      Author: imizus
  */
 
-#include <math.h>
-#include <stdio.h>
+#include <cmath>
+#include <cstdio>
+#include <cstdlib>
 
 #include "CubesMechanic.h"
+
+using namespace std;
 
 namespace sfmlcubes
 {
@@ -117,7 +120,20 @@ namespace sfmlcubes
 		return true;
 	}
 
-	CubesMechanic::RotationData CubesMechanic::findCenter()
+	int divideBy2Directed(int d, int direction)
+	{
+		if (d % 2 == 0)
+			return d / 2;
+		else
+		{
+			if (direction % 2 == 0)
+				return (d - 1) / 2;
+			else
+				return (d + 1) / 2;
+		}
+	}
+
+	CubesMechanic::CenterAndRadiusData CubesMechanic::findCenterAndRadius()
 	{
 		// Calculating the center of the falling cubes
 		float centerX = 0, centerY = 0;
@@ -127,31 +143,79 @@ namespace sfmlcubes
 		{
 			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
 			{
-				centerX += i + 0.5;
-				centerY += j + 0.5;
+				centerX += i;
+				centerY += j;
 				k ++;
 			}
 		}
 		centerX /= k; centerY /= k;
+
+		// Here we try to change 0.5 to something like 0.4999
+		// thus round() value will be defined
+		float bloha = 0.001;
+		switch (sumRotationValue)
+		{
+		case cmda0:
+			centerX -= bloha;
+			centerY -= bloha;
+			break;
+		case cmda90CW:
+			centerX += bloha;
+			centerY -= bloha;
+			break;
+		case cmda180CW:
+			centerX += bloha;
+			centerY += bloha;
+			break;
+		case cmda270CW:
+			centerX -= bloha;
+			centerY += bloha;
+			break;
+		default:
+			printf("[LOG] Error: Incorrect cmda value\n");
+			break;
+		}
+
 		int dblX = round(2 * centerX);
 		int dblY = round(2 * centerY);
 
 		int rotationCenterX, rotationCenterY;
 		CubeRotatingCenterType crct;
 
-		if (dblX % 2 == 0)
+
+		if (dblX % 2 == 0 || dblY % 2 == 0)
 		{
 			crct = crctCenterOfCube;
-			rotationCenterX = dblX / 2;
-			rotationCenterY = dblY / 2;
+			switch (sumRotationValue)
+			{
+			case cmda0:
+				rotationCenterX = divideBy2Directed(dblX, sumRotationValue / 2);
+				rotationCenterY = divideBy2Directed(dblY, sumRotationValue / 2 + 1);
+				break;
+			case cmda90CW:
+				rotationCenterX = divideBy2Directed(dblX, sumRotationValue / 2 + 1);
+				rotationCenterY = divideBy2Directed(dblY, sumRotationValue / 2);
+				break;
+			case cmda180CW:
+				rotationCenterX = divideBy2Directed(dblX, sumRotationValue / 2);
+				rotationCenterY = divideBy2Directed(dblY, sumRotationValue / 2 + 1);
+				break;
+			case cmda270CW:
+				rotationCenterX = divideBy2Directed(dblX, sumRotationValue / 2 + 1);
+				rotationCenterY = divideBy2Directed(dblY, sumRotationValue / 2);
+				break;
+			default:
+				printf("[LOG] Error: Incorrect cmda value\n");
+				break;
+			}
 		}
 		else
 		{
 			crct = crctCornerOfCube;
 			rotationCenterX = (dblX + 1) / 2;
 			rotationCenterY = (dblY + 1) / 2;
-
 		}
+
 
 		// Finding the radius of the falling cubes
 		float R = 0;
@@ -168,7 +232,7 @@ namespace sfmlcubes
 				if (R < r) R = r;
 			}
 		}
-		RotationData res;
+		CenterAndRadiusData res;
 
 		res.R = round(ceil(R));
 		if (crct == crctCenterOfCube) res.R++;
@@ -183,7 +247,7 @@ namespace sfmlcubes
 
 	bool CubesMechanic::canRotate()
 	{
-		RotationData rd = findCenter();
+		CenterAndRadiusData rd = findCenterAndRadius();
 
 		//float cx = rd.x - (rd.crct == crctCornerOfCube ? 0.5 : 0);
 		//float cy = rd.y - (rd.crct == crctCornerOfCube ? 0.5 : 0);
@@ -266,9 +330,9 @@ namespace sfmlcubes
 		}
 	}
 
-	void CubesMechanic::rotate(int angle)
+	void CubesMechanic::rotate(CubesMechanicDiscreteAngle angle)
 	{
-		RotationData rd = findCenter();
+		CenterAndRadiusData rd = findCenterAndRadius();
 
 		if (rd.crct == crctCenterOfCube)
 		{
@@ -345,6 +409,7 @@ namespace sfmlcubes
 				}
 			}
 		}
+		sumRotationValue = (CubesMechanicDiscreteAngle)((sumRotationValue + 1) % 4);
 	}
 
 	void CubesMechanic::cleanFrees()
@@ -470,7 +535,7 @@ namespace sfmlcubes
 	void CubesMechanic::processTimeStep(float dt)
 	{
 		// ** Rotation **
-		RotationData rd = findCenter();
+		CenterAndRadiusData rd = findCenterAndRadius();
 
 		float rotationAngle = 0;
 
@@ -486,7 +551,7 @@ namespace sfmlcubes
 			else
 			{
 				rotationPhase = 0;
-				rotate(1);
+				rotate(cmda90CW);
 				rotationAngle = 0;
 				rotationDirection = cmrdNone;
 			}
@@ -570,8 +635,94 @@ namespace sfmlcubes
 		setSliding(slidingX, slidingY);
 	}
 
+	void CubesMechanic::createTBlock()
+	{
+		sf::Color gray = sf::Color(192, 192, 192);
+		field.cubeAt(5, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(7, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+	}
+	void CubesMechanic::createJBlock()
+	{
+		sf::Color gray = sf::Color(192, 192, 192);
+		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(5, 2) = sfmlcubes::Cube(gray, true);
+	}
+	void CubesMechanic::createLBlock()
+	{
+		sf::Color gray = sf::Color(192, 192, 192);
+		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(7, 2) = sfmlcubes::Cube(gray, true);
+	}
+	void CubesMechanic::createIBlock()
+	{
+		sf::Color gray = sf::Color(192, 192, 192);
+		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 3) = sfmlcubes::Cube(gray, true);
+	}
+	void CubesMechanic::createZBlock()
+	{
+		sf::Color gray = sf::Color(192, 192, 192);
+		field.cubeAt(5, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
+	}
+	void CubesMechanic::createSBlock()
+	{
+		sf::Color gray = sf::Color(192, 192, 192);
+		field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(7, 0) = sfmlcubes::Cube(gray, true);
+
+	}
+	void CubesMechanic::createOBlock()
+	{
+		sf::Color gray = sf::Color(192, 192, 192);
+		field.cubeAt(5, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
+		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+	}
 	void CubesMechanic::createNewBlock()
 	{
+		int r = rand() * 7 / RAND_MAX;
+		switch (r)
+		{
+		case 0:
+			createOBlock();
+			break;
+		case 1:
+			createSBlock();
+			break;
+		case 2:
+			createLBlock();
+			break;
+		case 3:
+			createJBlock();
+			break;
+		case 4:
+			createIBlock();
+			break;
+		case 5:
+			createTBlock();
+			break;
+		case 6:
+			createSBlock();
+			break;
+		case 7:
+			createZBlock();
+			break;
+		}
+
 		/*Cube c = sfmlcubes::Cube(sf::Color::Red, true);
 		c.slidingX = -0.5;
 		c.slidingY = -0.2;
@@ -581,12 +732,6 @@ namespace sfmlcubes
 		field.cubeAt(0, 2) = sfmlcubes::Cube(sf::Color::Blue, true);
 		field.cubeAt(1, 1) = sfmlcubes::Cube(sf::Color::White, true);
 		*/
-
-		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
 	}
 
 	void CubesMechanic::test_createBlueCube()

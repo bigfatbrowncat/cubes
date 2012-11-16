@@ -39,9 +39,17 @@ namespace sfmlcubes
 		cmrdCCW
 	};
 
+	enum CubesMechanicDiscreteAngle
+	{
+		cmda0		= 0,
+		cmda90CW	= 1,
+		cmda180CW	= 2,
+		cmda270CW	= 3
+	};
+
 	class CubesMechanic
 	{
-		struct RotationData
+		struct CenterAndRadiusData
 		{
 			int x, y;
 			int R;
@@ -64,8 +72,10 @@ namespace sfmlcubes
 		CubesMechanicRotationDirection rotationDirection;
 		float rotationPhase;
 
+		CubesMechanicDiscreteAngle sumRotationValue;
+
 		bool cubeIsEmptyOrFreeAt(int i, int j);
-		RotationData findCenter();
+		CenterAndRadiusData findCenterAndRadius();
 	public:
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();
@@ -78,7 +88,7 @@ namespace sfmlcubes
 		void moveDown();
 		void moveRight();
 		void moveLeft();
-		void rotate(int angle);
+		void rotate(CubesMechanicDiscreteAngle angle);
 
 		CubesMechanicIssueResponse issueMovingDown(bool fast);
 		CubesMechanicIssueResponse issueMovingRight();
@@ -91,6 +101,15 @@ namespace sfmlcubes
 		void setRotation(int centerX, int centerY, CubeRotatingCenterType crct, float angle);
 
 		void cleanFrees();
+
+		void createTBlock();
+		void createJBlock();
+		void createLBlock();
+		void createIBlock();
+		void createZBlock();
+		void createSBlock();
+		void createOBlock();
+
 		void createNewBlock();
 
 		const CubesField& getField() const { return field; }

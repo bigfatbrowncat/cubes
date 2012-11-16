@@ -113,7 +113,6 @@ namespace sfmlcubes
     		break;
     	case sf::Keyboard::Right:
     		wantMoveRight = true;
-    		printf("[LOG] Right key down\n");
     		break;
     	case sf::Keyboard::Left:
     		wantMoveLeft = true;
@@ -137,7 +136,6 @@ namespace sfmlcubes
     	{
     	case sf::Keyboard::Right:
     		wantMoveRight = false;
-    		printf("[LOG] Right key up\n");
     		break;
     	case sf::Keyboard::Left:
     		wantMoveLeft = false;
@@ -219,7 +217,7 @@ namespace sfmlcubes
 
 		if (timeSinceFallIssued > fallingPeriod)
 		{
-			if (/*board.issueMovingDown(false) == cmirCantBecauseObstacle*/false)
+			if (board.issueMovingDown(false) == cmirCantBecauseObstacle)
 			{
 				if (board.getHorizontalDirection() == cmhdNone &&
 				    board.getRotationDirection() == cmrdNone)	// This means that no horizontal movement and no rotation is in progress

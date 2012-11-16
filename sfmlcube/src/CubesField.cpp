@@ -29,7 +29,7 @@ namespace sfmlcubes
 		// Loading the cube shader
 		if (!cubeShader.loadFromFile("res/cube.vert", "res/cube.frag"))
 		{
-			printf("Can't load the shader. Sorry...");
+			printf("[LOG] Can't load the cube shader. Sorry...");
 		}
 
 		cubeShader.setParameter("texture", sf::Shader::CurrentTexture);
