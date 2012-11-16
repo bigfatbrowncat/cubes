@@ -19,6 +19,9 @@ namespace sfmlcubes
 {
 	int Cube::cubesize = 30;
 	int Cube::OBJECT_INDEX = -1;
+
+	const Cube Cube::EMPTY;
+
 	sf::Shader Cube::cubeShader;
 
 	void Cube::initGlobal()
@@ -86,15 +89,21 @@ namespace sfmlcubes
 	CubesField::CubesField(int width, int height): width(width), height(height)
 	{
 		cubesData = new Cube[width * height];
+		occupiedMap = new bool[width * height];
 	}
 
 	CubesField::~CubesField()
 	{
 		delete [] cubesData;
+		delete [] occupiedMap;
 	}
 
 	Cube& CubesField::cubeAt(int i, int j)
 	{
+		if (i < 0 || i >= width || j < 0 || j >= height)
+		{
+			printf("[LOG] Error! Trying to get a cube with invalid position");
+		}
 		return cubesData[width * j + i];
 	}
 

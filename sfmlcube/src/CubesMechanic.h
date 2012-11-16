@@ -75,7 +75,13 @@ namespace sfmlcubes
 		CubesMechanicDiscreteAngle sumRotationValue;
 
 		bool cubeIsEmptyOrFreeAt(int i, int j);
-		CenterAndRadiusData findCenterAndRadius();
+
+		float calculateRadius(int rotationCenterX, int rotationCenterY, CubeRotatingCenterType crct);
+		int fallingCenterX;
+		int fallingCenterY;
+		CubeRotatingCenterType fallingCRCT;
+
+
 	public:
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();

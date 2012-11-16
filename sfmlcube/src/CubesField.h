@@ -31,6 +31,9 @@ namespace sfmlcubes
 	protected:
 		void glDraw(int i, int j);
 	public:
+
+		static const Cube EMPTY;
+
 		static int cubesize;
 		static int OBJECT_INDEX;
 		static sf::Shader cubeShader;
@@ -101,6 +104,7 @@ namespace sfmlcubes
 		};
 
 		Cube* cubesData;
+		bool* occupiedMap;
 		int width, height;
 
 	public:
@@ -113,6 +117,8 @@ namespace sfmlcubes
 		int getHeight() const { return height; }
 
 		void glDraw() const;
+
+		bool* getOccupiedMap() {}
 	};
 
 }

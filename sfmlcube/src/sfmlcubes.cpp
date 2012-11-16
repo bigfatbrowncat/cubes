@@ -8,7 +8,7 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	static float fallingPeriod = 1;	// seconds
+	static float fallingPeriod = 1.2;	// seconds
 
 	// Global application-level singletones
 	static sf::RenderWindow mainWindow;

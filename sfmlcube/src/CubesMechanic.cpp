@@ -15,8 +15,8 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	float CubesMechanic::ROTATION_LONGITUDE = 0.3;
-	float CubesMechanic::FALLING_DOWN_LONGITUDE = 0.3;
+	float CubesMechanic::ROTATION_LONGITUDE = 1;
+	float CubesMechanic::FALLING_DOWN_LONGITUDE = 1;
 	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.1;
 	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.2;
 
@@ -133,90 +133,8 @@ namespace sfmlcubes
 		}
 	}
 
-	CubesMechanic::CenterAndRadiusData CubesMechanic::findCenterAndRadius()
+	float CubesMechanic::calculateRadius(int rotationCenterX, int rotationCenterY, CubeRotatingCenterType crct)
 	{
-		// Calculating the center of the falling cubes
-		float centerX = 0, centerY = 0;
-		int k = 0;
-		for (int i = 0; i < field.getWidth(); i++)
-		for (int j = 0; j < field.getHeight(); j++)
-		{
-			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
-			{
-				centerX += i;
-				centerY += j;
-				k ++;
-			}
-		}
-		centerX /= k; centerY /= k;
-
-		// Here we try to change 0.5 to something like 0.4999
-		// thus round() value will be defined
-		float bloha = 0.001;
-		switch (sumRotationValue)
-		{
-		case cmda0:
-			centerX -= bloha;
-			centerY -= bloha;
-			break;
-		case cmda90CW:
-			centerX += bloha;
-			centerY -= bloha;
-			break;
-		case cmda180CW:
-			centerX += bloha;
-			centerY += bloha;
-			break;
-		case cmda270CW:
-			centerX -= bloha;
-			centerY += bloha;
-			break;
-		default:
-			printf("[LOG] Error: Incorrect cmda value\n");
-			break;
-		}
-
-		int dblX = round(2 * centerX);
-		int dblY = round(2 * centerY);
-
-		int rotationCenterX, rotationCenterY;
-		CubeRotatingCenterType crct;
-
-
-		if (dblX % 2 == 0 || dblY % 2 == 0)
-		{
-			crct = crctCenterOfCube;
-			switch (sumRotationValue)
-			{
-			case cmda0:
-				rotationCenterX = divideBy2Directed(dblX, sumRotationValue / 2);
-				rotationCenterY = divideBy2Directed(dblY, sumRotationValue / 2 + 1);
-				break;
-			case cmda90CW:
-				rotationCenterX = divideBy2Directed(dblX, sumRotationValue / 2 + 1);
-				rotationCenterY = divideBy2Directed(dblY, sumRotationValue / 2);
-				break;
-			case cmda180CW:
-				rotationCenterX = divideBy2Directed(dblX, sumRotationValue / 2);
-				rotationCenterY = divideBy2Directed(dblY, sumRotationValue / 2 + 1);
-				break;
-			case cmda270CW:
-				rotationCenterX = divideBy2Directed(dblX, sumRotationValue / 2 + 1);
-				rotationCenterY = divideBy2Directed(dblY, sumRotationValue / 2);
-				break;
-			default:
-				printf("[LOG] Error: Incorrect cmda value\n");
-				break;
-			}
-		}
-		else
-		{
-			crct = crctCornerOfCube;
-			rotationCenterX = (dblX + 1) / 2;
-			rotationCenterY = (dblY + 1) / 2;
-		}
-
-
 		// Finding the radius of the falling cubes
 		float R = 0;
 
@@ -232,30 +150,18 @@ namespace sfmlcubes
 				if (R < r) R = r;
 			}
 		}
-		CenterAndRadiusData res;
 
-		res.R = round(ceil(R));
-		if (crct == crctCenterOfCube) res.R++;
-		printf("R = %d\n", res.R);
-		fflush(stdout);
-
-		res.crct = crct;
-		res.x = rotationCenterX;
-		res.y = rotationCenterY;
-		return res;
+		return ceil(R) + 0.51;
 	}
 
 	bool CubesMechanic::canRotate()
 	{
-		CenterAndRadiusData rd = findCenterAndRadius();
+		float R = calculateRadius(fallingCenterX, fallingCenterY, fallingCRCT);
 
-		//float cx = rd.x - (rd.crct == crctCornerOfCube ? 0.5 : 0);
-		//float cy = rd.y - (rd.crct == crctCornerOfCube ? 0.5 : 0);
-
-		if (rd.crct == crctCenterOfCube)
+		if (fallingCRCT == crctCenterOfCube)
 		{
-			for (int i = rd.x - rd.R + 1; i < rd.x + rd.R; i++)
-			for (int j = rd.y - rd.R + 1; j < rd.y + rd.R; j++)
+			for (int i = fallingCenterX - R + 1; i < fallingCenterX + R; i++)
+			for (int j = fallingCenterY - R + 1; j < fallingCenterY + R; j++)
 			{
 				if (i < 0 || j < 0 || i >= field.getWidth() || j >= field.getHeight())
 				{
@@ -269,10 +175,10 @@ namespace sfmlcubes
 				}
 			}
 		}
-		else if (rd.crct == crctCornerOfCube)
+		else if (fallingCRCT == crctCornerOfCube)
 		{
-			for (int i = rd.x - rd.R; i < rd.x + rd.R; i++)
-			for (int j = rd.y - rd.R; j < rd.y + rd.R; j++)
+			for (int i = fallingCenterX - R; i < fallingCenterX + R; i++)
+			for (int j = fallingCenterY - R; j < fallingCenterY + R; j++)
 			{
 				if (i < 0 || j < 0 || i >= field.getWidth() || j >= field.getHeight())
 				{
@@ -302,6 +208,7 @@ namespace sfmlcubes
 				field.cubeAt(i, j).empty = true;
 			}
 		}
+		fallingCenterY ++;
 	}
 
 	void CubesMechanic::moveRight()
@@ -315,6 +222,7 @@ namespace sfmlcubes
 				field.cubeAt(i, j).empty = true;
 			}
 		}
+		fallingCenterX ++;
 	}
 
 	void CubesMechanic::moveLeft()
@@ -328,22 +236,23 @@ namespace sfmlcubes
 				field.cubeAt(i, j).empty = true;
 			}
 		}
+		fallingCenterX --;
 	}
 
 	void CubesMechanic::rotate(CubesMechanicDiscreteAngle angle)
 	{
-		CenterAndRadiusData rd = findCenterAndRadius();
+		float R = calculateRadius(fallingCenterX, fallingCenterY, fallingCRCT);
 
-		if (rd.crct == crctCenterOfCube)
+		if (fallingCRCT == crctCenterOfCube)
 		{
 			// Searching for anything in our radius
-			for (int i = rd.x - rd.R + 1; i <= rd.x; i++)
-			for (int j = rd.y - rd.R + 1; j < rd.y; j++)
+			for (int i = fallingCenterX - R + 1; i <= fallingCenterX; i++)
+			for (int j = fallingCenterY - R + 1; j < fallingCenterY; j++)
 			{
 				{
 					// Calculating 3 images for our position
 					int ik[4], jk[4];
-					int i0 = rd.x, j0 = rd.y;
+					int i0 = fallingCenterX, j0 = fallingCenterY;
 
 					// Making the 90 degrees rotating group
 					ik[0] = i;
@@ -358,7 +267,10 @@ namespace sfmlcubes
 					Cube group[4];
 					for (int k = 0; k < 4; k++)
 					{
-						group[k] = field.cubeAt(ik[k], jk[k]);
+						if (ik[k] >= 0 && ik[k] < field.getWidth() && jk[k] >= 0 && jk[k] < field.getHeight())
+							group[k] = field.cubeAt(ik[k], jk[k]);
+						else
+							group[k] = Cube::EMPTY;
 					}
 
 					// Rotating the group
@@ -366,22 +278,25 @@ namespace sfmlcubes
 					{
 						int kold = (k + 4 - angle) % 4;
 
-						field.cubeAt(ik[k], jk[k]) = group[kold];
+						if (ik[k] >= 0 && ik[k] < field.getWidth() && jk[k] >= 0 && jk[k] < field.getHeight())
+							field.cubeAt(ik[k], jk[k]) = group[kold];
+						else
+							field.cubeAt(ik[k], jk[k]) = Cube::EMPTY;
 					}
 				}
 			}
 		}
-		else if (rd.crct == crctCornerOfCube)
+		else if (fallingCRCT == crctCornerOfCube)
 		{
 			// Searching for anything in our radius
-			for (int i = rd.x - rd.R; i < rd.x; i++)
-			for (int j = rd.y - rd.R; j < rd.y; j++)
+			for (int i = fallingCenterX - R; i < fallingCenterX; i++)
+			for (int j = fallingCenterY - R; j < fallingCenterY; j++)
 			{
 				/*if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)*/
 				{
 					// Calculating 3 images for our position
 					int ik[4], jk[4];
-					int i0 = rd.x, j0 = rd.y;
+					int i0 = fallingCenterX, j0 = fallingCenterY;
 
 					// Making the 90 degrees rotating group
 					ik[0] = i;
@@ -535,7 +450,7 @@ namespace sfmlcubes
 	void CubesMechanic::processTimeStep(float dt)
 	{
 		// ** Rotation **
-		CenterAndRadiusData rd = findCenterAndRadius();
+		//CenterAndRadiusData rd = findCenterAndRadius();
 
 		float rotationAngle = 0;
 
@@ -556,8 +471,6 @@ namespace sfmlcubes
 				rotationDirection = cmrdNone;
 			}
 		}
-
-		setRotation(rd.x, rd.y, rd.crct, rotationAngle);
 
 		// ** Sliding **
 
@@ -632,6 +545,7 @@ namespace sfmlcubes
 			}
 		}
 
+		setRotation(fallingCenterX, fallingCenterY, fallingCRCT, rotationAngle);
 		setSliding(slidingX, slidingY);
 	}
 
@@ -642,6 +556,10 @@ namespace sfmlcubes
 		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(7, 0) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+
+		fallingCRCT = crctCenterOfCube;
+		fallingCenterX = 6;
+		fallingCenterY = 0;
 	}
 	void CubesMechanic::createJBlock()
 	{
@@ -650,6 +568,10 @@ namespace sfmlcubes
 		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(5, 2) = sfmlcubes::Cube(gray, true);
+
+		fallingCRCT = crctCenterOfCube;
+		fallingCenterX = 6;
+		fallingCenterY = 1;
 	}
 	void CubesMechanic::createLBlock()
 	{
@@ -658,6 +580,10 @@ namespace sfmlcubes
 		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(7, 2) = sfmlcubes::Cube(gray, true);
+
+		fallingCRCT = crctCenterOfCube;
+		fallingCenterX = 6;
+		fallingCenterY = 1;
 	}
 	void CubesMechanic::createIBlock()
 	{
@@ -666,6 +592,10 @@ namespace sfmlcubes
 		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(6, 3) = sfmlcubes::Cube(gray, true);
+
+		fallingCRCT = crctCornerOfCube;
+		fallingCenterX = 6;
+		fallingCenterY = 2;
 	}
 	void CubesMechanic::createZBlock()
 	{
@@ -674,6 +604,10 @@ namespace sfmlcubes
 		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
+
+		fallingCRCT = crctCornerOfCube;
+		fallingCenterX = 7;
+		fallingCenterY = 1;
 	}
 	void CubesMechanic::createSBlock()
 	{
@@ -683,6 +617,9 @@ namespace sfmlcubes
 		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(7, 0) = sfmlcubes::Cube(gray, true);
 
+		fallingCRCT = crctCornerOfCube;
+		fallingCenterX = 6;
+		fallingCenterY = 1;
 	}
 	void CubesMechanic::createOBlock()
 	{
@@ -691,9 +628,14 @@ namespace sfmlcubes
 		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
 		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+
+		fallingCRCT = crctCornerOfCube;
+		fallingCenterX = 6;
+		fallingCenterY = 1;
 	}
 	void CubesMechanic::createNewBlock()
 	{
+		//srand(RAND_MAX / 7 * 1.5);
 		int r = rand() * 7 / RAND_MAX;
 		switch (r)
 		{
