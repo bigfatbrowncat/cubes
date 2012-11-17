@@ -11,6 +11,7 @@
 
 #include "sfmlcubes.h"
 #include "CubesField.h"
+#include "Logger.h"
 
 using namespace std;
 
@@ -32,7 +33,7 @@ namespace sfmlcubes
 		// Loading the cube shader
 		if (!cubeShader.loadFromFile("res/cube.vert", "res/cube.frag"))
 		{
-			printf("[LOG] Can't load the cube shader. Sorry...");
+			Logger::DEFAULT.logWarning("Can't load the cube shader. Sorry...");
 		}
 
 		cubeShader.setParameter("texture", sf::Shader::CurrentTexture);
@@ -89,20 +90,20 @@ namespace sfmlcubes
 	CubesField::CubesField(int width, int height): width(width), height(height)
 	{
 		cubesData = new Cube[width * height];
-		occupiedMap = new bool[width * height];
+		//occupiedMap = new bool[width * height];
 	}
 
 	CubesField::~CubesField()
 	{
 		delete [] cubesData;
-		delete [] occupiedMap;
+		//delete [] occupiedMap;
 	}
 
 	Cube& CubesField::cubeAt(int i, int j)
 	{
 		if (i < 0 || i >= width || j < 0 || j >= height)
 		{
-			printf("[LOG] Error! Trying to get a cube with invalid position");
+			Logger::DEFAULT.logError("Trying to get a cube with invalid position");
 		}
 		return cubesData[width * j + i];
 	}

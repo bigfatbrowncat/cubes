@@ -8,7 +8,7 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	static float fallingPeriod = 1.2;	// seconds
+	static float fallingPeriod = 1.0;	// seconds
 
 	// Global application-level singletones
 	static sf::RenderWindow mainWindow;
@@ -20,8 +20,7 @@ namespace sfmlcubes
 
 	static float recentMoment = 0;
 
-	static bool wantMoveRight = false, wantMoveLeft = false, wantMoveDown = false, wantRotateCW = false;
-	static bool movingBonusUsed = false;
+	static bool rightKeyPressed = false, leftKeyPressed = false, downKeyPressed = false, rotateCWKeyPressed = false;
 
 	// Global application-level functions
 	void initMainWindow(const string& title = "Cubes", unsigned int width = 800, unsigned int height = 600, unsigned int antialias = 8)
@@ -112,16 +111,32 @@ namespace sfmlcubes
     		mainWindow.close();
     		break;
     	case sf::Keyboard::Right:
-    		wantMoveRight = true;
+    		if (!rightKeyPressed)
+    		{
+    			rightKeyPressed = true;
+    			//board.issueOrder(cmoMoveRight);
+    		}
     		break;
     	case sf::Keyboard::Left:
-    		wantMoveLeft = true;
+    		if (!leftKeyPressed)
+    		{
+    			leftKeyPressed = true;
+        		//board.issueOrder(cmoMoveLeft);
+    		}
     		break;
     	case sf::Keyboard::Down:
-    		wantMoveDown = true;
+    		if (!downKeyPressed)
+    		{
+    			downKeyPressed = true;
+        		//board.issueOrder(cmoMoveDown);
+    		}
     		break;
     	case sf::Keyboard::Up:
-    		wantRotateCW = true;
+    		if (!rotateCWKeyPressed)
+    		{
+    			rotateCWKeyPressed = true;
+        		//board.issueOrder(cmoRotateCW);
+    		}
     		break;
     	case sf::Keyboard::Space:
     		break;
@@ -135,16 +150,16 @@ namespace sfmlcubes
     	switch (key.code)
     	{
     	case sf::Keyboard::Right:
-    		wantMoveRight = false;
+    		rightKeyPressed = false;
     		break;
     	case sf::Keyboard::Left:
-    		wantMoveLeft = false;
+    		leftKeyPressed = false;
     		break;
     	case sf::Keyboard::Down:
-    		wantMoveDown = false;
+    		downKeyPressed = false;
     		break;
     	case sf::Keyboard::Up:
-    		wantRotateCW = false;
+    		rotateCWKeyPressed = false;
     		break;
     	default:
     		break;
@@ -195,29 +210,11 @@ namespace sfmlcubes
 		board.processTimeStep(dt);
 		recentMoment = curTime;
 
-		if (!movingBonusUsed)
-		{
-			if (wantMoveRight)
-			{
-				board.issueMovingRight();
-			}
-			else if (wantMoveLeft)
-			{
-				board.issueMovingLeft();
-			}
-			else if (wantMoveDown)
-			{
-				board.issueMovingDown(true);
-			}
-			else if (wantRotateCW)
-			{
-				board.issueRotatingCW();
-			}
-		}
-
 		if (timeSinceFallIssued > fallingPeriod)
 		{
-			if (board.issueMovingDown(false) == cmirCantBecauseObstacle)
+			board.issueOrder(cmoMoveDown);
+			momentWhenFallIssued = curTime;
+			/*
 			{
 				if (board.getHorizontalDirection() == cmhdNone &&
 				    board.getRotationDirection() == cmrdNone)	// This means that no horizontal movement and no rotation is in progress
@@ -237,9 +234,38 @@ namespace sfmlcubes
 			{
 				momentWhenFallIssued = curTime;
 				movingBonusUsed = false;
-			}
+			}*/
 		}
 
+	}
+
+	void boardOrderIssuedNotifier(CubesMechanicOrder order, CubesMechanicIssueResponse response)
+	{
+		if ((order == cmoMoveDown || order == cmoMoveDownFast) && (response == cmirCantBecauseObstacle))
+		{
+			board.cleanFrees();
+			board.createNewBlock();
+		}
+	}
+
+	void boardBeforeOrderIssuedNotifier()
+	{
+		if (leftKeyPressed)
+		{
+			board.issueOrder(cmoMoveLeft);
+		}
+		else if (rightKeyPressed)
+		{
+			board.issueOrder(cmoMoveRight);
+		}
+		else if (downKeyPressed)
+		{
+			board.issueOrder(cmoMoveDownFast);
+		}
+		else if (rotateCWKeyPressed)
+		{
+			board.issueOrder(cmoRotateCW);
+		}
 	}
 
 	void run()
@@ -263,7 +289,9 @@ int main()
 	sfmlcubes::initMainFont();
 	sfmlcubes::prepareScene();
 
-	sfmlcubes::board.test_createBlueCube();
+	sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);
+	sfmlcubes::board.setBeforeOrderIssuingNotifier(sfmlcubes::boardBeforeOrderIssuedNotifier);
+
 	sfmlcubes::board.createNewBlock();
 
 	sfmlcubes::run();

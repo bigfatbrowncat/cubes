@@ -8,6 +8,8 @@
 #ifndef CUBESMECHANIC_H_
 #define CUBESMECHANIC_H_
 
+#include <list>
+
 #include "CubesField.h"
 
 namespace sfmlcubes
@@ -16,7 +18,8 @@ namespace sfmlcubes
 	{
 		cmirSuccess,
 		cmirAlreadyInProgress,
-		cmirCantBecauseObstacle
+		cmirCantBecauseObstacle,
+		cmirNothingToIssue
 	};
 
 	enum CubesMechanicHorizontalDirection
@@ -46,6 +49,18 @@ namespace sfmlcubes
 		cmda180CW	= 2,
 		cmda270CW	= 3
 	};
+
+	enum CubesMechanicOrder
+	{
+		cmoMoveDown,
+		cmoMoveDownFast,
+		cmoMoveRight,
+		cmoMoveLeft,
+		cmoRotateCW
+	};
+
+	typedef void OrderIssuedNotifier(CubesMechanicOrder order, CubesMechanicIssueResponse response);
+	typedef void BeforeOrderIssuingNotifier();
 
 	class CubesMechanic
 	{
@@ -79,12 +94,15 @@ namespace sfmlcubes
 		float calculateRadius(int rotationCenterX, int rotationCenterY, CubeRotatingCenterType crct);
 		int fallingCenterX;
 		int fallingCenterY;
+		int fallingRadius;
 		CubeRotatingCenterType fallingCRCT;
+		OrderIssuedNotifier* orderIssuedNotifier;
+		BeforeOrderIssuingNotifier* beforeOrderIssuingNotifier;
 
+		list<CubesMechanicOrder> ordersQueue;
 
-	public:
-		CubesMechanic(int width, int height);
-		virtual ~CubesMechanic();
+		CubesMechanicIssueResponse executeNextOrder();
+		bool ordersStarted;
 
 		bool canMoveDown();
 		bool canMoveRight();
@@ -96,17 +114,13 @@ namespace sfmlcubes
 		void moveLeft();
 		void rotate(CubesMechanicDiscreteAngle angle);
 
-		CubesMechanicIssueResponse issueMovingDown(bool fast);
-		CubesMechanicIssueResponse issueMovingRight();
-		CubesMechanicIssueResponse issueMovingLeft();
-		CubesMechanicIssueResponse issueRotatingCW();
-
-		void processTimeStep(float dt);
+		CubesMechanicIssueResponse startMovingDownTransition(bool fast);
+		CubesMechanicIssueResponse startMovingRightTransition();
+		CubesMechanicIssueResponse startMovingLeftTransition();
+		CubesMechanicIssueResponse startRotatingCWTransition();
 
 		void setSliding(float slidingX, float slidingY);
 		void setRotation(int centerX, int centerY, CubeRotatingCenterType crct, float angle);
-
-		void cleanFrees();
 
 		void createTBlock();
 		void createJBlock();
@@ -115,6 +129,9 @@ namespace sfmlcubes
 		void createZBlock();
 		void createSBlock();
 		void createOBlock();
+	public:
+		CubesMechanic(int width, int height);
+		virtual ~CubesMechanic();
 
 		void createNewBlock();
 
@@ -122,9 +139,15 @@ namespace sfmlcubes
 		CubesMechanicHorizontalDirection getHorizontalDirection() const { return horizontalMovingDirection; }
 		CubesMechanicRotationDirection getRotationDirection() const { return rotationDirection; }
 
+		void setOrderIssuedNotifier(OrderIssuedNotifier& notifier) { orderIssuedNotifier = &notifier; }
+		void setBeforeOrderIssuingNotifier(BeforeOrderIssuingNotifier& notifier) { beforeOrderIssuingNotifier = &notifier; }
 
-		// ***************
-		void test_createBlueCube();
+		void issueOrder(CubesMechanicOrder order);
+		void issueHighPriorityOrder(CubesMechanicOrder order);
+
+		void processTimeStep(float dt);
+		void cleanFrees();
+
 	};
 
 }

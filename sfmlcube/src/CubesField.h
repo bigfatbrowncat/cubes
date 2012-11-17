@@ -104,7 +104,7 @@ namespace sfmlcubes
 		};
 
 		Cube* cubesData;
-		bool* occupiedMap;
+		//bool* occupiedMap;
 		int width, height;
 
 	public:
@@ -118,7 +118,7 @@ namespace sfmlcubes
 
 		void glDraw() const;
 
-		bool* getOccupiedMap() {}
+		//bool* getOccupiedMap() {}
 	};
 
 }

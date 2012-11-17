@@ -8,17 +8,19 @@
 #include <cmath>
 #include <cstdio>
 #include <cstdlib>
+#include <sstream>
 
+#include "Logger.h"
 #include "CubesMechanic.h"
 
 using namespace std;
 
 namespace sfmlcubes
 {
-	float CubesMechanic::ROTATION_LONGITUDE = 1;
-	float CubesMechanic::FALLING_DOWN_LONGITUDE = 1;
-	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.1;
-	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.2;
+	float CubesMechanic::ROTATION_LONGITUDE = 0.25;
+	float CubesMechanic::FALLING_DOWN_LONGITUDE = 0.1;
+	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.05;
+	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.1;
 
 	CubesMechanic::CubesMechanic(int width, int height):
 			field(width, height),
@@ -37,6 +39,49 @@ namespace sfmlcubes
 	bool CubesMechanic::cubeIsEmptyOrFreeAt(int i, int j)
 	{
 		return field.cubeAt(i, j).empty || field.cubeAt(i, j).freeMoving;
+	}
+
+	CubesMechanicIssueResponse CubesMechanic::executeNextOrder()
+	{
+		if (beforeOrderIssuingNotifier != NULL)
+		{
+			(*beforeOrderIssuingNotifier)();
+		}
+
+		if (ordersQueue.size() == 0)
+		{
+			return cmirNothingToIssue;
+		}
+		else
+		{
+			CubesMechanicOrder nextOrder = ordersQueue.back();
+			ordersQueue.pop_back();
+			CubesMechanicIssueResponse resp;
+			switch (nextOrder)
+			{
+			case cmoMoveDown:
+				resp = startMovingDownTransition(false);
+				break;
+			case cmoMoveDownFast:
+				resp = startMovingDownTransition(true);
+				break;
+			case cmoMoveLeft:
+				resp = startMovingLeftTransition();
+				break;
+			case cmoMoveRight:
+				resp = startMovingRightTransition();
+				break;
+			case cmoRotateCW:
+				resp = startRotatingCWTransition();
+				break;
+			}
+
+			if (orderIssuedNotifier != NULL)
+			{
+				(*orderIssuedNotifier)(nextOrder, resp);
+			}
+			return resp;
+		}
 	}
 
 	bool CubesMechanic::canMoveDown()
@@ -138,20 +183,22 @@ namespace sfmlcubes
 		// Finding the radius of the falling cubes
 		float R = 0;
 
-		float cx = rotationCenterX - (crct == crctCornerOfCube ? 0.5 : 0);
-		float cy = rotationCenterY - (crct == crctCornerOfCube ? 0.5 : 0);
+		float cx = rotationCenterX;// - (crct == crctCenterOfCube ? 0.5 : 0);
+		float cy = rotationCenterY;// - (crct == crctCenterOfCube ? 0.5 : 0);
 
 		for (int i = 0; i < field.getWidth(); i++)
 		for (int j = 0; j < field.getHeight(); j++)
 		{
 			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
 			{
-				double r = sqrt((cx - i)*(cx - i) + (cy - j)*(cy - j));
+				double r = i <= cx ? cx - i : i + 1 - cx;  //sqrt((cx - i)*(cx - i) + (cy - j)*(cy - j));
+				if (R < r) R = r;
+				r = j <= cy ? cy - j : j + 1 - cy;
 				if (R < r) R = r;
 			}
 		}
 
-		return ceil(R) + 0.51;
+		return R;
 	}
 
 	bool CubesMechanic::canRotate()
@@ -280,8 +327,6 @@ namespace sfmlcubes
 
 						if (ik[k] >= 0 && ik[k] < field.getWidth() && jk[k] >= 0 && jk[k] < field.getHeight())
 							field.cubeAt(ik[k], jk[k]) = group[kold];
-						else
-							field.cubeAt(ik[k], jk[k]) = Cube::EMPTY;
 					}
 				}
 			}
@@ -311,7 +356,10 @@ namespace sfmlcubes
 					Cube group[4];
 					for (int k = 0; k < 4; k++)
 					{
-						group[k] = field.cubeAt(ik[k], jk[k]);
+						if (ik[k] >= 0 && ik[k] < field.getWidth() && jk[k] >= 0 && jk[k] < field.getHeight())
+							group[k] = field.cubeAt(ik[k], jk[k]);
+						else
+							group[k] = Cube::EMPTY;
 					}
 
 					// Rotating the group
@@ -319,7 +367,8 @@ namespace sfmlcubes
 					{
 						int kold = (k + 4 - angle) % 4;
 
-						field.cubeAt(ik[k], jk[k]) = group[kold];
+						if (ik[k] >= 0 && ik[k] < field.getWidth() && jk[k] >= 0 && jk[k] < field.getHeight())
+							field.cubeAt(ik[k], jk[k]) = group[kold];
 					}
 				}
 			}
@@ -339,7 +388,7 @@ namespace sfmlcubes
 		}
 	}
 
-	CubesMechanicIssueResponse CubesMechanic::issueMovingDown(bool fast)
+	CubesMechanicIssueResponse CubesMechanic::startMovingDownTransition(bool fast)
 	{
 		if (!canMoveDown())
 		{
@@ -364,7 +413,7 @@ namespace sfmlcubes
 		}
 	}
 
-	CubesMechanicIssueResponse CubesMechanic::issueMovingRight()
+	CubesMechanicIssueResponse CubesMechanic::startMovingRightTransition()
 	{
 		if (!canMoveRight() || horizontalMovingDirection == cmhdLeft)
 		{
@@ -382,7 +431,7 @@ namespace sfmlcubes
 		}
 	}
 
-	CubesMechanicIssueResponse CubesMechanic::issueMovingLeft()
+	CubesMechanicIssueResponse CubesMechanic::startMovingLeftTransition()
 	{
 		if (!canMoveLeft() || horizontalMovingDirection == cmhdRight)
 		{
@@ -400,7 +449,7 @@ namespace sfmlcubes
 		}
 	}
 
-	CubesMechanicIssueResponse CubesMechanic::issueRotatingCW()
+	CubesMechanicIssueResponse CubesMechanic::startRotatingCWTransition()
 	{
 		if (!canRotate() || rotationDirection == cmrdCCW)
 		{
@@ -449,10 +498,8 @@ namespace sfmlcubes
 
 	void CubesMechanic::processTimeStep(float dt)
 	{
-		// ** Rotation **
-		//CenterAndRadiusData rd = findCenterAndRadius();
-
 		float rotationAngle = 0;
+		float slidingX = 0, slidingY = 0;
 
 		if (rotationDirection == cmrdCW)
 		{
@@ -460,8 +507,9 @@ namespace sfmlcubes
 
 			if (rotationPhase < 1)
 			{
-				float slope = 1.5f;
+				float slope = 1.0f;
 				rotationAngle = atan(slope * (rotationPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
+				setRotation(fallingCenterX, fallingCenterY, fallingCRCT, rotationAngle);
 			}
 			else
 			{
@@ -469,21 +517,19 @@ namespace sfmlcubes
 				rotate(cmda90CW);
 				rotationAngle = 0;
 				rotationDirection = cmrdNone;
+				setRotation(fallingCenterX, fallingCenterY, fallingCRCT, rotationAngle);
+				executeNextOrder();
 			}
 		}
-
-		// ** Sliding **
-
-		float slidingX = 0, slidingY = 0;
-		// Vertical movement
-		if (verticalMovingDirection == cmvdDown)
+		else if (verticalMovingDirection == cmvdDown)
 		{
 			verticalMovingPhase += dt / FALLING_DOWN_LONGITUDE;
 
 			if (verticalMovingPhase < 1)
 			{
-				float slope = 1.5f;
+				float slope = 1.0f;
 				slidingY = atan(slope * (verticalMovingPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
+				setSliding(slidingX, slidingY);
 			}
 			else
 			{
@@ -491,6 +537,8 @@ namespace sfmlcubes
 				moveDown();
 				slidingY = 0;
 				verticalMovingDirection = cmvdNone;
+				setSliding(slidingX, slidingY);
+				executeNextOrder();
 			}
 		}
 		else if (verticalMovingDirection == cmvdDownFast)
@@ -500,6 +548,7 @@ namespace sfmlcubes
 			if (verticalMovingPhase < 1)
 			{
 				slidingY = verticalMovingPhase;
+				setSliding(slidingX, slidingY);
 			}
 			else
 			{
@@ -507,18 +556,18 @@ namespace sfmlcubes
 				moveDown();
 				slidingY = 0;
 				verticalMovingDirection = cmvdNone;
+				setSliding(slidingX, slidingY);
+				executeNextOrder();
 			}
 		}
-
-
-		// Horizontal movement
-		if (horizontalMovingDirection == cmhdRight)
+		else if (horizontalMovingDirection == cmhdRight)
 		{
 			horizontalMovingPhase += dt / HORIZONTAL_MOVING_LONGITUDE;
 
 			if (horizontalMovingPhase < 1)
 			{
 				slidingX = horizontalMovingPhase;
+				setSliding(slidingX, slidingY);
 			}
 			else
 			{
@@ -526,6 +575,8 @@ namespace sfmlcubes
 				moveRight();
 				slidingX = 0;
 				horizontalMovingDirection = cmhdNone;
+				setSliding(slidingX, slidingY);
+				executeNextOrder();
 			}
 		}
 		else if (horizontalMovingDirection == cmhdLeft)
@@ -535,18 +586,21 @@ namespace sfmlcubes
 			if (horizontalMovingPhase < 1)
 			{
 				slidingX = -horizontalMovingPhase;
+				setSliding(slidingX, slidingY);
 			}
 			else
 			{
 				horizontalMovingPhase = 0;
 				moveLeft();
 				slidingX = 0;
+				setSliding(slidingX, slidingY);
 				horizontalMovingDirection = cmhdNone;
 			}
 		}
-
-		setRotation(fallingCenterX, fallingCenterY, fallingCRCT, rotationAngle);
-		setSliding(slidingX, slidingY);
+		else
+		{
+			executeNextOrder();
+		}
 	}
 
 	void CubesMechanic::createTBlock()
@@ -635,7 +689,6 @@ namespace sfmlcubes
 	}
 	void CubesMechanic::createNewBlock()
 	{
-		//srand(RAND_MAX / 7 * 1.5);
 		int r = rand() * 7 / RAND_MAX;
 		switch (r)
 		{
@@ -676,12 +729,14 @@ namespace sfmlcubes
 		*/
 	}
 
-	void CubesMechanic::test_createBlueCube()
+	void CubesMechanic::issueOrder(CubesMechanicOrder order)
 	{
-		/*field.cubeAt(0, 7) = sfmlcubes::Cube(sf::Color::Blue, false);
-		field.cubeAt(2, 2) = sfmlcubes::Cube(sf::Color::Blue, false);
-		field.cubeAt(2, 3) = sfmlcubes::Cube(sf::Color::Blue, false);
-		field.cubeAt(2, 4) = sfmlcubes::Cube(sf::Color::Blue, false);*/
-
+		ordersQueue.push_front(order);
 	}
+
+	void CubesMechanic::issueHighPriorityOrder(CubesMechanicOrder order)
+	{
+		ordersQueue.push_back(order);
+	}
+
 }
