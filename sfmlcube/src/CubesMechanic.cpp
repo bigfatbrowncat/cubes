@@ -732,11 +732,13 @@ namespace sfmlcubes
 	void CubesMechanic::issueOrder(CubesMechanicOrder order)
 	{
 		ordersQueue.push_front(order);
+		ordersQueue.unique();
 	}
 
 	void CubesMechanic::issueHighPriorityOrder(CubesMechanicOrder order)
 	{
 		ordersQueue.push_back(order);
+		ordersQueue.unique();
 	}
 
 }
