@@ -1,4 +1,5 @@
 #include <string>
+#include <sstream>
 
 #include "CubesField.h"
 #include "CubesMechanic.h"
@@ -16,9 +17,10 @@ namespace sfmlcubes
 	static sf::Clock clock;
 
 	static sf::Text gameOverText;
+	static sf::Text linesFiredText;
 	static bool showGameOverText = false;
 
-	static CubesMechanic board(12, 22);
+	static CubesMechanic board(12, 21);
 	static float momentWhenFallIssued = 0;
 
 	static float recentMoment = 0;
@@ -41,7 +43,7 @@ namespace sfmlcubes
 		mainFont.loadFromFile(fontFileName);
 	}
 
-	void initGameOverText()
+	void updateText()
 	{
 		gameOverText.setString("Game Over");
 		gameOverText.setCharacterSize(30);
@@ -49,11 +51,21 @@ namespace sfmlcubes
 		gameOverText.setPosition(mainWindow.getSize().x / 2 - gameOverText.getGlobalBounds().width / 2,
 				                 mainWindow.getSize().y / 2 - gameOverText.getGlobalBounds().height / 2);
 
+		stringstream ss;
+		ss << "Lines fired: " << board.getLinesFired();
+		linesFiredText.setString(ss.str());
+		linesFiredText.setCharacterSize(20);
+		linesFiredText.setFont(mainFont);
+		linesFiredText.setPosition(4 * mainWindow.getSize().x / 5 - linesFiredText.getGlobalBounds().width / 2,
+				                   1 * mainWindow.getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
+
 	}
 
 	void drawText()
 	{
 		mainWindow.pushGLStates();
+		updateText();
+		mainWindow.draw(linesFiredText, sf::RenderStates::Default);
 		if (showGameOverText)
 		{
 			mainWindow.draw(gameOverText, sf::RenderStates::Default);
@@ -315,7 +327,6 @@ int main()
 	sfmlcubes::initMainWindow();
 	sfmlcubes::Cube::initGlobal();
 	sfmlcubes::initMainFont();
-	sfmlcubes::initGameOverText();
 	sfmlcubes::prepareScene();
 
 	sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);

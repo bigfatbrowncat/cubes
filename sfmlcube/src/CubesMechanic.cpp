@@ -320,6 +320,7 @@ namespace sfmlcubes
 				}
 			}
 		}
+		linesFired += count;
 	}
 
 
@@ -748,6 +749,21 @@ namespace sfmlcubes
 		}
 	}
 
+	sf::Color generateBlockcolor()
+	{
+		int k = 4;
+
+		float r = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
+		float g = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
+		float b = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
+/*		float norm = sqrt(r*r + g*g + b*b);
+		r /= norm;
+		g /= norm;
+		b /= norm;*/
+
+		return sf::Color(255 * r, 255 * g, 255 * b);
+	}
+
 	bool CubesMechanic::createTBlock()
 	{
 		if (field.cubeAt(5, 1).empty &&
@@ -755,11 +771,11 @@ namespace sfmlcubes
 		    field.cubeAt(7, 1).empty &&
 		    field.cubeAt(6, 2).empty)
 		{
-			sf::Color gray = sf::Color(192, 192, 192);
-			field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+			sf::Color gen = generateBlockcolor();
+			field.cubeAt(5, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(7, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gen, true);
 
 			fallingCRCT = crctCenterOfCube;
 			fallingCenterX = 6;
@@ -776,11 +792,11 @@ namespace sfmlcubes
 		    field.cubeAt(6, 3).empty &&
 		    field.cubeAt(5, 3).empty)
 		{
-			sf::Color gray = sf::Color(192, 192, 192);
-			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 3) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(5, 3) = sfmlcubes::Cube(gray, true);
+			sf::Color gen = generateBlockcolor();
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 3) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(5, 3) = sfmlcubes::Cube(gen, true);
 
 			fallingCRCT = crctCenterOfCube;
 			fallingCenterX = 6;
@@ -797,11 +813,11 @@ namespace sfmlcubes
 		    field.cubeAt(6, 3).empty &&
 		    field.cubeAt(7, 3).empty)
 		{
-			sf::Color gray = sf::Color(192, 192, 192);
-			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 3) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(7, 3) = sfmlcubes::Cube(gray, true);
+			sf::Color gen = sf::Color(192, 192, 192);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 3) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(7, 3) = sfmlcubes::Cube(gen, true);
 
 			fallingCRCT = crctCenterOfCube;
 			fallingCenterX = 6;
@@ -818,11 +834,11 @@ namespace sfmlcubes
 		    field.cubeAt(7, 1).empty &&
 		    field.cubeAt(8, 1).empty)
 		{
-			sf::Color gray = sf::Color(192, 192, 192);
-			field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(8, 1) = sfmlcubes::Cube(gray, true);
+			sf::Color gen = generateBlockcolor();
+			field.cubeAt(5, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(7, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(8, 1) = sfmlcubes::Cube(gen, true);
 
 			fallingCRCT = crctCornerOfCube;
 			fallingCenterX = 7;
@@ -839,11 +855,11 @@ namespace sfmlcubes
 		    field.cubeAt(6, 2).empty &&
 		    field.cubeAt(7, 2).empty)
 		{
-			sf::Color gray = sf::Color(192, 192, 192);
-			field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(7, 2) = sfmlcubes::Cube(gray, true);
+			sf::Color gen = generateBlockcolor();
+			field.cubeAt(5, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(7, 2) = sfmlcubes::Cube(gen, true);
 
 			fallingCRCT = crctCornerOfCube;
 			fallingCenterX = 7;
@@ -860,11 +876,11 @@ namespace sfmlcubes
 		    field.cubeAt(6, 1).empty &&
 		    field.cubeAt(7, 1).empty)
 		{
-			sf::Color gray = sf::Color(192, 192, 192);
-			field.cubeAt(5, 2) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
+			sf::Color gen = generateBlockcolor();
+			field.cubeAt(5, 2) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(7, 1) = sfmlcubes::Cube(gen, true);
 
 			fallingCRCT = crctCornerOfCube;
 			fallingCenterX = 6;
@@ -881,11 +897,11 @@ namespace sfmlcubes
 		    field.cubeAt(5, 2).empty &&
 		    field.cubeAt(6, 2).empty)
 		{
-			sf::Color gray = sf::Color(192, 192, 192);
-			field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(5, 2) = sfmlcubes::Cube(gray, true);
-			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+			sf::Color gen = generateBlockcolor();
+			field.cubeAt(5, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(5, 2) = sfmlcubes::Cube(gen, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gen, true);
 
 			fallingCRCT = crctCornerOfCube;
 			fallingCenterX = 6;

@@ -94,6 +94,7 @@ namespace sfmlcubes
 		bool linesAreFiring;
 		float linesFiringPhase;
 		list<int> linesToFire;
+		int linesFired;
 
 		CubesMechanicDiscreteAngle sumRotationValue;
 
@@ -153,6 +154,7 @@ namespace sfmlcubes
 		const CubesField& getField() const { return field; }
 		CubesMechanicHorizontalDirection getHorizontalDirection() const { return horizontalMovingDirection; }
 		CubesMechanicRotationDirection getRotationDirection() const { return rotationDirection; }
+		int getLinesFired() const { return linesFired; }
 
 		void setOrderIssuedNotifier(OrderIssuedNotifier& notifier) { orderIssuedNotifier = &notifier; }
 		void setBeforeOrderIssuingNotifier(BeforeOrderIssuingNotifier& notifier) { beforeOrderIssuingNotifier = &notifier; }
