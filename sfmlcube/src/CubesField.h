@@ -30,6 +30,7 @@ namespace sfmlcubes
 		friend class CubesField;
 	protected:
 		void glDraw(int i, int j);
+		void glDraw(int i, int j, float alpha);
 	public:
 
 		static const Cube EMPTY;
@@ -104,7 +105,6 @@ namespace sfmlcubes
 		};
 
 		Cube* cubesData;
-		//bool* occupiedMap;
 		int width, height;
 
 	public:

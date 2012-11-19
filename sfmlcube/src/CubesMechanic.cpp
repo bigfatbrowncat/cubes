@@ -748,119 +748,174 @@ namespace sfmlcubes
 		}
 	}
 
-	void CubesMechanic::createTBlock()
+	bool CubesMechanic::createTBlock()
 	{
-		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(5, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(7, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+		if (field.cubeAt(5, 1).empty &&
+		    field.cubeAt(6, 1).empty &&
+		    field.cubeAt(7, 1).empty &&
+		    field.cubeAt(6, 2).empty)
+		{
+			sf::Color gray = sf::Color(192, 192, 192);
+			field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
 
-		fallingCRCT = crctCenterOfCube;
-		fallingCenterX = 6;
-		fallingCenterY = 0;
+			fallingCRCT = crctCenterOfCube;
+			fallingCenterX = 6;
+			fallingCenterY = 1;
+			return true;
+		}
+		else
+			return false;
 	}
-	void CubesMechanic::createJBlock()
+	bool CubesMechanic::createJBlock()
 	{
-		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(5, 2) = sfmlcubes::Cube(gray, true);
+		if (field.cubeAt(6, 1).empty &&
+		    field.cubeAt(6, 2).empty &&
+		    field.cubeAt(6, 3).empty &&
+		    field.cubeAt(5, 3).empty)
+		{
+			sf::Color gray = sf::Color(192, 192, 192);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 3) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(5, 3) = sfmlcubes::Cube(gray, true);
 
-		fallingCRCT = crctCenterOfCube;
-		fallingCenterX = 6;
-		fallingCenterY = 1;
+			fallingCRCT = crctCenterOfCube;
+			fallingCenterX = 6;
+			fallingCenterY = 2;
+			return true;
+		}
+		else
+			return false;
 	}
-	void CubesMechanic::createLBlock()
+	bool CubesMechanic::createLBlock()
 	{
-		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(7, 2) = sfmlcubes::Cube(gray, true);
+		if (field.cubeAt(6, 1).empty &&
+		    field.cubeAt(6, 2).empty &&
+		    field.cubeAt(6, 3).empty &&
+		    field.cubeAt(7, 3).empty)
+		{
+			sf::Color gray = sf::Color(192, 192, 192);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 3) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(7, 3) = sfmlcubes::Cube(gray, true);
 
-		fallingCRCT = crctCenterOfCube;
-		fallingCenterX = 6;
-		fallingCenterY = 1;
+			fallingCRCT = crctCenterOfCube;
+			fallingCenterX = 6;
+			fallingCenterY = 2;
+			return true;
+		}
+		else
+			return false;
 	}
-	void CubesMechanic::createIBlock()
+	bool CubesMechanic::createIBlock()
 	{
-		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 3) = sfmlcubes::Cube(gray, true);
+		if (field.cubeAt(5, 1).empty &&
+		    field.cubeAt(6, 1).empty &&
+		    field.cubeAt(7, 1).empty &&
+		    field.cubeAt(8, 1).empty)
+		{
+			sf::Color gray = sf::Color(192, 192, 192);
+			field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(8, 1) = sfmlcubes::Cube(gray, true);
 
-		fallingCRCT = crctCornerOfCube;
-		fallingCenterX = 6;
-		fallingCenterY = 2;
+			fallingCRCT = crctCornerOfCube;
+			fallingCenterX = 7;
+			fallingCenterY = 1;
+			return true;
+		}
+		else
+			return false;
 	}
-	void CubesMechanic::createZBlock()
+	bool CubesMechanic::createZBlock()
 	{
-		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(5, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
+		if (field.cubeAt(5, 1).empty &&
+		    field.cubeAt(6, 1).empty &&
+		    field.cubeAt(6, 2).empty &&
+		    field.cubeAt(7, 2).empty)
+		{
+			sf::Color gray = sf::Color(192, 192, 192);
+			field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(7, 2) = sfmlcubes::Cube(gray, true);
 
-		fallingCRCT = crctCornerOfCube;
-		fallingCenterX = 7;
-		fallingCenterY = 1;
+			fallingCRCT = crctCornerOfCube;
+			fallingCenterX = 7;
+			fallingCenterY = 2;
+			return true;
+		}
+		else
+			return false;
 	}
-	void CubesMechanic::createSBlock()
+	bool CubesMechanic::createSBlock()
 	{
-		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(7, 0) = sfmlcubes::Cube(gray, true);
+		if (field.cubeAt(5, 2).empty &&
+		    field.cubeAt(6, 2).empty &&
+		    field.cubeAt(6, 1).empty &&
+		    field.cubeAt(7, 1).empty)
+		{
+			sf::Color gray = sf::Color(192, 192, 192);
+			field.cubeAt(5, 2) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(7, 1) = sfmlcubes::Cube(gray, true);
 
-		fallingCRCT = crctCornerOfCube;
-		fallingCenterX = 6;
-		fallingCenterY = 1;
+			fallingCRCT = crctCornerOfCube;
+			fallingCenterX = 6;
+			fallingCenterY = 2;
+			return true;
+		}
+		else
+			return false;
 	}
-	void CubesMechanic::createOBlock()
+	bool CubesMechanic::createOBlock()
 	{
-		sf::Color gray = sf::Color(192, 192, 192);
-		field.cubeAt(5, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 0) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
-		field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+		if (field.cubeAt(5, 1).empty &&
+		    field.cubeAt(6, 1).empty &&
+		    field.cubeAt(5, 2).empty &&
+		    field.cubeAt(6, 2).empty)
+		{
+			sf::Color gray = sf::Color(192, 192, 192);
+			field.cubeAt(5, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 1) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(5, 2) = sfmlcubes::Cube(gray, true);
+			field.cubeAt(6, 2) = sfmlcubes::Cube(gray, true);
 
-		fallingCRCT = crctCornerOfCube;
-		fallingCenterX = 6;
-		fallingCenterY = 1;
+			fallingCRCT = crctCornerOfCube;
+			fallingCenterX = 6;
+			fallingCenterY = 2;
+			return true;
+		}
+		else
+			return false;
 	}
-	void CubesMechanic::createNewBlock()
+	bool CubesMechanic::createNewBlock()
 	{
 		int r = rand() * 7 / RAND_MAX;
 		switch (r)
 		{
 		case 0:
-			createOBlock();
-			break;
+			return createOBlock();
 		case 1:
-			createSBlock();
-			break;
+			return createSBlock();
 		case 2:
-			createLBlock();
-			break;
+			return createLBlock();
 		case 3:
-			createJBlock();
-			break;
+			return createJBlock();
 		case 4:
-			createIBlock();
-			break;
+			return createIBlock();
 		case 5:
-			createTBlock();
-			break;
+			return createTBlock();
 		case 6:
-			createSBlock();
-			break;
+			return createSBlock();
 		case 7:
-			createZBlock();
-			break;
+			return createZBlock();
 		}
 
 		/*Cube c = sfmlcubes::Cube(sf::Color::Red, true);

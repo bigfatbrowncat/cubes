@@ -15,7 +15,10 @@ namespace sfmlcubes
 	static sf::Font mainFont;
 	static sf::Clock clock;
 
-	static CubesMechanic board(12, 20);
+	static sf::Text gameOverText;
+	static bool showGameOverText = false;
+
+	static CubesMechanic board(12, 22);
 	static float momentWhenFallIssued = 0;
 
 	static float recentMoment = 0;
@@ -36,6 +39,26 @@ namespace sfmlcubes
 	void initMainFont(const string& fontFileName = "res/fonts/arian_amu/arnamu.ttf")
 	{
 		mainFont.loadFromFile(fontFileName);
+	}
+
+	void initGameOverText()
+	{
+		gameOverText.setString("Game Over");
+		gameOverText.setCharacterSize(30);
+		gameOverText.setFont(mainFont);
+		gameOverText.setPosition(mainWindow.getSize().x / 2 - gameOverText.getGlobalBounds().width / 2,
+				                 mainWindow.getSize().y / 2 - gameOverText.getGlobalBounds().height / 2);
+
+	}
+
+	void drawText()
+	{
+		mainWindow.pushGLStates();
+		if (showGameOverText)
+		{
+			mainWindow.draw(gameOverText, sf::RenderStates::Default);
+		}
+		mainWindow.popGLStates();
 	}
 
 	void setPerspective()
@@ -75,7 +98,7 @@ namespace sfmlcubes
 	{
 		// Translating the board center to the center of the screen
 		int delta_x = board.getField().getWidth() / 2;
-		int delta_y = board.getField().getHeight() / 2;
+		int delta_y = (board.getField().getHeight() + 1) / 2;
 		glTranslatef(-delta_x * Cube::cubesize, delta_y * Cube::cubesize, 0.f);
 
 		board.getField().glDraw();
@@ -201,6 +224,7 @@ namespace sfmlcubes
 	void draw()
 	{
 		drawScene(mainWindow, 0, 0, 0);
+		drawText();
 		mainWindow.display();
 	}
 
@@ -221,6 +245,15 @@ namespace sfmlcubes
 
 	}
 
+	void tryCreateNewBlock()
+	{
+		if (!board.createNewBlock())
+		{
+			sfmlcubes::mainWindow.setTitle("Cubes — Game Over");
+			showGameOverText = true;
+		}
+	}
+
 	void boardOrderIssuedNotifier(CubesMechanicOrder order, CubesMechanicIssueResponse response)
 	{
 		if ((order == cmoMoveDown || order == cmoMoveDownFast) && (response == cmirFail))
@@ -230,7 +263,7 @@ namespace sfmlcubes
 		}
 		else if (order == cmoFireLines && response == cmirFail)
 		{
-			board.createNewBlock();
+			tryCreateNewBlock();
 		}
 	}
 
@@ -238,7 +271,7 @@ namespace sfmlcubes
 	{
 		if (order == cmoFireLines)
 		{
-			board.createNewBlock();
+			tryCreateNewBlock();
 		}
 	}
 
@@ -282,6 +315,7 @@ int main()
 	sfmlcubes::initMainWindow();
 	sfmlcubes::Cube::initGlobal();
 	sfmlcubes::initMainFont();
+	sfmlcubes::initGameOverText();
 	sfmlcubes::prepareScene();
 
 	sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);

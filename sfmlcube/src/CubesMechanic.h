@@ -137,18 +137,18 @@ namespace sfmlcubes
 		void setFiringLinesAlpha(float alpha);
 		void setFiringLinesSliding(float phase);
 
-		void createTBlock();
-		void createJBlock();
-		void createLBlock();
-		void createIBlock();
-		void createZBlock();
-		void createSBlock();
-		void createOBlock();
+		bool createTBlock();
+		bool createJBlock();
+		bool createLBlock();
+		bool createIBlock();
+		bool createZBlock();
+		bool createSBlock();
+		bool createOBlock();
 	public:
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();
 
-		void createNewBlock();
+		bool createNewBlock();
 
 		const CubesField& getField() const { return field; }
 		CubesMechanicHorizontalDirection getHorizontalDirection() const { return horizontalMovingDirection; }

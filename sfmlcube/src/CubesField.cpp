@@ -42,10 +42,15 @@ namespace sfmlcubes
 
 	void Cube::glDraw(int i, int j)
 	{
+		glDraw(i, j, 1);
+	}
+
+	void Cube::glDraw(int i, int j, float alpha)
+	{
 		glPushMatrix();
 		glTranslatef(i * Cube::cubesize, -j * Cube::cubesize, 0.f);			// Translating the cube
 
-		cubeShader.setParameter("color", (float)color.r / 255, (float)color.g / 255, (float)color.b / 255, (float)color.a / 255);
+		cubeShader.setParameter("color", (float)color.r / 255, (float)color.g / 255, (float)color.b / 255, (float)color.a / 255 * alpha);
 		cubeShader.bind();
 
 		// ** Sliding **
@@ -87,10 +92,10 @@ namespace sfmlcubes
 
 
 
-	CubesField::CubesField(int width, int height): width(width), height(height)
+	CubesField::CubesField(int width, int height):
+			width(width), height(height)
 	{
 		cubesData = new Cube[width * height];
-		//occupiedMap = new bool[width * height];
 	}
 
 	CubesField::~CubesField()
