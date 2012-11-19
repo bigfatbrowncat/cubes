@@ -26,6 +26,7 @@ namespace sfmlcubes
 
 	CubesMechanic::CubesMechanic(int width, int height):
 			field(width, height),
+			background(width + 2, height + 2),
 
 			verticalMovingDirection(cmvdNone),
 			verticalMovingPhase(0),
@@ -33,7 +34,24 @@ namespace sfmlcubes
 			horizontalMovingDirection(cmhdNone),
 			horizontalMovingPhase(0)
 	{
+		sf::Color wallColor = sf::Color(32, 32, 32);
 
+		for (int i = 0; i < background.getWidth(); i++)
+		{
+			background.cubeAt(i, background.getHeight() - 1).empty = false;
+			background.cubeAt(i, background.getHeight() - 1).color = wallColor;
+			background.cubeAt(i, background.getHeight() - 1).modelType = cmtWall;
+		}
+		for (int j = 2; j < background.getHeight(); j++)
+		{
+			background.cubeAt(0, j).empty = false;
+			background.cubeAt(0, j).color = wallColor;
+			background.cubeAt(0, j).modelType = cmtWall;
+
+			background.cubeAt(background.getWidth() - 1, j).empty = false;
+			background.cubeAt(background.getWidth() - 1, j).color = wallColor;
+			background.cubeAt(background.getWidth() - 1, j).modelType = cmtWall;
+		}
 	}
 
 	CubesMechanic::~CubesMechanic() { }

@@ -19,7 +19,8 @@ using namespace std;
 namespace sfmlcubes
 {
 	int Cube::cubesize = 30;
-	int Cube::OBJECT_INDEX = -1;
+	int Cube::PLAYING_CUBE_INDEX = -1;
+	int Cube::WALL_CUBE_INDEX = -1;
 
 	const Cube Cube::EMPTY;
 
@@ -28,7 +29,8 @@ namespace sfmlcubes
 	void Cube::initGlobal()
 	{
 		// Loading the cube model
-		OBJECT_INDEX = objLoader.load("res/cube-subdivided.obj", "res");
+		PLAYING_CUBE_INDEX = objLoader.load("res/cube.obj", "res");
+		WALL_CUBE_INDEX = objLoader.load("res/wall.obj", "res");
 
 		// Loading the cube shader
 		if (!cubeShader.loadFromFile("res/cube.vert", "res/cube.frag"))
@@ -85,7 +87,10 @@ namespace sfmlcubes
 	    glScalef(cubesize / 2, cubesize / 2, cubesize / 2);			// Scaling the cube
 
 	    // Drawing the cube
-	    sfmlcubes::objLoader.draw(Cube::OBJECT_INDEX);
+	    if (modelType == cmtPlaying)
+	    	sfmlcubes::objLoader.draw(Cube::PLAYING_CUBE_INDEX);
+	    else
+	    	sfmlcubes::objLoader.draw(Cube::WALL_CUBE_INDEX);
 
 	    glPopMatrix();
 	}
@@ -113,7 +118,7 @@ namespace sfmlcubes
 		return cubesData[width * j + i];
 	}
 
-	void CubesField::glDraw() const
+	void CubesField::glDraw(int dx, int dy) const
 	{
 		// Drawing the cubes
 		for (int i = 0; i < width; i++)
@@ -121,7 +126,7 @@ namespace sfmlcubes
 		{
 			if (!cubesData[width * j + i].empty)
 			{
-				cubesData[width * j + i].glDraw(i, j);
+				cubesData[width * j + i].glDraw(i + dx, j + dy);
 			}
 		}
 	}

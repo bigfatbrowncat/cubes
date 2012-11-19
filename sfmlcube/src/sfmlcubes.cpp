@@ -56,7 +56,7 @@ namespace sfmlcubes
 		linesFiredText.setString(ss.str());
 		linesFiredText.setCharacterSize(20);
 		linesFiredText.setFont(mainFont);
-		linesFiredText.setPosition(4 * mainWindow.getSize().x / 5 - linesFiredText.getGlobalBounds().width / 2,
+		linesFiredText.setPosition(5 * mainWindow.getSize().x / 6 - linesFiredText.getGlobalBounds().width / 2,
 				                   1 * mainWindow.getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
 
 	}
@@ -109,11 +109,12 @@ namespace sfmlcubes
 	void drawBoard()
 	{
 		// Translating the board center to the center of the screen
-		int delta_x = board.getField().getWidth() / 2;
-		int delta_y = (board.getField().getHeight() + 1) / 2;
+		float delta_x = board.getField().getWidth() / 2;
+		float delta_y = (board.getField().getHeight() + 0.5) / 2;
 		glTranslatef(-delta_x * Cube::cubesize, delta_y * Cube::cubesize, 0.f);
 
-		board.getField().glDraw();
+		board.getFieldBackground().glDraw(-1, -1);
+		board.getField().glDraw(0, 0);
 	}
 
 	void drawScene(const sf::RenderTarget& win, float xangle, float yangle, float zangle)
@@ -124,8 +125,11 @@ namespace sfmlcubes
 
 	    // Clear color and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glEnable(GL_CULL_FACE);
-        glCullFace(GL_BACK);
+
+        glEnable(GL_DEPTH_TEST);
+
+        //glDisable(GL_CULL_FACE);
+        //glCullFace(GL_BACK);
 
 	    // Apply some transformations
 	    glMatrixMode(GL_MODELVIEW);

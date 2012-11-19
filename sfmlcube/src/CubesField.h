@@ -25,6 +25,11 @@ namespace sfmlcubes
 		crctCenterOfCube, crctCornerOfCube
 	};
 
+	enum CubeModelType
+	{
+		cmtPlaying, cmtWall
+	};
+
 	struct Cube
 	{
 		friend class CubesField;
@@ -36,7 +41,8 @@ namespace sfmlcubes
 		static const Cube EMPTY;
 
 		static int cubesize;
-		static int OBJECT_INDEX;
+		static int PLAYING_CUBE_INDEX;
+		static int WALL_CUBE_INDEX;
 		static sf::Shader cubeShader;
 
 		static void initGlobal();
@@ -44,6 +50,7 @@ namespace sfmlcubes
 		bool empty;
 		sf::Color color;
 		bool freeMoving;
+		CubeModelType modelType;
 
 		// Sliding
 		float slidingX, slidingY;
@@ -58,6 +65,7 @@ namespace sfmlcubes
 		     empty(false),
 		     color(color),
 		     freeMoving(falling),
+		     modelType(cmtPlaying),
 
 		     slidingX(0),
 		     slidingY(0),
@@ -116,7 +124,7 @@ namespace sfmlcubes
 		int getWidth() const { return width; }
 		int getHeight() const { return height; }
 
-		void glDraw() const;
+		void glDraw(int dx, int dy) const;
 
 		//bool* getOccupiedMap() {}
 	};

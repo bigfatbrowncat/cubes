@@ -81,6 +81,7 @@ namespace sfmlcubes
 		static float LINES_FIRING_BLINKING_PART;
 
 		CubesField field;
+		CubesField background;
 
 		CubesMechanicVerticalDirection verticalMovingDirection;
 		float verticalMovingPhase;	// 0..1
@@ -152,6 +153,7 @@ namespace sfmlcubes
 		bool createNewBlock();
 
 		const CubesField& getField() const { return field; }
+		const CubesField& getFieldBackground() const { return background; }
 		CubesMechanicHorizontalDirection getHorizontalDirection() const { return horizontalMovingDirection; }
 		CubesMechanicRotationDirection getRotationDirection() const { return rotationDirection; }
 		int getLinesFired() const { return linesFired; }
