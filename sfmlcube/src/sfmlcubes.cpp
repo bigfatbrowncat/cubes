@@ -15,7 +15,7 @@ namespace sfmlcubes
 	static sf::Font mainFont;
 	static sf::Clock clock;
 
-	static CubesMechanic board(12, 18);
+	static CubesMechanic board(12, 20);
 	static float momentWhenFallIssued = 0;
 
 	static float recentMoment = 0;
@@ -60,6 +60,9 @@ namespace sfmlcubes
 	    // Enable Z-buffer read and write
 	    glEnable(GL_DEPTH_TEST);
 	    glDepthMask(GL_TRUE);
+
+	    glEnable(GL_BLEND);
+	    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	    setPerspective();
 	    setView();
@@ -214,39 +217,31 @@ namespace sfmlcubes
 		{
 			board.issueOrder(cmoMoveDown);
 			momentWhenFallIssued = curTime;
-			/*
-			{
-				if (board.getHorizontalDirection() == cmhdNone &&
-				    board.getRotationDirection() == cmrdNone)	// This means that no horizontal movement and no rotation is in progress
-				{
-					board.cleanFrees();
-					board.createNewBlock();
-					momentWhenFallIssued = curTime;
-
-				}
-				else
-				{
-					// Don't pause. Just wait for the player to position the block
-					movingBonusUsed = true;
-				}
-			}
-			else
-			{
-				momentWhenFallIssued = curTime;
-				movingBonusUsed = false;
-			}*/
 		}
 
 	}
 
 	void boardOrderIssuedNotifier(CubesMechanicOrder order, CubesMechanicIssueResponse response)
 	{
-		if ((order == cmoMoveDown || order == cmoMoveDownFast) && (response == cmirCantBecauseObstacle))
+		if ((order == cmoMoveDown || order == cmoMoveDownFast) && (response == cmirFail))
 		{
 			board.cleanFrees();
+			board.issueOrder(cmoFireLines);
+		}
+		else if (order == cmoFireLines && response == cmirFail)
+		{
 			board.createNewBlock();
 		}
 	}
+
+	void boardTransitionFinishedNotifier(CubesMechanicOrder order)
+	{
+		if (order == cmoFireLines)
+		{
+			board.createNewBlock();
+		}
+	}
+
 
 	void boardBeforeOrderIssuedNotifier()
 	{
@@ -291,6 +286,7 @@ int main()
 
 	sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);
 	sfmlcubes::board.setBeforeOrderIssuingNotifier(sfmlcubes::boardBeforeOrderIssuedNotifier);
+	sfmlcubes::board.setTransitionFinishedNotifier(sfmlcubes::boardTransitionFinishedNotifier);
 
 	sfmlcubes::board.createNewBlock();
 

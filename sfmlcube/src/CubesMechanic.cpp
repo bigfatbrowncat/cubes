@@ -20,7 +20,9 @@ namespace sfmlcubes
 	float CubesMechanic::ROTATION_LONGITUDE = 0.25;
 	float CubesMechanic::FALLING_DOWN_LONGITUDE = 0.1;
 	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.05;
-	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.1;
+	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.08;
+	float CubesMechanic::LINES_FIRING_LONGITUDE = 1;
+	float CubesMechanic::LINES_FIRING_BLINKING_PART = 0.8;
 
 	CubesMechanic::CubesMechanic(int width, int height):
 			field(width, height),
@@ -73,6 +75,9 @@ namespace sfmlcubes
 				break;
 			case cmoRotateCW:
 				resp = startRotatingCWTransition();
+				break;
+			case cmoFireLines:
+				resp = startFiringLinesTransition();
 				break;
 			}
 
@@ -165,19 +170,6 @@ namespace sfmlcubes
 		return true;
 	}
 
-	int divideBy2Directed(int d, int direction)
-	{
-		if (d % 2 == 0)
-			return d / 2;
-		else
-		{
-			if (direction % 2 == 0)
-				return (d - 1) / 2;
-			else
-				return (d + 1) / 2;
-		}
-	}
-
 	float CubesMechanic::calculateRadius(int rotationCenterX, int rotationCenterY, CubeRotatingCenterType crct)
 	{
 		// Finding the radius of the falling cubes
@@ -244,6 +236,24 @@ namespace sfmlcubes
 		return true;
 	}
 
+	bool CubesMechanic::canFireLines()
+	{
+		linesToFire.clear();
+		for (int j = 0; j < field.getHeight(); j++)
+		{
+			bool thisRowIsFull = true;
+			for (int i = 0; i < field.getWidth(); i++)
+			{
+				if (field.cubeAt(i, j).empty) thisRowIsFull = false;
+			}
+			if (thisRowIsFull)
+			{
+				linesToFire.push_back(j);
+			}
+		}
+		return linesToFire.size() > 0;
+	}
+
 	void CubesMechanic::moveDown()
 	{
 		for (int i = 0; i < field.getWidth(); i++)
@@ -285,6 +295,33 @@ namespace sfmlcubes
 		}
 		fallingCenterX --;
 	}
+
+	void CubesMechanic::fireLines()
+	{
+		int count = 0;
+		for (int j = field.getHeight() - 1; j >= count; j--)
+		{
+			// Check if this line is full
+			bool thisRowIsFull = true;
+			for (int i = 0; i < field.getWidth(); i++)
+			{
+				if (field.cubeAt(i, j).empty) thisRowIsFull = false;
+			}
+
+			if (thisRowIsFull)
+			{
+				count ++;
+			}
+			else
+			{
+				for (int i = 0; i < field.getWidth(); i++)
+				{
+					field.cubeAt(i, j + count) = field.cubeAt(i, j);
+				}
+			}
+		}
+	}
+
 
 	void CubesMechanic::rotate(CubesMechanicDiscreteAngle angle)
 	{
@@ -392,7 +429,7 @@ namespace sfmlcubes
 	{
 		if (!canMoveDown())
 		{
-			return cmirCantBecauseObstacle;
+			return cmirFail;
 		}
 		else if (verticalMovingDirection == cmvdDown || verticalMovingDirection == cmvdDownFast)
 		{
@@ -417,7 +454,7 @@ namespace sfmlcubes
 	{
 		if (!canMoveRight() || horizontalMovingDirection == cmhdLeft)
 		{
-			return cmirCantBecauseObstacle;
+			return cmirFail;
 		}
 		else if (horizontalMovingDirection == cmhdRight)
 		{
@@ -435,7 +472,7 @@ namespace sfmlcubes
 	{
 		if (!canMoveLeft() || horizontalMovingDirection == cmhdRight)
 		{
-			return cmirCantBecauseObstacle;
+			return cmirFail;
 		}
 		else if (horizontalMovingDirection == cmhdLeft)
 		{
@@ -453,7 +490,7 @@ namespace sfmlcubes
 	{
 		if (!canRotate() || rotationDirection == cmrdCCW)
 		{
-			return cmirCantBecauseObstacle;
+			return cmirFail;
 		}
 		else if (rotationDirection == cmrdCW)
 		{
@@ -463,6 +500,24 @@ namespace sfmlcubes
 		{
 			rotationDirection = cmrdCW;
 			rotationPhase = 0;
+			return cmirSuccess;
+		}
+	}
+
+	CubesMechanicIssueResponse CubesMechanic::startFiringLinesTransition()
+	{
+		if (!canFireLines())
+		{
+			return cmirFail;
+		}
+		else if (linesAreFiring)
+		{
+			return cmirAlreadyInProgress;
+		}
+		else
+		{
+			linesAreFiring = true;
+			linesFiringPhase = 0;
 			return cmirSuccess;
 		}
 	}
@@ -495,6 +550,43 @@ namespace sfmlcubes
 		}
 	}
 
+	void CubesMechanic::setFiringLinesAlpha(float alpha)
+	{
+		for (list<int>::iterator iter = linesToFire.begin(); iter != linesToFire.end(); iter++)
+		{
+			int j = *iter;
+			for (int i = 0; i < field.getWidth(); i++)
+			{
+				field.cubeAt(i, j).color.a = alpha * 255;
+			}
+		}
+	}
+
+	void CubesMechanic::setFiringLinesSliding(float phase)
+	{
+		int count = 0;
+		for (int j = field.getHeight() - 1; j >= count; j--)
+		{
+			// Check if this line is full
+			bool thisRowIsFull = true;
+			for (int i = 0; i < field.getWidth(); i++)
+			{
+				if (field.cubeAt(i, j).empty) thisRowIsFull = false;
+			}
+
+			if (thisRowIsFull)
+			{
+				count ++;
+			}
+			else
+			{
+				for (int i = 0; i < field.getWidth(); i++)
+				{
+					field.cubeAt(i, j).slidingY = phase * count;
+				}
+			}
+		}
+	}
 
 	void CubesMechanic::processTimeStep(float dt)
 	{
@@ -518,6 +610,11 @@ namespace sfmlcubes
 				rotationAngle = 0;
 				rotationDirection = cmrdNone;
 				setRotation(fallingCenterX, fallingCenterY, fallingCRCT, rotationAngle);
+
+				if (transitionFinishedNotifier != NULL)
+				{
+					(*transitionFinishedNotifier)(cmoRotateCW);
+				}
 				executeNextOrder();
 			}
 		}
@@ -538,6 +635,11 @@ namespace sfmlcubes
 				slidingY = 0;
 				verticalMovingDirection = cmvdNone;
 				setSliding(slidingX, slidingY);
+
+				if (transitionFinishedNotifier != NULL)
+				{
+					(*transitionFinishedNotifier)(cmoMoveDown);
+				}
 				executeNextOrder();
 			}
 		}
@@ -557,6 +659,11 @@ namespace sfmlcubes
 				slidingY = 0;
 				verticalMovingDirection = cmvdNone;
 				setSliding(slidingX, slidingY);
+				if (transitionFinishedNotifier != NULL)
+				{
+					(*transitionFinishedNotifier)(cmoMoveDownFast);
+				}
+
 				executeNextOrder();
 			}
 		}
@@ -576,6 +683,11 @@ namespace sfmlcubes
 				slidingX = 0;
 				horizontalMovingDirection = cmhdNone;
 				setSliding(slidingX, slidingY);
+
+				if (transitionFinishedNotifier != NULL)
+				{
+					(*transitionFinishedNotifier)(cmoMoveRight);
+				}
 				executeNextOrder();
 			}
 		}
@@ -594,8 +706,41 @@ namespace sfmlcubes
 				moveLeft();
 				slidingX = 0;
 				setSliding(slidingX, slidingY);
+
+				if (transitionFinishedNotifier != NULL)
+				{
+					(*transitionFinishedNotifier)(cmoMoveLeft);
+				}
 				horizontalMovingDirection = cmhdNone;
 			}
+		}
+		else if (linesAreFiring)
+		{
+			linesFiringPhase += dt / LINES_FIRING_LONGITUDE;
+			if (linesFiringPhase < LINES_FIRING_BLINKING_PART)
+			{
+				float blinkingPhase = (linesFiringPhase / LINES_FIRING_BLINKING_PART) * 3.5;
+				setFiringLinesAlpha(abs(sin(3.14159 * blinkingPhase)));
+			}
+			else if (linesFiringPhase < 1)
+			{
+				setFiringLinesAlpha(0);
+				float slidingPhase = (linesFiringPhase - LINES_FIRING_BLINKING_PART) / (1.0 - LINES_FIRING_BLINKING_PART);
+				setFiringLinesSliding(slidingPhase * slidingPhase);
+			}
+			else
+			{
+				linesFiringPhase = 0;
+				setFiringLinesSliding(0);
+				fireLines();
+				linesAreFiring = false;
+				if (transitionFinishedNotifier != NULL)
+				{
+					(*transitionFinishedNotifier)(cmoFireLines);
+				}
+				executeNextOrder();
+			}
+
 		}
 		else
 		{

@@ -24,5 +24,5 @@ void main(void)
    //lighting = 0.7 + 0.3 * lighting;
    
    gl_FragColor = (ambient + lighting * diffuse) * gloss * (texture2D(texture, textureCoords));
-   gl_FragColor.a = 1; 
+   gl_FragColor.a = color.a; 
 }   
