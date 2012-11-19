@@ -30,7 +30,7 @@ namespace sfmlcubes
 	{
 		// Loading the cube model
 		PLAYING_CUBE_INDEX = objLoader.load("res/cube.obj", "res");
-		WALL_CUBE_INDEX = objLoader.load("res/wall.obj", "res");
+		WALL_CUBE_INDEX = objLoader.load("res/brick-wall.obj", "res");
 
 		// Loading the cube shader
 		if (!cubeShader.loadFromFile("res/cube.vert", "res/cube.frag"))
@@ -38,8 +38,6 @@ namespace sfmlcubes
 			Logger::DEFAULT.logWarning("Can't load the cube shader. Sorry...");
 		}
 
-		cubeShader.setParameter("texture", sf::Shader::CurrentTexture);
-		cubeShader.setParameter("light0", 200, 300, 200, 1);
 	}
 
 	void Cube::glDraw(int i, int j)
@@ -53,6 +51,8 @@ namespace sfmlcubes
 		glTranslatef(i * Cube::cubesize, -j * Cube::cubesize, 0.f);			// Translating the cube
 
 		cubeShader.setParameter("color", (float)color.r / 255, (float)color.g / 255, (float)color.b / 255, (float)color.a / 255 * alpha);
+		cubeShader.setParameter("texture", sf::Shader::CurrentTexture);
+		cubeShader.setParameter("light0", 200, 300, 200, 1);
 		cubeShader.bind();
 
 		// ** Sliding **

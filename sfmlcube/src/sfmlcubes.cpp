@@ -28,11 +28,22 @@ namespace sfmlcubes
 	static bool rightKeyPressed = false, leftKeyPressed = false, downKeyPressed = false, rotateCWKeyPressed = false;
 
 	// Global application-level functions
-	void initMainWindow(const string& title = "Cubes", unsigned int width = 800, unsigned int height = 600, unsigned int antialias = 8)
+	void initMainWindow(const string& title = "Cubes", unsigned int width = 0, unsigned int height = 0, unsigned int antialias = 8)
 	{
-		mainWindow.create(sf::VideoMode(width, height, 32),
-						  title,
-						  sf::Style::Close /*| sf::Style::Resize*/,
+		int stl = sf::Style::Close;
+		sf::VideoMode vm;
+		if (width == 0 || height == 0)
+		{
+			vm = sf::VideoMode::getFullscreenModes()[0];
+			stl |= sf::Style::Fullscreen;
+		}
+		else
+		{
+			vm = sf::VideoMode(width, height, 32);
+		}
+
+		mainWindow.create(vm, title, stl
+						  /*| sf::Style::Resize*/,
 						  sf::ContextSettings(24, 8, antialias, 3, 2));		// Creating OpenGL 3.2 context
 
 		mainWindow.setFramerateLimit(60);
@@ -328,7 +339,7 @@ namespace sfmlcubes
 int main()
 {
 	// Create the main window
-	sfmlcubes::initMainWindow();
+	sfmlcubes::initMainWindow("Cubes", 800, 600);
 	sfmlcubes::Cube::initGlobal();
 	sfmlcubes::initMainFont();
 	sfmlcubes::prepareScene();

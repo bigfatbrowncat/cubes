@@ -76,7 +76,7 @@ namespace sfmlcubes
 		{
 			CubesMechanicOrder nextOrder = ordersQueue.back();
 			ordersQueue.pop_back();
-			CubesMechanicIssueResponse resp;
+			CubesMechanicIssueResponse resp = cmirNothingToIssue;
 			switch (nextOrder)
 			{
 			case cmoMoveDown:
@@ -950,6 +950,8 @@ namespace sfmlcubes
 			return createSBlock();
 		case 7:
 			return createZBlock();
+		default:
+			return false;
 		}
 
 		/*Cube c = sfmlcubes::Cube(sf::Color::Red, true);
