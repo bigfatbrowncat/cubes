@@ -136,7 +136,7 @@ namespace sfmlcubes
 		float delta_y = (board.getField().getHeight() + 0.5) / 2;
 		glTranslatef(-delta_x * Cube::cubesize, delta_y * Cube::cubesize, 0.f);
 
-		board.getFieldBackground().glDraw(-1, -1);
+		//board.getFieldBackground().glDraw(-1, -1);
 		board.getField().glDraw(0, 0);
 	}
 
@@ -293,7 +293,7 @@ namespace sfmlcubes
 		}
 	}
 
-	void boardOrderIssuedNotifier(CubesMechanicOrder order, CubesMechanicIssueResponse response)
+/*	void boardOrderIssuedNotifier(CubesMechanicOrder order, CubesMechanicIssueResponse response)
 	{
 		if ((order == cmoMoveDown || order == cmoMoveDownFast) && (response == cmirFail))
 		{
@@ -313,7 +313,7 @@ namespace sfmlcubes
 			tryCreateNewBlock();
 		}
 	}
-
+*/
 
 	void boardBeforeOrderIssuedNotifier()
 	{
@@ -356,9 +356,9 @@ int main()
 	sfmlcubes::initMainFont();
 	sfmlcubes::prepareScene();
 
-	sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);
+	//sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);
 	sfmlcubes::board.setBeforeOrderIssuingNotifier(sfmlcubes::boardBeforeOrderIssuedNotifier);
-	sfmlcubes::board.setTransitionFinishedNotifier(sfmlcubes::boardTransitionFinishedNotifier);
+	//sfmlcubes::board.setTransitionFinishedNotifier(sfmlcubes::boardTransitionFinishedNotifier);
 
 	sfmlcubes::board.createNewBlock();
 

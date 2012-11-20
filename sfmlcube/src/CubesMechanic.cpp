@@ -12,6 +12,8 @@
 
 #include "Logger.h"
 #include "CubesMechanic.h"
+#include "Transition.h"
+#include "CubesField.h"
 
 using namespace std;
 
@@ -26,40 +28,32 @@ namespace sfmlcubes
 
 	CubesMechanic::CubesMechanic(int width, int height):
 			field(width, height),
-			background(width + 2, height + 2),
+			background(field),
+			falling(field),
+			fallen(field),
 
 			verticalMovingDirection(cmvdNone),
-			verticalMovingPhase(0),
+			horizontalMovingDirection(cmhdNone)
 
-			horizontalMovingDirection(cmhdNone),
-			horizontalMovingPhase(0)
 	{
+		field.getCubesGroups().push_back(&background);
+		field.getCubesGroups().push_back(&fallen);
+		field.getCubesGroups().push_back(&falling);
+
 		sf::Color wallColor = sf::Color(32, 32, 32);
 
-		for (int i = 0; i < background.getWidth(); i++)
+		for (int i = 0; i < field.getWidth(); i++)
 		{
-			background.cubeAt(i, background.getHeight() - 1).empty = false;
-			background.cubeAt(i, background.getHeight() - 1).color = wallColor;
-			background.cubeAt(i, background.getHeight() - 1).modelType = cmtWall;
+			background.getCubes().push_back(Cube(cmtWall, i, field.getHeight() - 1, wallColor));
 		}
-		for (int j = 2; j < background.getHeight(); j++)
+		for (int j = 2; j < field.getHeight(); j++)
 		{
-			background.cubeAt(0, j).empty = false;
-			background.cubeAt(0, j).color = wallColor;
-			background.cubeAt(0, j).modelType = cmtWall;
-
-			background.cubeAt(background.getWidth() - 1, j).empty = false;
-			background.cubeAt(background.getWidth() - 1, j).color = wallColor;
-			background.cubeAt(background.getWidth() - 1, j).modelType = cmtWall;
+			background.getCubes().push_back(Cube(cmtWall, 0, j, wallColor));
+			background.getCubes().push_back(Cube(cmtWall, field.getWidth() - 1, j, wallColor));
 		}
 	}
 
 	CubesMechanic::~CubesMechanic() { }
-
-	bool CubesMechanic::cubeIsEmptyOrFreeAt(int i, int j)
-	{
-		return field.cubeAt(i, j).empty || field.cubeAt(i, j).freeMoving;
-	}
 
 	CubesMechanicIssueResponse CubesMechanic::executeNextOrder()
 	{
@@ -80,34 +74,34 @@ namespace sfmlcubes
 			switch (nextOrder)
 			{
 			case cmoMoveDown:
-				resp = startMovingDownTransition(false);
+				falling.moveDown();
 				break;
-			case cmoMoveDownFast:
+/*			case cmoMoveDownFast:
 				resp = startMovingDownTransition(true);
-				break;
+				break;*/
 			case cmoMoveLeft:
-				resp = startMovingLeftTransition();
+				falling.moveLeft();
 				break;
 			case cmoMoveRight:
-				resp = startMovingRightTransition();
+				falling.moveRight();
 				break;
 			case cmoRotateCW:
-				resp = startRotatingCWTransition();
+				falling.rotateCW(1);
 				break;
-			case cmoFireLines:
+/*			case cmoFireLines:
 				resp = startFiringLinesTransition();
-				break;
+				break;*/
 			}
 
-			if (orderIssuedNotifier != NULL)
+/*			if (orderIssuedNotifier != NULL)
 			{
 				(*orderIssuedNotifier)(nextOrder, resp);
-			}
+			}*/
 			return resp;
 		}
 	}
 
-	bool CubesMechanic::canMoveDown()
+/*	bool CubesMechanic::canMoveDown()
 	{
 		for (int i = 0; i < field.getWidth(); i++)
 		for (int j = 0; j < field.getHeight(); j++)
@@ -272,47 +266,6 @@ namespace sfmlcubes
 		return linesToFire.size() > 0;
 	}
 
-	void CubesMechanic::moveDown()
-	{
-		for (int i = 0; i < field.getWidth(); i++)
-		for (int j = field.getHeight() - 2; j >= 0; j--)
-		{
-			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
-			{
-				field.cubeAt(i, j + 1) = field.cubeAt(i, j);
-				field.cubeAt(i, j).empty = true;
-			}
-		}
-		fallingCenterY ++;
-	}
-
-	void CubesMechanic::moveRight()
-	{
-		for (int i = field.getWidth() - 2; i >= 0; i--)
-		for (int j = 0; j < field.getHeight(); j++)
-		{
-			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
-			{
-				field.cubeAt(i + 1, j) = field.cubeAt(i, j);
-				field.cubeAt(i, j).empty = true;
-			}
-		}
-		fallingCenterX ++;
-	}
-
-	void CubesMechanic::moveLeft()
-	{
-		for (int i = 1; i < field.getWidth(); i++)
-		for (int j = 0; j < field.getHeight(); j++)
-		{
-			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
-			{
-				field.cubeAt(i - 1, j) = field.cubeAt(i, j);
-				field.cubeAt(i, j).empty = true;
-			}
-		}
-		fallingCenterX --;
-	}
 
 	void CubesMechanic::fireLines()
 	{
@@ -393,7 +346,7 @@ namespace sfmlcubes
 			for (int i = fallingCenterX - R; i < fallingCenterX; i++)
 			for (int j = fallingCenterY - R; j < fallingCenterY; j++)
 			{
-				/*if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)*/
+
 				{
 					// Calculating 3 images for our position
 					int ik[4], jk[4];
@@ -443,8 +396,8 @@ namespace sfmlcubes
 			}
 		}
 	}
-
-	CubesMechanicIssueResponse CubesMechanic::startMovingDownTransition(bool fast)
+*/
+/*	CubesMechanicIssueResponse CubesMechanic::startMovingDownTransition(bool fast)
 	{
 		if (!canMoveDown())
 		{
@@ -580,7 +533,6 @@ namespace sfmlcubes
 			}
 		}
 	}
-
 	void CubesMechanic::setFiringLinesSliding(float phase)
 	{
 		int count = 0;
@@ -606,134 +558,62 @@ namespace sfmlcubes
 			}
 		}
 	}
+*/
 
 	void CubesMechanic::processTimeStep(float dt)
 	{
-		float rotationAngle = 0;
-		float slidingX = 0, slidingY = 0;
+		falling.advanceStep(dt);
 
-		if (rotationDirection == cmrdCW)
+/*		if (horizontalMovingDirection != cmhdNone &&
+		    horizontalTransition.advanceStep(dt / HORIZONTAL_MOVING_LONGITUDE) == Transition::asrFinished)
 		{
-			rotationPhase += dt / ROTATION_LONGITUDE;
-
-			if (rotationPhase < 1)
+			horizontalTransition.reset();
+			switch (horizontalMovingDirection)
 			{
-				float slope = 1.0f;
-				rotationAngle = atan(slope * (rotationPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
-				setRotation(fallingCenterX, fallingCenterY, fallingCRCT, rotationAngle);
-			}
-			else
-			{
-				rotationPhase = 0;
-				rotate(cmda90CW);
-				rotationAngle = 0;
-				rotationDirection = cmrdNone;
-				setRotation(fallingCenterX, fallingCenterY, fallingCRCT, rotationAngle);
-
-				if (transitionFinishedNotifier != NULL)
-				{
-					(*transitionFinishedNotifier)(cmoRotateCW);
-				}
-				executeNextOrder();
-			}
-		}
-		else if (verticalMovingDirection == cmvdDown)
-		{
-			verticalMovingPhase += dt / FALLING_DOWN_LONGITUDE;
-
-			if (verticalMovingPhase < 1)
-			{
-				float slope = 1.0f;
-				slidingY = atan(slope * (verticalMovingPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
-				setSliding(slidingX, slidingY);
-			}
-			else
-			{
-				verticalMovingPhase = 0;
-				moveDown();
-				slidingY = 0;
-				verticalMovingDirection = cmvdNone;
-				setSliding(slidingX, slidingY);
-
-				if (transitionFinishedNotifier != NULL)
-				{
-					(*transitionFinishedNotifier)(cmoMoveDown);
-				}
-				executeNextOrder();
-			}
-		}
-		else if (verticalMovingDirection == cmvdDownFast)
-		{
-			verticalMovingPhase += dt / FALLING_DOWN_FAST_LONGITUDE;
-
-			if (verticalMovingPhase < 1)
-			{
-				slidingY = verticalMovingPhase;
-				setSliding(slidingX, slidingY);
-			}
-			else
-			{
-				verticalMovingPhase = 0;
-				moveDown();
-				slidingY = 0;
-				verticalMovingDirection = cmvdNone;
-				setSliding(slidingX, slidingY);
-				if (transitionFinishedNotifier != NULL)
-				{
-					(*transitionFinishedNotifier)(cmoMoveDownFast);
-				}
-
-				executeNextOrder();
-			}
-		}
-		else if (horizontalMovingDirection == cmhdRight)
-		{
-			horizontalMovingPhase += dt / HORIZONTAL_MOVING_LONGITUDE;
-
-			if (horizontalMovingPhase < 1)
-			{
-				slidingX = horizontalMovingPhase;
-				setSliding(slidingX, slidingY);
-			}
-			else
-			{
-				horizontalMovingPhase = 0;
+			case cmhdRight:
 				moveRight();
-				slidingX = 0;
-				horizontalMovingDirection = cmhdNone;
-				setSliding(slidingX, slidingY);
-
-				if (transitionFinishedNotifier != NULL)
-				{
-					(*transitionFinishedNotifier)(cmoMoveRight);
-				}
-				executeNextOrder();
-			}
-		}
-		else if (horizontalMovingDirection == cmhdLeft)
-		{
-			horizontalMovingPhase += dt / HORIZONTAL_MOVING_LONGITUDE;
-
-			if (horizontalMovingPhase < 1)
-			{
-				slidingX = -horizontalMovingPhase;
-				setSliding(slidingX, slidingY);
-			}
-			else
-			{
-				horizontalMovingPhase = 0;
+				break;
+			case cmhdLeft:
 				moveLeft();
-				slidingX = 0;
-				setSliding(slidingX, slidingY);
+				break;
+			default:
+				Logger::DEFAULT.logError("Strange case of horizontalMovingDirection");
+				break;
+			}
 
-				if (transitionFinishedNotifier != NULL)
-				{
-					(*transitionFinishedNotifier)(cmoMoveLeft);
-				}
-				horizontalMovingDirection = cmhdNone;
+		}
+
+		if (verticalMovingDirection != cmvdNone &&
+		    verticalTransition.advanceStep(dt / FALLING_DOWN_LONGITUDE) == Transition::asrFinished)
+		{
+			verticalTransition.reset();
+			switch (verticalMovingDirection)
+			{
+			case cmvdDown:
+				moveDown();
+				break;
+			default:
+				Logger::DEFAULT.logError("Strange case of horizontalMovingDirection");
+				break;
 			}
 		}
-		else if (linesAreFiring)
+
+		if (rotationDirection != cmrdNone &&
+		    rotateTransition.advanceStep(dt / ROTATION_LONGITUDE) == Transition::asrFinished)
+		{
+			rotateTransition.reset();
+			switch (rotationDirection)
+			{
+			case cmrdCW:
+				rotate(cmda90CW);
+				break;
+			default:
+				Logger::DEFAULT.logError("Strange case of horizontalMovingDirection");
+				break;
+			}
+		}
+
+		if (linesAreFiring)
 		{
 			linesFiringPhase += dt / LINES_FIRING_LONGITUDE;
 			if (linesFiringPhase < LINES_FIRING_BLINKING_PART)
@@ -765,6 +645,7 @@ namespace sfmlcubes
 		{
 			executeNextOrder();
 		}
+		*/
 	}
 
 	sf::Color generateBlockcolor()
@@ -784,26 +665,18 @@ namespace sfmlcubes
 
 	bool CubesMechanic::createTBlock()
 	{
-		if (field.cubeAt(5, 1).empty &&
-		    field.cubeAt(6, 1).empty &&
-		    field.cubeAt(7, 1).empty &&
-		    field.cubeAt(6, 2).empty)
-		{
-			sf::Color gen = generateBlockcolor();
-			field.cubeAt(5, 1) = sfmlcubes::Cube(gen, true);
-			field.cubeAt(6, 1) = sfmlcubes::Cube(gen, true);
-			field.cubeAt(7, 1) = sfmlcubes::Cube(gen, true);
-			field.cubeAt(6, 2) = sfmlcubes::Cube(gen, true);
+		sf::Color gen = generateBlockcolor();
 
-			fallingCRCT = crctCenterOfCube;
-			fallingCenterX = 6;
-			fallingCenterY = 1;
-			return true;
-		}
-		else
-			return false;
+		falling.getCubes().push_back(Cube(cmtPlaying, 5, 1, gen));
+		falling.getCubes().push_back(Cube(cmtPlaying, 6, 1, gen));
+		falling.getCubes().push_back(Cube(cmtPlaying, 7, 1, gen));
+		falling.getCubes().push_back(Cube(cmtPlaying, 6, 2, gen));
+
+		falling.setRotatingCenter(6, 1, crctCenterOfCube);
+
+		return true;
 	}
-	bool CubesMechanic::createJBlock()
+/*	bool CubesMechanic::createJBlock()
 	{
 		if (field.cubeAt(6, 1).empty &&
 		    field.cubeAt(6, 2).empty &&
@@ -928,10 +801,12 @@ namespace sfmlcubes
 		}
 		else
 			return false;
-	}
+	}*/
 	bool CubesMechanic::createNewBlock()
 	{
-		int r = rand() * 7 / RAND_MAX;
+		return createTBlock();
+
+		/*int r = rand() * 7 / RAND_MAX;
 		switch (r)
 		{
 		case 0:
@@ -952,7 +827,7 @@ namespace sfmlcubes
 			return createZBlock();
 		default:
 			return false;
-		}
+		}*/
 
 		/*Cube c = sfmlcubes::Cube(sf::Color::Red, true);
 		c.slidingX = -0.5;
@@ -969,6 +844,7 @@ namespace sfmlcubes
 	{
 		ordersQueue.push_front(order);
 		ordersQueue.unique();
+		executeNextOrder();			// Temporary
 	}
 
 	void CubesMechanic::issueHighPriorityOrder(CubesMechanicOrder order)

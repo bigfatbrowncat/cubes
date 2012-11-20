@@ -5,128 +5,41 @@
  *      Author: imizus
  */
 
-#include <vector>
-
-#include <SFML/Graphics/Shader.hpp>
-
-using namespace std;
+namespace sfmlcubes
+{
+	class CubesField;
+}
 
 #ifndef CUBESFIELD_H_
 #define CUBESFIELD_H_
 
-#include <SFML/Graphics.hpp>
+#include <list>
+
+#include "CubesGroup.h"
+#include "CubeRotatingCenterType.h"
+
+using namespace std;
 
 namespace sfmlcubes
 {
-	class CubesField;
-
-	enum CubeRotatingCenterType
-	{
-		crctCenterOfCube, crctCornerOfCube
-	};
-
-	enum CubeModelType
-	{
-		cmtPlaying, cmtWall
-	};
-
-	struct Cube
-	{
-		friend class CubesField;
-	protected:
-		void glDraw(int i, int j);
-		void glDraw(int i, int j, float alpha);
-	public:
-
-		static const Cube EMPTY;
-
-		static int cubesize;
-		static int PLAYING_CUBE_INDEX;
-		static int WALL_CUBE_INDEX;
-		static sf::Shader cubeShader;
-
-		static void initGlobal();
-
-		bool empty;
-		sf::Color color;
-		bool freeMoving;
-		CubeModelType modelType;
-
-		// Sliding
-		float slidingX, slidingY;
-
-		// Rotating animation
-		CubeRotatingCenterType rotatingCenterType;
-		int rotatingCenterX, rotatingCenterY;
-		float rotatingAngle;	// 1 = 90 degrees
-
-		// Constructs non-empty cube
-		Cube(sf::Color color, bool falling):
-		     empty(false),
-		     color(color),
-		     freeMoving(falling),
-		     modelType(cmtPlaying),
-
-		     slidingX(0),
-		     slidingY(0),
-
-		     rotatingCenterType(crctCenterOfCube),
-		     rotatingCenterX(0),
-		     rotatingCenterY(0),
-		     rotatingAngle(0)
-		{
-
-		}
-
-		// Constructs empty cube
-		Cube():
-			empty(true),
-			color(color),
-			freeMoving(false),
-
-			slidingX(0),
-			slidingY(0),
-
-			rotatingCenterType(crctCenterOfCube),
-			rotatingCenterX(0),
-			rotatingCenterY(0),
-			rotatingAngle(0)
-		{
-
-		}
-
-	};
-
-	enum CubesSlidingType
-	{
-		cstSlidingAnimation,
-		cstTrueSliding
-	};
-
-	class CubesField
+	class CubesField : public sf::NonCopyable
 	{
 	private:
-		struct XY
-		{
-			int x, y;
-			XY(int x, int y): x(x), y(y) {}
-		};
-
-		Cube* cubesData;
+		list<CubesGroup*> cubesGroups;
 		int width, height;
 
 	public:
-		CubesField(int width, int height);
-		virtual ~CubesField();
+		CubesField(int width, int height): width(width), height(height) {}
+		virtual ~CubesField() {}
 
-		Cube& cubeAt(int i, int j);
+		list<CubesGroup*>& getCubesGroups() { return cubesGroups; }
+
+		//Cube& cubeAt(int i, int j);
 
 		int getWidth() const { return width; }
 		int getHeight() const { return height; }
 
-		void glDraw(int dx, int dy) const;
-
-		//bool* getOccupiedMap() {}
+		void glDraw(int dx, int dy);
 	};
 
 }

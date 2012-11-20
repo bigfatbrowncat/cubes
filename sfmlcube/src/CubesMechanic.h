@@ -81,16 +81,21 @@ namespace sfmlcubes
 		static float LINES_FIRING_BLINKING_PART;
 
 		CubesField field;
-		CubesField background;
+		CubesGroup background, falling, fallen;
+		//CubesField background;
 
 		CubesMechanicVerticalDirection verticalMovingDirection;
-		float verticalMovingPhase;	// 0..1
+		//float verticalMovingPhase;	// 0..1
 
 		CubesMechanicHorizontalDirection horizontalMovingDirection;
-		float horizontalMovingPhase;
+		//float horizontalMovingPhase;
 
 		CubesMechanicRotationDirection rotationDirection;
-		float rotationPhase;
+		//float rotationPhase;
+
+/*		SlideXTransition horizontalTransition;
+		SlideYTransition verticalTransition;
+		RotateTransition rotateTransition;*/
 
 		bool linesAreFiring;
 		float linesFiringPhase;
@@ -101,11 +106,11 @@ namespace sfmlcubes
 
 		bool cubeIsEmptyOrFreeAt(int i, int j);
 
-		float calculateRadius(int rotationCenterX, int rotationCenterY, CubeRotatingCenterType crct);
+/*		float calculateRadius(int rotationCenterX, int rotationCenterY, CubeRotatingCenterType crct);
 		int fallingCenterX;
 		int fallingCenterY;
 		int fallingRadius;
-		CubeRotatingCenterType fallingCRCT;
+		CubeRotatingCenterType fallingCRCT;*/
 
 		OrderIssuedNotifier* orderIssuedNotifier;
 		BeforeOrderIssuingNotifier* beforeOrderIssuingNotifier;
@@ -128,32 +133,32 @@ namespace sfmlcubes
 		void rotate(CubesMechanicDiscreteAngle angle);
 		void fireLines();
 
-		CubesMechanicIssueResponse startMovingDownTransition(bool fast);
+/*		CubesMechanicIssueResponse startMovingDownTransition(bool fast);
 		CubesMechanicIssueResponse startMovingRightTransition();
 		CubesMechanicIssueResponse startMovingLeftTransition();
 		CubesMechanicIssueResponse startRotatingCWTransition();
-		CubesMechanicIssueResponse startFiringLinesTransition();
+		CubesMechanicIssueResponse startFiringLinesTransition();*/
 
-		void setSliding(float slidingX, float slidingY);
+/*		void setSliding(float slidingX, float slidingY);
 		void setRotation(int centerX, int centerY, CubeRotatingCenterType crct, float angle);
 		void setFiringLinesAlpha(float alpha);
-		void setFiringLinesSliding(float phase);
+		void setFiringLinesSliding(float phase);*/
 
 		bool createTBlock();
-		bool createJBlock();
+/*		bool createJBlock();
 		bool createLBlock();
 		bool createIBlock();
 		bool createZBlock();
 		bool createSBlock();
-		bool createOBlock();
+		bool createOBlock();*/
 	public:
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();
 
 		bool createNewBlock();
 
-		const CubesField& getField() const { return field; }
-		const CubesField& getFieldBackground() const { return background; }
+		CubesField& getField() { return field; }
+		//const CubesField& getFieldBackground() const { return background; }
 		CubesMechanicHorizontalDirection getHorizontalDirection() const { return horizontalMovingDirection; }
 		CubesMechanicRotationDirection getRotationDirection() const { return rotationDirection; }
 		int getLinesFired() const { return linesFired; }
