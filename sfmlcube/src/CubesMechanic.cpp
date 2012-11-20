@@ -76,9 +76,9 @@ namespace sfmlcubes
 			case cmoMoveDown:
 				falling.moveDown();
 				break;
-/*			case cmoMoveDownFast:
-				resp = startMovingDownTransition(true);
-				break;*/
+			case cmoMoveDownFast:
+				//resp = startMovingDownTransition(true);
+				break;
 			case cmoMoveLeft:
 				falling.moveLeft();
 				break;
@@ -88,9 +88,9 @@ namespace sfmlcubes
 			case cmoRotateCW:
 				falling.rotateCW(1);
 				break;
-/*			case cmoFireLines:
-				resp = startFiringLinesTransition();
-				break;*/
+			case cmoFireLines:
+				//resp = startFiringLinesTransition();
+				break;
 			}
 
 /*			if (orderIssuedNotifier != NULL)

@@ -27,7 +27,7 @@ namespace sfmlcubes
 		     iter != getGroup().getCubes().end();
 		     iter ++)
 		{
-			(*iter).slidingX = getProcessedPhase() * sourceY;
+			(*iter).slidingY = (1-getProcessedPhase()) * sourceY;
 		}
 	}
 

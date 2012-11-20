@@ -22,7 +22,6 @@ namespace sfmlcubes
 	protected:
 		virtual void updateObjects();
 	public:
-		SlideYTransition() {}
 		SlideYTransition(CubesGroup& group);
 		virtual ~SlideYTransition();
 

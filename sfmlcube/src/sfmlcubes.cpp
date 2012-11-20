@@ -179,28 +179,28 @@ namespace sfmlcubes
     		if (!rightKeyPressed)
     		{
     			rightKeyPressed = true;
-    			//board.issueOrder(cmoMoveRight);
+    			board.issueOrder(cmoMoveRight);
     		}
     		break;
     	case sf::Keyboard::Left:
     		if (!leftKeyPressed)
     		{
     			leftKeyPressed = true;
-        		//board.issueOrder(cmoMoveLeft);
+        		board.issueOrder(cmoMoveLeft);
     		}
     		break;
     	case sf::Keyboard::Down:
     		if (!downKeyPressed)
     		{
     			downKeyPressed = true;
-        		//board.issueOrder(cmoMoveDown);
+        		board.issueOrder(cmoMoveDown);
     		}
     		break;
     	case sf::Keyboard::Up:
     		if (!rotateCWKeyPressed)
     		{
     			rotateCWKeyPressed = true;
-        		//board.issueOrder(cmoRotateCW);
+        		board.issueOrder(cmoRotateCW);
     		}
     		break;
     	case sf::Keyboard::Space:
@@ -278,7 +278,7 @@ namespace sfmlcubes
 
 		if (timeSinceFallIssued > fallingPeriod)
 		{
-			board.issueOrder(cmoMoveDown);
+			//board.issueOrder(cmoMoveDown);
 			momentWhenFallIssued = curTime;
 		}
 
@@ -315,7 +315,7 @@ namespace sfmlcubes
 	}
 */
 
-	void boardBeforeOrderIssuedNotifier()
+/*	void boardBeforeOrderIssuedNotifier()
 	{
 		if (leftKeyPressed)
 		{
@@ -334,7 +334,7 @@ namespace sfmlcubes
 			board.issueOrder(cmoRotateCW);
 		}
 	}
-
+*/
 	void run()
 	{
 	    while (mainWindow.isOpen())
@@ -357,7 +357,7 @@ int main()
 	sfmlcubes::prepareScene();
 
 	//sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);
-	sfmlcubes::board.setBeforeOrderIssuingNotifier(sfmlcubes::boardBeforeOrderIssuedNotifier);
+	//sfmlcubes::board.setBeforeOrderIssuingNotifier(sfmlcubes::boardBeforeOrderIssuedNotifier);
 	//sfmlcubes::board.setTransitionFinishedNotifier(sfmlcubes::boardTransitionFinishedNotifier);
 
 	sfmlcubes::board.createNewBlock();

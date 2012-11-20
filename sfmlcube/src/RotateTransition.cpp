@@ -17,7 +17,7 @@ namespace sfmlcubes
 {
 	RotateTransition::RotateTransition(CubesGroup& group) :
 			Transition(group),
-			targetAngle(0)
+			sourceAngle(0)
 	{
 	}
 
@@ -29,13 +29,13 @@ namespace sfmlcubes
 		{
 			(*iter).rotatingCenterX = rotatingCenterX;
 			(*iter).rotatingCenterY = rotatingCenterY;
-			(*iter).rotatingAngle = getProcessedPhase() * targetAngle * 90;
+			(*iter).rotatingAngle = (1 - getProcessedPhase()) * sourceAngle;
 		}
 	}
 
-	void RotateTransition::setAngle(int value)
+	void RotateTransition::setSourceAngle(int value)
 	{
-		targetAngle = value;
+		sourceAngle = value;
 		updateObjects();
 	}
 

@@ -87,6 +87,7 @@ namespace sfmlcubes
 		{
 			(*iter).y ++;
 		}
+		this->rotatingCenterY ++;
 		verticalTransition.setSourceY(-1.0);
 		verticalTransition.setPhase(0);
 	}
@@ -99,6 +100,7 @@ namespace sfmlcubes
 		{
 			(*iter).x ++;
 		}
+		this->rotatingCenterX ++;
 		horizontalTransition.setSourceX(-1.0);
 		horizontalTransition.setPhase(0);
 	}
@@ -111,6 +113,7 @@ namespace sfmlcubes
 		{
 			(*iter).x --;
 		}
+		this->rotatingCenterX --;
 		horizontalTransition.setSourceX(1.0);
 		horizontalTransition.setPhase(0);
 	}
@@ -132,18 +135,20 @@ namespace sfmlcubes
 	void CubesGroup::rotateCW(int angle)
 	{
 		// Searching for anything in our radius
-		for (int i = getLeft(); i <= getRight(); i++)
-		for (int j = getTop(); j <= getBottom(); j++)
+		for (list<Cube>::iterator iter = getCubes().begin();
+			 iter != getCubes().end();
+			 iter ++)
 		{
 			// Calculating 3 images for our position
 			int ik[4], jk[4];
 			int i0 = rotatingCenterX, j0 = rotatingCenterY;
 
+			ik[0] = (*iter).x;
+			jk[0] = (*iter).y;
+
 			if (crct == crctCenterOfCube)
 			{
 				// Making the 90 degrees rotating group
-				ik[0] = i;
-				jk[0] = j;
 				for (int k = 1; k < 4; k++)
 				{
 					ik[k] = i0 - jk[k - 1] + j0;
@@ -153,8 +158,6 @@ namespace sfmlcubes
 			else if (crct == crctCornerOfCube)
 			{
 				// Making the 90 degrees rotating group
-				ik[0] = i;
-				jk[0] = j;
 				for (int k = 1; k < 4; k++)
 				{
 					ik[k] = i0 - jk[k - 1] + j0 - 1;
@@ -163,19 +166,19 @@ namespace sfmlcubes
 			}
 
 			// Making the group array
-			Cube* src = cubeAt(ik[0], jk[0]);
+			//Cube* src = cubeAt(ik[0], jk[0]);
 
-			if (src != NULL)
+			//if (src != NULL)
 			{
 				// Rotating the group
-				int k = (4 - angle) % 4;
-				src->x = ik[k];
-				src->y = jk[k];
+				int k = (4 + angle) % 4;
+				(*iter).x = ik[k];
+				(*iter).y = jk[k];
 			}
 		}
 
 		rotateTransition.setRotatingCenter(rotatingCenterX, rotatingCenterY, crct);
-		rotateTransition.setAngle(angle);
+		rotateTransition.setSourceAngle(-angle);
 		rotateTransition.setPhase(0);
 	}
 

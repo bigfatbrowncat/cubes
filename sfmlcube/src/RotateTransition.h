@@ -19,7 +19,7 @@ namespace sfmlcubes
 	class RotateTransition : public Transition
 	{
 	private:
-		int targetAngle;
+		int sourceAngle;
 		int rotatingCenterX, rotatingCenterY;
 		CubeRotatingCenterType rotatingCenterType;
 	protected:
@@ -29,7 +29,7 @@ namespace sfmlcubes
 		RotateTransition(CubesGroup& group);
 		virtual ~RotateTransition();
 
-		void setAngle(int value);
+		void setSourceAngle(int value);
 		void setRotatingCenter(int x, int y, CubeRotatingCenterType crct);
 	};
 

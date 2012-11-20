@@ -31,6 +31,7 @@ namespace sfmlcubes
 		int rotatingCenterX, rotatingCenterY;
 		float rotatingAngle;	// 1 = 90 degrees
 
+		CubeModelType modelType;
 	public:
 		static int cubesize;
 		static int PLAYING_CUBE_INDEX;
@@ -42,37 +43,39 @@ namespace sfmlcubes
 		sf::Color color;
 		int x, y;
 
-		CubeModelType modelType;
-
-
 		// Constructs non-empty cube
 		Cube(CubeModelType modelType, int x, int y, sf::Color color):
-			 color(color),
-			 x(x), y(y),
-			 modelType(cmtPlaying),
-
 			 slidingX(0),
 			 slidingY(0),
 
 			 rotatingCenterType(crctCenterOfCube),
 			 rotatingCenterX(0),
 			 rotatingCenterY(0),
-			 rotatingAngle(0)
+			 rotatingAngle(0),
+
+			 modelType(modelType),
+
+			 color(color),
+			 x(x), y(y)
+
 		{
 
 		}
 
 		// Constructs empty cube
 		Cube():
-			color(color),
+		     slidingX(0),
+		     slidingY(0),
 
-			slidingX(0),
-			slidingY(0),
+		     rotatingCenterType(crctCenterOfCube),
+		     rotatingCenterX(0),
+		     rotatingCenterY(0),
+		     rotatingAngle(0),
 
-			rotatingCenterType(crctCenterOfCube),
-			rotatingCenterX(0),
-			rotatingCenterY(0),
-			rotatingAngle(0)
+		     modelType(cmtPlaying),
+
+			 color(color),
+			 x(x), y(y)
 		{
 
 		}
