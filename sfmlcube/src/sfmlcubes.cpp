@@ -18,6 +18,7 @@ namespace sfmlcubes
 
 	static sf::Text gameOverText;
 	static sf::Text linesFiredText;
+	static sf::Text linesFiredValueText;
 	static bool showGameOverText = false;
 
 	static CubesMechanic board(12, 21);
@@ -56,19 +57,29 @@ namespace sfmlcubes
 
 	void updateText()
 	{
+		float k = (float)mainWindow.getSize().x / 640;
+
 		gameOverText.setString("Game Over");
-		gameOverText.setCharacterSize(30);
+		gameOverText.setCharacterSize(30 * k);
 		gameOverText.setFont(mainFont);
-		gameOverText.setPosition(mainWindow.getSize().x / 2 - gameOverText.getGlobalBounds().width / 2,
-				                 mainWindow.getSize().y / 2 - gameOverText.getGlobalBounds().height / 2);
+		gameOverText.setPosition(1.0 * mainWindow.getSize().x / 2 - gameOverText.getGlobalBounds().width / 2,
+				                 4.0 * mainWindow.getSize().y / 9 - gameOverText.getGlobalBounds().height / 2);
+
+		linesFiredText.setString("Lines fired");
+		linesFiredText.setCharacterSize(15 * k);
+		linesFiredText.setFont(mainFont);
+		linesFiredText.setPosition(23.0 * mainWindow.getSize().x / 28 - linesFiredText.getGlobalBounds().width / 2,
+				                   1.0 * mainWindow.getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
 
 		stringstream ss;
-		ss << "Lines fired: " << board.getLinesFired();
-		linesFiredText.setString(ss.str());
-		linesFiredText.setCharacterSize(20);
-		linesFiredText.setFont(mainFont);
-		linesFiredText.setPosition(5 * mainWindow.getSize().x / 6 - linesFiredText.getGlobalBounds().width / 2,
-				                   1 * mainWindow.getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
+		ss << board.getLinesFired();
+		linesFiredValueText.setString(ss.str());
+		linesFiredValueText.setColor(sf::Color(192, 128, 128));
+		linesFiredValueText.setCharacterSize(30 * k);
+		linesFiredValueText.setFont(mainFont);
+		linesFiredValueText.setPosition(24.0 * mainWindow.getSize().x / 28 - linesFiredValueText.getGlobalBounds().width / 2,
+				                   1.0 * mainWindow.getSize().y / 8 + linesFiredText.getGlobalBounds().height + 2.0 * k);
+
 
 	}
 
@@ -77,6 +88,7 @@ namespace sfmlcubes
 		mainWindow.pushGLStates();
 		updateText();
 		mainWindow.draw(linesFiredText, sf::RenderStates::Default);
+		mainWindow.draw(linesFiredValueText, sf::RenderStates::Default);
 		if (showGameOverText)
 		{
 			mainWindow.draw(gameOverText, sf::RenderStates::Default);
