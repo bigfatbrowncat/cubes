@@ -15,7 +15,6 @@
 
 using namespace std;
 
-
 namespace sfmlcubes
 {
 	void CubesField::glDraw(int dx, int dy)

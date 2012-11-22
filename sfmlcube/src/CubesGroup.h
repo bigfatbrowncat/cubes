@@ -15,9 +15,7 @@
 #include "SlideXTransition.h"
 #include "SlideYTransition.h"
 #include "RotateTransition.h"
-
 #include "Cube.h"
-//#include "CubesField.h"
 
 using namespace std;
 
@@ -27,17 +25,24 @@ namespace sfmlcubes
 
 	class CubesGroup : public sf::NonCopyable
 	{
+		friend class SlideXTransition;
+		friend class SlideYTransition;
+		friend class RotateTransition;
 	private:
 		CubesField& field;
 		list<Cube> cubes;
 		SlideXTransition horizontalTransition;
 		SlideYTransition verticalTransition;
 		RotateTransition rotateTransition;
+
+		// Sliding
+		float slidingX, slidingY;
+
+		// Rotating animation
 		CubeRotatingCenterType rotatingCenterType;
 		int rotatingCenterX, rotatingCenterY;
+		float rotatingAngle;	// 1 = 90 degrees
 
-		float rotatingLongitude;
-		float movingLongitude;
 	public:
 		CubesGroup(CubesField& field) :
 			field(field),
@@ -46,8 +51,13 @@ namespace sfmlcubes
 			verticalTransition(*this),
 			rotateTransition(*this),
 
-			rotatingLongitude(0.25),
-			movingLongitude(0.08)
+			slidingX(0),
+		    slidingY(0),
+
+		    rotatingCenterType(crctCenterOfCube),
+		    rotatingCenterX(0),
+		    rotatingCenterY(0),
+		    rotatingAngle(0)
 		{}
 
 		list<Cube>& getCubes() { return cubes; }
@@ -64,7 +74,7 @@ namespace sfmlcubes
 		int getTop();
 		int getBottom();
 
-		Cube* cubeAt(int i, int j);
+		list<Cube*> cubeAt(int i, int j);
 
 		void setRotatingCenter(int centerX, int centerY, CubeRotatingCenterType value)
 		{

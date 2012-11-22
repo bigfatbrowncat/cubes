@@ -655,10 +655,6 @@ namespace sfmlcubes
 		float r = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
 		float g = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
 		float b = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-/*		float norm = sqrt(r*r + g*g + b*b);
-		r /= norm;
-		g /= norm;
-		b /= norm;*/
 
 		return sf::Color(255 * r, 255 * g, 255 * b);
 	}

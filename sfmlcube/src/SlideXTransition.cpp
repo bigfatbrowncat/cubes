@@ -23,12 +23,7 @@ namespace sfmlcubes
 
 	void SlideXTransition::updateObjects()
 	{
-		for (list<Cube>::iterator iter = getGroup().getCubes().begin();
-		     iter != getGroup().getCubes().end();
-		     iter ++)
-		{
-			(*iter).slidingX = (1-getProcessedPhase()) * sourceX;
-		}
+		getGroup().slidingX = (1-getProcessedPhase()) * sourceX;
 	}
 
 	SlideXTransition::~SlideXTransition()

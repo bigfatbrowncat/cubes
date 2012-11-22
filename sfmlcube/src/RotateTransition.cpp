@@ -23,14 +23,14 @@ namespace sfmlcubes
 
 	void RotateTransition::updateObjects()
 	{
-		for (list<Cube>::iterator iter = getGroup().getCubes().begin();
+		/*for (list<Cube>::iterator iter = getGroup().getCubes().begin();
 		     iter != getGroup().getCubes().end();
-		     iter ++)
+		     iter ++)*/
 		{
-			(*iter).rotatingCenterX = getGroup().getRotatingCenterX();
-			(*iter).rotatingCenterY = getGroup().getRotatingCenterY();
-			(*iter).rotatingCenterType = getGroup().getRotatingCenterType();
-			(*iter).rotatingAngle = (1 - getProcessedPhase()) * sourceAngle;
+/*			getGroup().rotatingCenterX = getGroup().getRotatingCenterX();
+			getGroup().rotatingCenterY = getGroup().getRotatingCenterY();
+			getGroup().rotatingCenterType = getGroup().getRotatingCenterType();*/
+			getGroup().rotatingAngle = (1 - getProcessedPhase()) * sourceAngle;
 		}
 	}
 

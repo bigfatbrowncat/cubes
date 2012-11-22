@@ -5,10 +5,6 @@
  *      Author: imizus
  */
 
-namespace sfmlcubes
-{
-	class CubesField;
-}
 
 #ifndef CUBESFIELD_H_
 #define CUBESFIELD_H_
@@ -34,8 +30,6 @@ namespace sfmlcubes
 
 		list<CubesGroup*>& getCubesGroups() { return cubesGroups; }
 
-		//Cube& cubeAt(int i, int j);
-
 		int getWidth() const { return width; }
 		int getHeight() const { return height; }
 
@@ -44,4 +38,4 @@ namespace sfmlcubes
 
 }
 
-#endif /* CUBESFIELD_H_ */
+#endif

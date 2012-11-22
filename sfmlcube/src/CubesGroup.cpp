@@ -5,6 +5,8 @@
  *      Author: imizus
  */
 
+#include <GL/gl.h>
+
 #include "CubesGroup.h"
 
 namespace sfmlcubes
@@ -12,9 +14,9 @@ namespace sfmlcubes
 
 	void CubesGroup::advanceStep(double delta)
 	{
+		rotateTransition.advanceStep(delta);
 		horizontalTransition.advanceStep(delta);
 		verticalTransition.advanceStep(delta);
-		rotateTransition.advanceStep(delta);
 	}
 
 	void CubesGroup::glDraw(int dx, int dy)
@@ -23,8 +25,44 @@ namespace sfmlcubes
 			 citer != getCubes().end();
 			 citer ++)
 		{
-			(*citer).glDraw(dx, dy);
+			glPushMatrix();
+			{
+				int xx = (*citer).x + dx;
+				int yy = (*citer).y + dy;
+
+				glTranslatef(xx * Cube::cubesize, -yy * Cube::cubesize, 0.f);			// Translating the cube
+
+				// ** Sliding **
+
+				double hdistance = Cube::cubesize * slidingX;
+				double vdistance = Cube::cubesize * slidingY;
+				glTranslatef(hdistance, -vdistance, 0.f);
+
+				// ** Rotating **
+
+				// Moving it back from rotating center
+				if (rotatingCenterType == crctCornerOfCube)
+				{
+					glTranslatef(-Cube::cubesize / 2, Cube::cubesize / 2, 0.f);
+				}
+				glTranslatef(Cube::cubesize * (rotatingCenterX - xx), -Cube::cubesize * (rotatingCenterY - yy), 0.f);
+
+				// Applying rotation
+				double angle = 90 * rotatingAngle;
+				glRotatef(angle, 0.f, 0.f, -1.f);
+
+				// Moving the cube to it's rotating center
+				glTranslatef(-Cube::cubesize * (rotatingCenterX - xx), Cube::cubesize * (rotatingCenterY - yy), 0.f);
+				if (rotatingCenterType == crctCornerOfCube)
+				{
+					glTranslatef(Cube::cubesize / 2, -Cube::cubesize / 2, 0.f);
+				}
+
+				(*citer).glDraw();
+			}
+			glPopMatrix();
 		}
+
 	}
 
 	int CubesGroup::getLeft()
@@ -114,18 +152,19 @@ namespace sfmlcubes
 		horizontalTransition.setPhase(0);
 	}
 
-	Cube* CubesGroup::cubeAt(int i, int j)
+	list<Cube*> CubesGroup::cubeAt(int i, int j)
 	{
+		list<Cube*> res;
 		for (list<Cube>::iterator iter = getCubes().begin();
 			 iter != getCubes().end();
 			 iter ++)
 		{
 			if ((*iter).x == i && (*iter).y == j)
 			{
-				return &(*iter);
+				res.push_back(&(*iter));
 			}
 		}
-		return NULL;
+		return res;
 	}
 
 	void CubesGroup::rotateCW(int angle)

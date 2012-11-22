@@ -23,11 +23,11 @@ namespace sfmlcubes
 
 	void SlideYTransition::updateObjects()
 	{
-		for (list<Cube>::iterator iter = getGroup().getCubes().begin();
+		/*for (list<Cube>::iterator iter = getGroup().getCubes().begin();
 		     iter != getGroup().getCubes().end();
-		     iter ++)
+		     iter ++)*/
 		{
-			(*iter).slidingY = (1-getProcessedPhase()) * sourceY;
+			getGroup().slidingY = (1-getProcessedPhase()) * sourceY;
 		}
 	}
 
