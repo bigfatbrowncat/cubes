@@ -30,6 +30,8 @@ namespace sfmlcubes
 
 		list<CubesGroup*>& getCubesGroups() { return cubesGroups; }
 
+		list<Cube*> cubeAt(int i, int j);
+
 		int getWidth() const { return width; }
 		int getHeight() const { return height; }
 

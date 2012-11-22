@@ -81,7 +81,7 @@ namespace sfmlcubes
 		static float LINES_FIRING_BLINKING_PART;
 
 		CubesField field;
-		CubesGroup background, falling, fallen;
+		CubesGroup walls, falling, fallen;
 		//CubesField background;
 
 		CubesMechanicVerticalDirection verticalMovingDirection;
@@ -121,10 +121,12 @@ namespace sfmlcubes
 		CubesMechanicIssueResponse executeNextOrder();
 		bool ordersStarted;
 
-		bool canMoveDown();
-		bool canMoveRight();
-		bool canMoveLeft();
-		bool canRotate();
+		bool areAnyCollisions();
+		bool canMoveDownFalling();
+		bool canMoveRightFalling();
+		bool canMoveLeftFalling();
+		bool canRotateCWFalling(int angle);
+
 		bool canFireLines();
 
 		void moveDown();

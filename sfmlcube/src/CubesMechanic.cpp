@@ -28,7 +28,7 @@ namespace sfmlcubes
 
 	CubesMechanic::CubesMechanic(int width, int height):
 			field(width, height),
-			background(field),
+			walls(field),
 			falling(field),
 			fallen(field),
 
@@ -36,7 +36,7 @@ namespace sfmlcubes
 			horizontalMovingDirection(cmhdNone)
 
 	{
-		field.getCubesGroups().push_back(&background);
+		field.getCubesGroups().push_back(&walls);
 		field.getCubesGroups().push_back(&fallen);
 		field.getCubesGroups().push_back(&falling);
 
@@ -44,12 +44,12 @@ namespace sfmlcubes
 
 		for (int i = 0; i < field.getWidth(); i++)
 		{
-			background.getCubes().push_back(Cube(cmtWall, i, field.getHeight() - 1, wallColor));
+			walls.getCubes().push_back(Cube(cmtWall, i, field.getHeight() - 1, wallColor));
 		}
 		for (int j = 2; j < field.getHeight(); j++)
 		{
-			background.getCubes().push_back(Cube(cmtWall, 0, j, wallColor));
-			background.getCubes().push_back(Cube(cmtWall, field.getWidth() - 1, j, wallColor));
+			walls.getCubes().push_back(Cube(cmtWall, 0, j, wallColor));
+			walls.getCubes().push_back(Cube(cmtWall, field.getWidth() - 1, j, wallColor));
 		}
 	}
 
@@ -74,19 +74,31 @@ namespace sfmlcubes
 			switch (nextOrder)
 			{
 			case cmoMoveDown:
-				falling.moveDown();
+				if (canMoveDownFalling())
+				{
+					falling.moveDown();
+				}
 				break;
 			case cmoMoveDownFast:
 				//resp = startMovingDownTransition(true);
 				break;
 			case cmoMoveLeft:
-				falling.moveLeft();
+				if (canMoveLeftFalling())
+				{
+					falling.moveLeft();
+				}
 				break;
 			case cmoMoveRight:
-				falling.moveRight();
+				if (canMoveRightFalling())
+				{
+					falling.moveRight();
+				}
 				break;
 			case cmoRotateCW:
-				falling.rotateCW(1);
+				if (canRotateCWFalling(1))
+				{
+					falling.rotateCW(1);
+				}
 				break;
 			case cmoFireLines:
 				//resp = startFiringLinesTransition();
@@ -101,34 +113,59 @@ namespace sfmlcubes
 		}
 	}
 
-/*	bool CubesMechanic::canMoveDown()
+	bool CubesMechanic::areAnyCollisions()
 	{
-		for (int i = 0; i < field.getWidth(); i++)
-		for (int j = 0; j < field.getHeight(); j++)
+		for (list<Cube>::const_iterator citer = falling.getCubes().begin(); citer != falling.getCubes().end(); citer++)
 		{
-			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
-			{
-				// Checking if we are on the floor already
-				if (j == field.getHeight() - 1) return false;
+			int i = (*citer).x;
+			int j = (*citer).y;
 
-				// Checking the cube under our
-				if (!cubeIsEmptyOrFreeAt(i, j + 1)) return false;
-
-				// Check if the cube is moved horizontally
-				if (horizontalMovingDirection == cmhdRight && i < field.getWidth() - 1)
-				{
-					if (!cubeIsEmptyOrFreeAt(i + 1, j + 1)) return false;
-				}
-				if (horizontalMovingDirection == cmhdLeft && i > 0)
-				{
-					if (!cubeIsEmptyOrFreeAt(i - 1, j + 1)) return false;
-				}
-			}
+			// Checking if there is a cube or a wall under our cube
+			if (!fallen.cubeAt(i, j).empty() ||
+			    !walls.cubeAt(i, j).empty()) return true;
 		}
-		return true;
+
+		return false;
 	}
 
-	bool CubesMechanic::canMoveLeft()
+	bool CubesMechanic::canMoveDownFalling()
+	{
+		falling.moveDownNoTransition();
+		bool res = !areAnyCollisions();
+		falling.moveUpNoTransition();
+
+		return res;
+	}
+
+	bool CubesMechanic::canMoveLeftFalling()
+	{
+		falling.moveLeftNoTransition();
+		bool res = !areAnyCollisions();
+		falling.moveRightNoTransition();
+
+		return res;
+	}
+
+	bool CubesMechanic::canMoveRightFalling()
+	{
+		falling.moveRightNoTransition();
+		bool res = !areAnyCollisions();
+		falling.moveLeftNoTransition();
+
+		return res;
+	}
+
+	bool CubesMechanic::canRotateCWFalling(int angle)
+	{
+		falling.rotateCWNoTransition(angle);
+		bool res = !areAnyCollisions();
+		falling.rotateCWNoTransition(-angle);
+
+		return res;
+	}
+
+
+/*	bool CubesMechanic::canMoveLeft()
 	{
 		for (int i = 0; i < field.getWidth(); i++)
 		for (int j = 0; j < field.getHeight(); j++)

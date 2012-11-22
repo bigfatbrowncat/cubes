@@ -113,7 +113,25 @@ namespace sfmlcubes
 		return bottom;
 	}
 
-	void CubesGroup::moveDown()
+	void CubesGroup::moveUpNoTransition()
+	{
+		for (list<Cube>::iterator iter = getCubes().begin();
+			 iter != getCubes().end();
+			 iter ++)
+		{
+			(*iter).y --;
+		}
+		this->rotatingCenterY --;
+	}
+
+	void CubesGroup::moveUp()
+	{
+		moveUpNoTransition();
+		verticalTransition.setSourceY(+1.0);
+		verticalTransition.setPhase(0);
+	}
+
+	void CubesGroup::moveDownNoTransition()
 	{
 		for (list<Cube>::iterator iter = getCubes().begin();
 			 iter != getCubes().end();
@@ -122,11 +140,16 @@ namespace sfmlcubes
 			(*iter).y ++;
 		}
 		this->rotatingCenterY ++;
+	}
+
+	void CubesGroup::moveDown()
+	{
+		moveDownNoTransition();
 		verticalTransition.setSourceY(-1.0);
 		verticalTransition.setPhase(0);
 	}
 
-	void CubesGroup::moveRight()
+	void CubesGroup::moveRightNoTransition()
 	{
 		for (list<Cube>::iterator iter = getCubes().begin();
 			 iter != getCubes().end();
@@ -135,11 +158,16 @@ namespace sfmlcubes
 			(*iter).x ++;
 		}
 		this->rotatingCenterX ++;
+	}
+
+	void CubesGroup::moveRight()
+	{
+		moveRightNoTransition();
 		horizontalTransition.setSourceX(-1.0);
 		horizontalTransition.setPhase(0);
 	}
 
-	void CubesGroup::moveLeft()
+	void CubesGroup::moveLeftNoTransition()
 	{
 		for (list<Cube>::iterator iter = getCubes().begin();
 			 iter != getCubes().end();
@@ -148,26 +176,17 @@ namespace sfmlcubes
 			(*iter).x --;
 		}
 		this->rotatingCenterX --;
+	}
+
+	void CubesGroup::moveLeft()
+	{
+		moveLeftNoTransition();
 		horizontalTransition.setSourceX(1.0);
 		horizontalTransition.setPhase(0);
 	}
 
-	list<Cube*> CubesGroup::cubeAt(int i, int j)
-	{
-		list<Cube*> res;
-		for (list<Cube>::iterator iter = getCubes().begin();
-			 iter != getCubes().end();
-			 iter ++)
-		{
-			if ((*iter).x == i && (*iter).y == j)
-			{
-				res.push_back(&(*iter));
-			}
-		}
-		return res;
-	}
 
-	void CubesGroup::rotateCW(int angle)
+	void CubesGroup::rotateCWNoTransition(int angle)
 	{
 		// Searching for anything in our radius
 		for (list<Cube>::iterator iter = getCubes().begin();
@@ -212,8 +231,30 @@ namespace sfmlcubes
 			}
 		}
 
+	}
+
+	void CubesGroup::rotateCW(int angle)
+	{
+		rotateCWNoTransition(angle);
 		rotateTransition.setSourceAngle(-angle);
 		rotateTransition.setPhase(0);
+	}
+
+
+
+	list<Cube*> CubesGroup::cubeAt(int i, int j)
+	{
+		list<Cube*> res;
+		for (list<Cube>::iterator iter = getCubes().begin();
+			 iter != getCubes().end();
+			 iter ++)
+		{
+			if ((*iter).x == i && (*iter).y == j)
+			{
+				res.push_back(&(*iter));
+			}
+		}
+		return res;
 	}
 
 }

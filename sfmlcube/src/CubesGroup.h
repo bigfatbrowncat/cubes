@@ -64,10 +64,18 @@ namespace sfmlcubes
 
 		void advanceStep(double delta);
 
+		void moveUpNoTransition();
+		void moveDownNoTransition();
+		void moveRightNoTransition();
+		void moveLeftNoTransition();
+		void rotateCWNoTransition(int angle);
+
+		void moveUp();
 		void moveDown();
 		void moveRight();
 		void moveLeft();
 		void rotateCW(int angle);
+
 
 		int getLeft();
 		int getRight();
