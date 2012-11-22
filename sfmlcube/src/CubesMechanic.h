@@ -73,8 +73,8 @@ namespace sfmlcubes
 		CubesMechanicRotationDirection rotationDirection;
 
 		/*bool linesAreFiring;
-		float linesFiringPhase;
-		list<int> linesToFire;*/
+		float linesFiringPhase;*/
+		list<int> linesToFire;
 		int linesFired;
 /*
 		CubesMechanicDiscreteAngle sumRotationValue;
@@ -98,7 +98,7 @@ namespace sfmlcubes
 
 		bool areAnyCollisions();
 
-		//bool canFireLines();
+		bool countLinesToFire();
 
 		void moveDown();
 		void moveRight();
@@ -145,7 +145,7 @@ namespace sfmlcubes
 		void setBeforeOrderIssuingNotifier(BeforeOrderIssuingNotifier& notifier) { beforeOrderIssuingNotifier = &notifier; }
 		void setTransitionFinishedNotifier(TransitionFinishedNotifier& notifier) { transitionFinishedNotifier = &notifier; }
 
-		void fallingToFallen();
+		void freezeFalling();
 
 		void turnOn(CubesMechanicCommand command);
 		void turnOff(CubesMechanicCommand command);
@@ -154,6 +154,8 @@ namespace sfmlcubes
 
 		void processTimeStep(float dt);
 		void cleanFrees();
+
+		const CubesGroup& getFalling() const { return falling; }
 
 	};
 

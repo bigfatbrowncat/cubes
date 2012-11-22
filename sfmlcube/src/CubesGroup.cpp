@@ -25,6 +25,13 @@ namespace sfmlcubes
 		verticalTransition.advanceStep(delta);
 	}
 
+	bool CubesGroup::transitionIsInProgress() const
+	{
+		return rotateTransition.isInProgress() ||
+		       horizontalTransition.isInProgress() ||
+		       verticalTransition.isInProgress();
+	}
+
 	void CubesGroup::glDraw(int dx, int dy)
 	{
 		for (list<Cube>::const_iterator citer = getCubes().begin();
@@ -152,9 +159,15 @@ namespace sfmlcubes
 	{
 		moveDownNoTransition();
 		if (fast)
+		{
 			verticalTransition.setLongitude(FALLING_DOWN_FAST_LONGITUDE);
+			verticalTransition.setFunction(Transition::ppfLinear);
+		}
 		else
+		{
 			verticalTransition.setLongitude(FALLING_DOWN_LONGITUDE);
+			verticalTransition.setFunction(Transition::ppfArctangent);
+		}
 
 		verticalTransition.setSourceY(-1.0);
 		verticalTransition.reset();

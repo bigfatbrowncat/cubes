@@ -104,7 +104,7 @@ namespace sfmlcubes
 	}
 
 
-/*	bool CubesMechanic::canFireLines()
+	bool CubesMechanic::countLinesToFire()
 	{
 		linesToFire.clear();
 		for (int j = 0; j < field.getHeight(); j++)
@@ -112,7 +112,7 @@ namespace sfmlcubes
 			bool thisRowIsFull = true;
 			for (int i = 0; i < field.getWidth(); i++)
 			{
-				if (field.cubeAt(i, j).empty) thisRowIsFull = false;
+				if (field.cubeAt(i, j).empty()) thisRowIsFull = false;
 			}
 			if (thisRowIsFull)
 			{
@@ -123,7 +123,7 @@ namespace sfmlcubes
 	}
 
 
-	void CubesMechanic::fireLines()
+/*	void CubesMechanic::fireLines()
 	{
 		int count = 0;
 		for (int j = field.getHeight() - 1; j >= count; j--)
@@ -148,9 +148,9 @@ namespace sfmlcubes
 			}
 		}
 		linesFired += count;
-	}
+	}*/
 
-	CubesMechanicIssueResponse CubesMechanic::startMovingDownTransition(bool fast)
+/*	CubesMechanicIssueResponse CubesMechanic::startMovingDownTransition(bool fast)
 	{
 		if (!canMoveDown())
 		{
@@ -231,7 +231,7 @@ namespace sfmlcubes
 
 	CubesMechanicIssueResponse CubesMechanic::startFiringLinesTransition()
 	{
-		if (!canFireLines())
+		if (!countLinesToFire())
 		{
 			return cmirFail;
 		}
@@ -568,7 +568,7 @@ namespace sfmlcubes
 		*/
 	}
 
-	void CubesMechanic::fallingToFallen()
+	void CubesMechanic::freezeFalling()
 	{
 		for (list<Cube>::iterator iter = falling.getCubes().begin(); iter != falling.getCubes().end(); iter++)
 		{

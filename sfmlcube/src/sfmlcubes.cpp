@@ -167,7 +167,6 @@ namespace sfmlcubes
 
 	}
 
-
 	void handleKeyPressed(sf::Event::KeyEvent key)
 	{
     	switch (key.code)
@@ -217,10 +216,18 @@ namespace sfmlcubes
     	case sf::Keyboard::Right:
     		rightKeyPressed = false;
     		board.turnOff(cmcMoveRight);
+    		if (leftKeyPressed)
+    		{
+    			board.turnOn(cmcMoveLeft);
+    		}
     		break;
     	case sf::Keyboard::Left:
     		leftKeyPressed = false;
     		board.turnOff(cmcMoveLeft);
+    		if (rightKeyPressed)
+    		{
+    			board.turnOn(cmcMoveRight);
+    		}
     		break;
     	case sf::Keyboard::Down:
     		downKeyPressed = false;
@@ -290,16 +297,29 @@ namespace sfmlcubes
 
 		if (timeSinceFallIssued > fallingPeriod)
 		{
-			if (!board.canMoveDownFalling())
+			if (!board.canMoveDownFalling() && !board.getFalling().transitionIsInProgress())
 			{
-				board.fallingToFallen();
+				// No transition in progress now,
+				// so we can freeze the falling shape
+				// and generate a new one
+				board.freezeFalling();
 				tryCreateNewBlock();
+				momentWhenFallIssued = curTime;
+			}
+			else if (!board.canMoveDownFalling())
+			{
+				// A transition is still in progress.
+				// We should turn all transition commands off
+				board.turnOff(cmcMoveLeft);
+				board.turnOff(cmcMoveRight);
+				board.turnOff(cmcRotateCW);
 			}
 			else
 			{
+				// Moving down
 				board.turnOn(cmcMoveDown);
+				momentWhenFallIssued = curTime;
 			}
-			momentWhenFallIssued = curTime;
 		}
 
 		board.processTimeStep(dt);

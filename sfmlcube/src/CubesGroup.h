@@ -77,6 +77,7 @@ namespace sfmlcubes
 		list<Cube>& getCubes() { return cubes; }
 
 		void advanceStep(double delta);
+		bool transitionIsInProgress() const;
 
 		void moveUpNoTransition();
 		void moveDownNoTransition();
