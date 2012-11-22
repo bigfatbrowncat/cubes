@@ -33,7 +33,7 @@ namespace sfmlcubes
 		SlideXTransition horizontalTransition;
 		SlideYTransition verticalTransition;
 		RotateTransition rotateTransition;
-		CubeRotatingCenterType crct;
+		CubeRotatingCenterType rotatingCenterType;
 		int rotatingCenterX, rotatingCenterY;
 
 		float rotatingLongitude;
@@ -70,8 +70,12 @@ namespace sfmlcubes
 		{
 			rotatingCenterX = centerX;
 			rotatingCenterY = centerY;
-			crct = value;
+			rotatingCenterType = value;
 		}
+
+		int getRotatingCenterX() const { return rotatingCenterX; }
+		int getRotatingCenterY() const { return rotatingCenterY; }
+		CubeRotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
 
 		void glDraw(int dx, int dy);
 	};

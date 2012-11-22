@@ -7,10 +7,6 @@
 
 #include "CubesGroup.h"
 
-#ifndef NULL
-#define NULL	0
-#endif
-
 namespace sfmlcubes
 {
 
@@ -146,7 +142,7 @@ namespace sfmlcubes
 			ik[0] = (*iter).x;
 			jk[0] = (*iter).y;
 
-			if (crct == crctCenterOfCube)
+			if (rotatingCenterType == crctCenterOfCube)
 			{
 				// Making the 90 degrees rotating group
 				for (int k = 1; k < 4; k++)
@@ -155,7 +151,7 @@ namespace sfmlcubes
 					jk[k] = j0 + ik[k - 1] - i0;
 				}
 			}
-			else if (crct == crctCornerOfCube)
+			else if (rotatingCenterType == crctCornerOfCube)
 			{
 				// Making the 90 degrees rotating group
 				for (int k = 1; k < 4; k++)
@@ -177,7 +173,6 @@ namespace sfmlcubes
 			}
 		}
 
-		rotateTransition.setRotatingCenter(rotatingCenterX, rotatingCenterY, crct);
 		rotateTransition.setSourceAngle(-angle);
 		rotateTransition.setPhase(0);
 	}

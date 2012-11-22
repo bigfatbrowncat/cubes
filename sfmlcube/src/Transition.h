@@ -10,8 +10,6 @@
 
 #include <list>
 
-//#include "CubesGroup.h"
-
 using namespace std;
 
 namespace sfmlcubes
@@ -45,7 +43,6 @@ namespace sfmlcubes
 		virtual void updateObjects() = 0;
 	public:
 		Transition(CubesGroup& group);
-		Transition() {}
 
 		AdvanceStepResult advanceStep(double delta);
 		virtual ~Transition();

@@ -9,12 +9,9 @@
 #define SLIDEYTRANSITION_H_
 
 #include "Transition.h"
-//#include "CubesGroup.h"
 
 namespace sfmlcubes
 {
-	class CubesGroup;
-
 	class SlideYTransition : public Transition
 	{
 	private:

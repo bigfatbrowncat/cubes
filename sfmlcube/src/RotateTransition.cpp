@@ -27,8 +27,9 @@ namespace sfmlcubes
 		     iter != getGroup().getCubes().end();
 		     iter ++)
 		{
-			(*iter).rotatingCenterX = rotatingCenterX;
-			(*iter).rotatingCenterY = rotatingCenterY;
+			(*iter).rotatingCenterX = getGroup().getRotatingCenterX();
+			(*iter).rotatingCenterY = getGroup().getRotatingCenterY();
+			(*iter).rotatingCenterType = getGroup().getRotatingCenterType();
 			(*iter).rotatingAngle = (1 - getProcessedPhase()) * sourceAngle;
 		}
 	}
@@ -36,14 +37,6 @@ namespace sfmlcubes
 	void RotateTransition::setSourceAngle(int value)
 	{
 		sourceAngle = value;
-		updateObjects();
-	}
-
-	void RotateTransition::setRotatingCenter(int x, int y, CubeRotatingCenterType crct)
-	{
-		rotatingCenterX = x;
-		rotatingCenterY = y;
-		rotatingCenterType = crct;
 		updateObjects();
 	}
 
