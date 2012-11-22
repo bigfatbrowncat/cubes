@@ -386,14 +386,23 @@ namespace sfmlcubes
 	{
 		sf::Color gen = generateBlockcolor();
 
-		falling.getCubes().push_back(Cube(cmtPlaying, 5, 1, gen));
-		falling.getCubes().push_back(Cube(cmtPlaying, 6, 1, gen));
-		falling.getCubes().push_back(Cube(cmtPlaying, 7, 1, gen));
-		falling.getCubes().push_back(Cube(cmtPlaying, 6, 2, gen));
+		if (fallen.cubeAt(5, 1).empty() &&
+		    fallen.cubeAt(6, 1).empty() &&
+		    fallen.cubeAt(7, 1).empty() &&
+		    fallen.cubeAt(6, 2).empty())
+		{
+			falling.getCubes().push_back(Cube(cmtPlaying, 5, 1, gen));
+			falling.getCubes().push_back(Cube(cmtPlaying, 6, 1, gen));
+			falling.getCubes().push_back(Cube(cmtPlaying, 7, 1, gen));
+			falling.getCubes().push_back(Cube(cmtPlaying, 6, 2, gen));
 
-		falling.setRotatingCenter(6, 1, crctCenterOfCube);
-
-		return true;
+			falling.setRotatingCenter(6, 1, crctCenterOfCube);
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 /*	bool CubesMechanic::createJBlock()
 	{

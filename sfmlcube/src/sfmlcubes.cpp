@@ -271,6 +271,15 @@ namespace sfmlcubes
 		mainWindow.display();
 	}
 
+	void tryCreateNewBlock()
+	{
+		if (!board.createNewBlock())
+		{
+			sfmlcubes::mainWindow.setTitle("Cubes — Game Over");
+			showGameOverText = true;
+		}
+	}
+
 	void updateStatesAndTiming()
 	{
 		float curTime = clock.getElapsedTime().asSeconds();
@@ -284,7 +293,7 @@ namespace sfmlcubes
 			if (!board.canMoveDownFalling())
 			{
 				board.fallingToFallen();
-				board.createNewBlock();
+				tryCreateNewBlock();
 			}
 			else
 			{
@@ -295,15 +304,6 @@ namespace sfmlcubes
 
 		board.processTimeStep(dt);
 		board.turnOff(cmcMoveDown);
-	}
-
-	void tryCreateNewBlock()
-	{
-		if (!board.createNewBlock())
-		{
-			sfmlcubes::mainWindow.setTitle("Cubes — Game Over");
-			showGameOverText = true;
-		}
 	}
 
 	void run()
