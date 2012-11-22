@@ -34,12 +34,6 @@ namespace sfmlcubes
 		}
 	}
 
-	void RotateTransition::setSourceAngle(int value)
-	{
-		sourceAngle = value;
-		updateObjects();
-	}
-
 	RotateTransition::~RotateTransition()
 	{
 	}

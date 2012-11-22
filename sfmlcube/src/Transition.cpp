@@ -18,7 +18,9 @@ namespace sfmlcubes
 
 	Transition::Transition(CubesGroup& group) :
 			group(&group),
-			phase(0)
+			inProgress(false),
+			phase(0),
+			longitude(1)
 	{
 	}
 
@@ -28,11 +30,11 @@ namespace sfmlcubes
 
 		switch (function)
 		{
-		case rfLinear:
+		case ppfLinear:
 			return phase;
-		case rfParabolic:
+		case ppfParabolic:
 			return phase * phase;
-		case rfArctangent:
+		case ppfArctangent:
 			return atan(slope * (phase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
 		default:
 			Logger::DEFAULT.logError("Strange case in RotateTransition::updateObjects");
@@ -40,27 +42,31 @@ namespace sfmlcubes
 		}
 	}
 
-	void Transition::setPhase(float value)
+	void Transition::reset()
 	{
-		phase = value;
+		inProgress = false;
+		phase = 0;
 		updateObjects();
 	}
 
-	Transition::AdvanceStepResult Transition::advanceStep(double delta)
+	void Transition::advanceStep(double deltaT)
 	{
+		inProgress = true;
 		if (phase >= 1)
 		{
-			return asrFinished;
+			// Finished
+			inProgress = false;
 		}
-		Transition::AdvanceStepResult res = asrAdvanced;
-		phase += delta;
-		if (phase > 1)
+		else
 		{
-			phase = 1;
-			res = asrFinished;
+			phase += deltaT / longitude;
+			if (phase > 1)
+			{
+				phase = 1;
+				inProgress = false;
+			}
 		}
 		updateObjects();
-		return res;
 	}
 
 

@@ -22,7 +22,11 @@ namespace sfmlcubes
 		SlideYTransition(CubesGroup& group);
 		virtual ~SlideYTransition();
 
-		void setSourceY(float value) { sourceY = value; }
+		void setSourceY(float value)
+		{
+			if (isInProgress()) throw TRANSITION_IS_IN_PROGRESS_EXCEPTION;
+			sourceY = value;
+		}
 	};
 
 }

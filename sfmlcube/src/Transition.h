@@ -8,6 +8,8 @@
 #ifndef TRANSITION_H_
 #define TRANSITION_H_
 
+#define TRANSITION_IS_IN_PROGRESS_EXCEPTION			12301
+
 #include <list>
 
 using namespace std;
@@ -19,23 +21,19 @@ namespace sfmlcubes
 	class Transition
 	{
 	public:
-		enum AdvanceStepResult
-		{
-			asrAdvanced,
-			asrFinished
-		};
-
 		enum PhaseProcessingFunction
 		{
-			rfLinear,
-			rfArctangent,
-			rfParabolic
+			ppfLinear,
+			ppfArctangent,
+			ppfParabolic
 		};
 
 
 	private:
 		CubesGroup* group;
+		bool inProgress;
 		float phase;
+		float longitude;
 		PhaseProcessingFunction function;
 	protected:
 		float getProcessedPhase() const;
@@ -44,13 +42,25 @@ namespace sfmlcubes
 	public:
 		Transition(CubesGroup& group);
 
-		AdvanceStepResult advanceStep(double delta);
+		void advanceStep(double deltaT);
 		virtual ~Transition();
 
-		void setFunction(PhaseProcessingFunction value) { function = value; }
-		void setPhase(float value);
+		void setFunction(PhaseProcessingFunction value)
+		{
+			if (inProgress) throw TRANSITION_IS_IN_PROGRESS_EXCEPTION;
+			function = value;
+		}
+		void setLongitude(float value)
+		{
+			if (inProgress) throw TRANSITION_IS_IN_PROGRESS_EXCEPTION;
+			longitude = value;
+		}
+
+		void reset();
 
 		float getPhase() const { return phase; }
+		bool isInProgress() const { return inProgress; }
+
 	};
 
 }

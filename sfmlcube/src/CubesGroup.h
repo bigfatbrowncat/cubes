@@ -29,6 +29,13 @@ namespace sfmlcubes
 		friend class SlideYTransition;
 		friend class RotateTransition;
 	private:
+		static float ROTATION_LONGITUDE;
+		static float FALLING_DOWN_LONGITUDE;
+		static float FALLING_DOWN_FAST_LONGITUDE;
+		static float HORIZONTAL_MOVING_LONGITUDE;
+//		static float LINES_FIRING_LONGITUDE;
+//		static float LINES_FIRING_BLINKING_PART;
+
 		CubesField& field;
 		list<Cube> cubes;
 		SlideXTransition horizontalTransition;
@@ -58,7 +65,14 @@ namespace sfmlcubes
 		    rotatingCenterX(0),
 		    rotatingCenterY(0),
 		    rotatingAngle(0)
-		{}
+		{
+			horizontalTransition.setFunction(Transition::ppfLinear);
+			horizontalTransition.setLongitude(HORIZONTAL_MOVING_LONGITUDE);
+			verticalTransition.setFunction(Transition::ppfArctangent);
+			verticalTransition.setLongitude(FALLING_DOWN_LONGITUDE);
+			rotateTransition.setFunction(Transition::ppfArctangent);
+			rotateTransition.setLongitude(ROTATION_LONGITUDE);
+		}
 
 		list<Cube>& getCubes() { return cubes; }
 
@@ -71,11 +85,10 @@ namespace sfmlcubes
 		void rotateCWNoTransition(int angle);
 
 		void moveUp();
-		void moveDown();
+		void moveDown(bool fast);
 		void moveRight();
 		void moveLeft();
 		void rotateCW(int angle);
-
 
 		int getLeft();
 		int getRight();
@@ -94,6 +107,10 @@ namespace sfmlcubes
 		int getRotatingCenterX() const { return rotatingCenterX; }
 		int getRotatingCenterY() const { return rotatingCenterY; }
 		CubeRotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
+
+		const SlideXTransition& getHorizontalTransition() const { return horizontalTransition; }
+		const SlideYTransition& getVerticalTransition() const { return verticalTransition; }
+		const RotateTransition& getRotateTransition() const { return rotateTransition; }
 
 		void glDraw(int dx, int dy);
 	};

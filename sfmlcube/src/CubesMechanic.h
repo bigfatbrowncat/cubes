@@ -50,61 +50,36 @@ namespace sfmlcubes
 		cmda270CW	= 3
 	};
 
-	enum CubesMechanicOrder
+	enum CubesMechanicCommand
 	{
-		cmoMoveDown,
-		cmoMoveDownFast,
-		cmoMoveRight,
-		cmoMoveLeft,
-		cmoRotateCW,
-		cmoFireLines
+		cmcMoveDown = 0,
+		cmcMoveDownFast = 1,
+		cmcMoveRight = 2,
+		cmcMoveLeft = 3,
+		cmcRotateCW = 4
 	};
 
-	typedef void OrderIssuedNotifier(CubesMechanicOrder order, CubesMechanicIssueResponse response);
-	typedef void TransitionFinishedNotifier(CubesMechanicOrder order);
+	typedef void OrderIssuedNotifier(CubesMechanicCommand order, CubesMechanicIssueResponse response);
+	typedef void TransitionFinishedNotifier(CubesMechanicCommand order);
 	typedef void BeforeOrderIssuingNotifier();
 
 	class CubesMechanic
 	{
-		struct CenterAndRadiusData
-		{
-			int x, y;
-			int R;
-			CubeRotatingCenterType crct;
-		};
-
-		static float ROTATION_LONGITUDE;
-		static float FALLING_DOWN_LONGITUDE;
-		static float FALLING_DOWN_FAST_LONGITUDE;
-		static float HORIZONTAL_MOVING_LONGITUDE;
-		static float LINES_FIRING_LONGITUDE;
-		static float LINES_FIRING_BLINKING_PART;
-
 		CubesField field;
 		CubesGroup walls, falling, fallen;
-		//CubesField background;
 
-		CubesMechanicVerticalDirection verticalMovingDirection;
-		//float verticalMovingPhase;	// 0..1
-
-		CubesMechanicHorizontalDirection horizontalMovingDirection;
-		//float horizontalMovingPhase;
-
+		CubesMechanicHorizontalDirection horizontalDirection;
+		CubesMechanicVerticalDirection verticalDirection;
 		CubesMechanicRotationDirection rotationDirection;
-		//float rotationPhase;
 
-/*		SlideXTransition horizontalTransition;
-		SlideYTransition verticalTransition;
-		RotateTransition rotateTransition;*/
-
-		bool linesAreFiring;
+		/*bool linesAreFiring;
 		float linesFiringPhase;
-		list<int> linesToFire;
+		list<int> linesToFire;*/
 		int linesFired;
-
+/*
 		CubesMechanicDiscreteAngle sumRotationValue;
 
-		bool cubeIsEmptyOrFreeAt(int i, int j);
+		bool cubeIsEmptyOrFreeAt(int i, int j);*/
 
 /*		float calculateRadius(int rotationCenterX, int rotationCenterY, CubeRotatingCenterType crct);
 		int fallingCenterX;
@@ -116,24 +91,21 @@ namespace sfmlcubes
 		BeforeOrderIssuingNotifier* beforeOrderIssuingNotifier;
 		TransitionFinishedNotifier* transitionFinishedNotifier;
 
-		list<CubesMechanicOrder> ordersQueue;
+		//list<CubesMechanicOrder> ordersQueue;
 
 		CubesMechanicIssueResponse executeNextOrder();
-		bool ordersStarted;
+		//bool ordersStarted;
 
 		bool areAnyCollisions();
-		bool canMoveDownFalling();
-		bool canMoveRightFalling();
-		bool canMoveLeftFalling();
-		bool canRotateCWFalling(int angle);
 
-		bool canFireLines();
+		//bool canFireLines();
 
 		void moveDown();
 		void moveRight();
 		void moveLeft();
 		void rotate(CubesMechanicDiscreteAngle angle);
-		void fireLines();
+
+		//void fireLines();
 
 /*		CubesMechanicIssueResponse startMovingDownTransition(bool fast);
 		CubesMechanicIssueResponse startMovingRightTransition();
@@ -157,11 +129,15 @@ namespace sfmlcubes
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();
 
+		bool canMoveDownFalling();
+		bool canMoveRightFalling();
+		bool canMoveLeftFalling();
+		bool canRotateCWFalling(int angle);
+
 		bool createNewBlock();
 
 		CubesField& getField() { return field; }
 		//const CubesField& getFieldBackground() const { return background; }
-		CubesMechanicHorizontalDirection getHorizontalDirection() const { return horizontalMovingDirection; }
 		CubesMechanicRotationDirection getRotationDirection() const { return rotationDirection; }
 		int getLinesFired() const { return linesFired; }
 
@@ -169,8 +145,12 @@ namespace sfmlcubes
 		void setBeforeOrderIssuingNotifier(BeforeOrderIssuingNotifier& notifier) { beforeOrderIssuingNotifier = &notifier; }
 		void setTransitionFinishedNotifier(TransitionFinishedNotifier& notifier) { transitionFinishedNotifier = &notifier; }
 
-		void issueOrder(CubesMechanicOrder order);
-		void issueHighPriorityOrder(CubesMechanicOrder order);
+		void fallingToFallen();
+
+		void turnOn(CubesMechanicCommand command);
+		void turnOff(CubesMechanicCommand command);
+
+		void issueHighPriorityOrder(CubesMechanicCommand order);
 
 		void processTimeStep(float dt);
 		void cleanFrees();

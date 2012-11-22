@@ -11,6 +11,12 @@
 
 namespace sfmlcubes
 {
+	float CubesGroup::ROTATION_LONGITUDE = 0.5;//0.25;
+	float CubesGroup::FALLING_DOWN_LONGITUDE = 0.2;//0.1;
+	float CubesGroup::FALLING_DOWN_FAST_LONGITUDE = 0.1;//0.05;
+	float CubesGroup::HORIZONTAL_MOVING_LONGITUDE = 0.16;//0.08;
+//	float CubesGroup::LINES_FIRING_LONGITUDE = 1;
+//	float CubesGroup::LINES_FIRING_BLINKING_PART = 0.8;
 
 	void CubesGroup::advanceStep(double delta)
 	{
@@ -127,8 +133,8 @@ namespace sfmlcubes
 	void CubesGroup::moveUp()
 	{
 		moveUpNoTransition();
-		verticalTransition.setSourceY(+1.0);
-		verticalTransition.setPhase(0);
+		verticalTransition.setSourceY(1.0);
+		verticalTransition.reset();
 	}
 
 	void CubesGroup::moveDownNoTransition()
@@ -142,11 +148,16 @@ namespace sfmlcubes
 		this->rotatingCenterY ++;
 	}
 
-	void CubesGroup::moveDown()
+	void CubesGroup::moveDown(bool fast)
 	{
 		moveDownNoTransition();
+		if (fast)
+			verticalTransition.setLongitude(FALLING_DOWN_FAST_LONGITUDE);
+		else
+			verticalTransition.setLongitude(FALLING_DOWN_LONGITUDE);
+
 		verticalTransition.setSourceY(-1.0);
-		verticalTransition.setPhase(0);
+		verticalTransition.reset();
 	}
 
 	void CubesGroup::moveRightNoTransition()
@@ -164,7 +175,7 @@ namespace sfmlcubes
 	{
 		moveRightNoTransition();
 		horizontalTransition.setSourceX(-1.0);
-		horizontalTransition.setPhase(0);
+		horizontalTransition.reset();
 	}
 
 	void CubesGroup::moveLeftNoTransition()
@@ -182,7 +193,7 @@ namespace sfmlcubes
 	{
 		moveLeftNoTransition();
 		horizontalTransition.setSourceX(1.0);
-		horizontalTransition.setPhase(0);
+		horizontalTransition.reset();
 	}
 
 
@@ -237,7 +248,7 @@ namespace sfmlcubes
 	{
 		rotateCWNoTransition(angle);
 		rotateTransition.setSourceAngle(-angle);
-		rotateTransition.setPhase(0);
+		rotateTransition.reset();
 	}
 
 

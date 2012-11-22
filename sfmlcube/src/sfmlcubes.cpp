@@ -179,28 +179,28 @@ namespace sfmlcubes
     		if (!rightKeyPressed)
     		{
     			rightKeyPressed = true;
-    			board.issueOrder(cmoMoveRight);
+    			board.turnOn(cmcMoveRight);
     		}
     		break;
     	case sf::Keyboard::Left:
     		if (!leftKeyPressed)
     		{
     			leftKeyPressed = true;
-        		board.issueOrder(cmoMoveLeft);
+        		board.turnOn(cmcMoveLeft);
     		}
     		break;
     	case sf::Keyboard::Down:
     		if (!downKeyPressed)
     		{
     			downKeyPressed = true;
-        		board.issueOrder(cmoMoveDown);
+        		board.turnOn(cmcMoveDownFast);
     		}
     		break;
     	case sf::Keyboard::Up:
     		if (!rotateCWKeyPressed)
     		{
     			rotateCWKeyPressed = true;
-        		board.issueOrder(cmoRotateCW);
+        		board.turnOn(cmcRotateCW);
     		}
     		break;
     	case sf::Keyboard::Space:
@@ -216,15 +216,19 @@ namespace sfmlcubes
     	{
     	case sf::Keyboard::Right:
     		rightKeyPressed = false;
+    		board.turnOff(cmcMoveRight);
     		break;
     	case sf::Keyboard::Left:
     		leftKeyPressed = false;
+    		board.turnOff(cmcMoveLeft);
     		break;
     	case sf::Keyboard::Down:
     		downKeyPressed = false;
+    		board.turnOff(cmcMoveDownFast);
     		break;
     	case sf::Keyboard::Up:
     		rotateCWKeyPressed = false;
+    		board.turnOff(cmcRotateCW);
     		break;
     	default:
     		break;
@@ -273,15 +277,24 @@ namespace sfmlcubes
 		float timeSinceFallIssued = curTime - momentWhenFallIssued;
 
 		float dt = curTime - recentMoment;
-		board.processTimeStep(dt);
 		recentMoment = curTime;
 
 		if (timeSinceFallIssued > fallingPeriod)
 		{
-			//board.issueOrder(cmoMoveDown);
+			if (!board.canMoveDownFalling())
+			{
+				board.fallingToFallen();
+				board.createNewBlock();
+			}
+			else
+			{
+				board.turnOn(cmcMoveDown);
+			}
 			momentWhenFallIssued = curTime;
 		}
 
+		board.processTimeStep(dt);
+		board.turnOff(cmcMoveDown);
 	}
 
 	void tryCreateNewBlock()
@@ -293,48 +306,6 @@ namespace sfmlcubes
 		}
 	}
 
-/*	void boardOrderIssuedNotifier(CubesMechanicOrder order, CubesMechanicIssueResponse response)
-	{
-		if ((order == cmoMoveDown || order == cmoMoveDownFast) && (response == cmirFail))
-		{
-			board.cleanFrees();
-			board.issueOrder(cmoFireLines);
-		}
-		else if (order == cmoFireLines && response == cmirFail)
-		{
-			tryCreateNewBlock();
-		}
-	}
-
-	void boardTransitionFinishedNotifier(CubesMechanicOrder order)
-	{
-		if (order == cmoFireLines)
-		{
-			tryCreateNewBlock();
-		}
-	}
-*/
-
-/*	void boardBeforeOrderIssuedNotifier()
-	{
-		if (leftKeyPressed)
-		{
-			board.issueOrder(cmoMoveLeft);
-		}
-		else if (rightKeyPressed)
-		{
-			board.issueOrder(cmoMoveRight);
-		}
-		else if (downKeyPressed)
-		{
-			board.issueOrder(cmoMoveDownFast);
-		}
-		else if (rotateCWKeyPressed)
-		{
-			board.issueOrder(cmoRotateCW);
-		}
-	}
-*/
 	void run()
 	{
 	    while (mainWindow.isOpen())
@@ -350,19 +321,26 @@ namespace sfmlcubes
 // The entry point
 int main()
 {
-	// Create the main window
-	sfmlcubes::initMainWindow("Cubes", 800, 600);
-	sfmlcubes::Cube::initGlobal();
-	sfmlcubes::initMainFont();
-	sfmlcubes::prepareScene();
+	try
+	{
+		// Create the main window
+		sfmlcubes::initMainWindow("Cubes", 800, 600);
+		sfmlcubes::Cube::initGlobal();
+		sfmlcubes::initMainFont();
+		sfmlcubes::prepareScene();
 
-	//sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);
-	//sfmlcubes::board.setBeforeOrderIssuingNotifier(sfmlcubes::boardBeforeOrderIssuedNotifier);
-	//sfmlcubes::board.setTransitionFinishedNotifier(sfmlcubes::boardTransitionFinishedNotifier);
+/*		sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);
+		sfmlcubes::board.setBeforeOrderIssuingNotifier(sfmlcubes::boardBeforeOrderIssuedNotifier);
+		sfmlcubes::board.setTransitionFinishedNotifier(sfmlcubes::boardTransitionFinishedNotifier);*/
 
-	sfmlcubes::board.createNewBlock();
+		sfmlcubes::board.createNewBlock();
 
-	sfmlcubes::run();
+		sfmlcubes::run();
+	}
+	catch (int ex)
+	{
+		printf("Caught an error: %d", ex);
+	}
 
 	return EXIT_SUCCESS;
 }

@@ -25,7 +25,11 @@ namespace sfmlcubes
 		RotateTransition(CubesGroup& group);
 		virtual ~RotateTransition();
 
-		void setSourceAngle(int value);
+		void setSourceAngle(float value)
+		{
+			if (isInProgress()) throw TRANSITION_IS_IN_PROGRESS_EXCEPTION;
+			sourceAngle = value;
+		}
 	};
 
 }
