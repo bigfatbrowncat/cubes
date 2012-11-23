@@ -19,7 +19,6 @@ namespace sfmlcubes
 	static sf::Text gameOverText;
 	static sf::Text linesFiredText;
 	static sf::Text linesFiredValueText;
-	static bool showGameOverText = false;
 
 	static CubesMechanic board(12, 21);
 	static float momentWhenFallIssued = 0;
@@ -89,8 +88,9 @@ namespace sfmlcubes
 		updateText();
 		mainWindow.draw(linesFiredText, sf::RenderStates::Default);
 		mainWindow.draw(linesFiredValueText, sf::RenderStates::Default);
-		if (showGameOverText)
+		if (board.getState() == cmsGameOver)
 		{
+			sfmlcubes::mainWindow.setTitle("Cubes — Game Over");
 			mainWindow.draw(gameOverText, sf::RenderStates::Default);
 		}
 		mainWindow.popGLStates();
@@ -133,7 +133,7 @@ namespace sfmlcubes
 	{
 		// Translating the board center to the center of the screen
 		float delta_x = board.getField().getWidth() / 2;
-		float delta_y = (board.getField().getHeight() + 0.5) / 2;
+		float delta_y = (board.getField().getHeight() - 0.5) / 2;
 		glTranslatef(-delta_x * Cube::cubesize, delta_y * Cube::cubesize, 0.f);
 
 		//board.getFieldBackground().glDraw(-1, -1);
@@ -278,15 +278,6 @@ namespace sfmlcubes
 		mainWindow.display();
 	}
 
-	void tryCreateNewBlock()
-	{
-		if (!board.createNewBlock())
-		{
-			sfmlcubes::mainWindow.setTitle("Cubes — Game Over");
-			showGameOverText = true;
-		}
-	}
-
 	void updateStatesAndTiming()
 	{
 		float curTime = clock.getElapsedTime().asSeconds();
@@ -303,7 +294,7 @@ namespace sfmlcubes
 				// so we can freeze the falling shape
 				// and generate a new one
 				board.freezeFalling();
-				tryCreateNewBlock();
+				board.fireLines();
 				momentWhenFallIssued = curTime;
 			}
 			else if (!board.canMoveDownFalling())

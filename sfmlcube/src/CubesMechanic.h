@@ -59,12 +59,21 @@ namespace sfmlcubes
 		cmcRotateCW = 4
 	};
 
+	enum CubesMechanicState
+	{
+		cmsShapeFalling,
+		cmsLinesFiring,
+		cmsGameOver
+	};
+
 	typedef void OrderIssuedNotifier(CubesMechanicCommand order, CubesMechanicIssueResponse response);
 	typedef void TransitionFinishedNotifier(CubesMechanicCommand order);
 	typedef void BeforeOrderIssuingNotifier();
 
 	class CubesMechanic
 	{
+		CubesMechanicState state;
+
 		CubesField field;
 		CubesGroup walls, falling, fallen;
 
@@ -75,6 +84,7 @@ namespace sfmlcubes
 		/*bool linesAreFiring;
 		float linesFiringPhase;*/
 		list<int> linesToFire;
+		list<CubesGroup*> firingGroups;
 		int linesFired;
 /*
 		CubesMechanicDiscreteAngle sumRotationValue;
@@ -96,14 +106,16 @@ namespace sfmlcubes
 		CubesMechanicIssueResponse executeNextOrder();
 		//bool ordersStarted;
 
-		bool areAnyCollisions();
+		bool anyCollisions();
+		void firingGroupsToFallen();
 
-		bool countLinesToFire();
+		//bool countLinesToFire();
 
 		void moveDown();
 		void moveRight();
 		void moveLeft();
 		void rotate(CubesMechanicDiscreteAngle angle);
+
 
 		//void fireLines();
 
@@ -119,12 +131,12 @@ namespace sfmlcubes
 		void setFiringLinesSliding(float phase);*/
 
 		bool createTBlock();
-/*		bool createJBlock();
+		bool createJBlock();
 		bool createLBlock();
 		bool createIBlock();
 		bool createZBlock();
 		bool createSBlock();
-		bool createOBlock();*/
+		bool createOBlock();
 	public:
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();
@@ -134,6 +146,7 @@ namespace sfmlcubes
 		bool canMoveLeftFalling();
 		bool canRotateCWFalling(int angle);
 
+		void fireLines();
 		bool createNewBlock();
 
 		CubesField& getField() { return field; }
@@ -155,6 +168,7 @@ namespace sfmlcubes
 		void processTimeStep(float dt);
 		void cleanFrees();
 
+		CubesMechanicState getState() const { return state; }
 		const CubesGroup& getFalling() const { return falling; }
 
 	};

@@ -32,15 +32,17 @@ namespace sfmlcubes
 		static float ROTATION_LONGITUDE;
 		static float FALLING_DOWN_LONGITUDE;
 		static float FALLING_DOWN_FAST_LONGITUDE;
+		static float FALLING_DOWN_FIRED_LONGITUDE;
 		static float HORIZONTAL_MOVING_LONGITUDE;
 //		static float LINES_FIRING_LONGITUDE;
 //		static float LINES_FIRING_BLINKING_PART;
 
 		CubesField& field;
 		list<Cube> cubes;
-		SlideXTransition horizontalTransition;
-		SlideYTransition verticalTransition;
-		RotateTransition rotateTransition;
+		SlideXTransition mHorizontalTransition;
+		SlideYTransition mVerticalTransition;
+		RotateTransition mRotateTransition;
+
 
 		// Sliding
 		float slidingX, slidingY;
@@ -49,14 +51,14 @@ namespace sfmlcubes
 		CubeRotatingCenterType rotatingCenterType;
 		int rotatingCenterX, rotatingCenterY;
 		float rotatingAngle;	// 1 = 90 degrees
-
+		sf::Color mTone;
 	public:
 		CubesGroup(CubesField& field) :
 			field(field),
 
-			horizontalTransition(*this),
-			verticalTransition(*this),
-			rotateTransition(*this),
+			mHorizontalTransition(*this),
+			mVerticalTransition(*this),
+			mRotateTransition(*this),
 
 			slidingX(0),
 		    slidingY(0),
@@ -66,12 +68,12 @@ namespace sfmlcubes
 		    rotatingCenterY(0),
 		    rotatingAngle(0)
 		{
-			horizontalTransition.setFunction(Transition::ppfLinear);
-			horizontalTransition.setLongitude(HORIZONTAL_MOVING_LONGITUDE);
-			verticalTransition.setFunction(Transition::ppfArctangent);
-			verticalTransition.setLongitude(FALLING_DOWN_LONGITUDE);
-			rotateTransition.setFunction(Transition::ppfArctangent);
-			rotateTransition.setLongitude(ROTATION_LONGITUDE);
+			mHorizontalTransition.setFunction(Transition::ppfLinear);
+			mHorizontalTransition.setLongitude(HORIZONTAL_MOVING_LONGITUDE);
+			mVerticalTransition.setFunction(Transition::ppfArctangent);
+			mVerticalTransition.setLongitude(FALLING_DOWN_LONGITUDE);
+			mRotateTransition.setFunction(Transition::ppfArctangent);
+			mRotateTransition.setLongitude(ROTATION_LONGITUDE);
 		}
 
 		list<Cube>& getCubes() { return cubes; }
@@ -80,13 +82,17 @@ namespace sfmlcubes
 		bool transitionIsInProgress() const;
 
 		void moveUpNoTransition();
-		void moveDownNoTransition();
+		void moveDownNoTransition(int cells);
 		void moveRightNoTransition();
 		void moveLeftNoTransition();
 		void rotateCWNoTransition(int angle);
 
 		void moveUp();
-		void moveDown(bool fast);
+		void moveDown(int cells);
+		void moveDownFast();
+		void moveDownFired(int cells);
+		void moveDownFalling();
+
 		void moveRight();
 		void moveLeft();
 		void rotateCW(int angle);
@@ -109,10 +115,15 @@ namespace sfmlcubes
 		int getRotatingCenterY() const { return rotatingCenterY; }
 		CubeRotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
 
-		const SlideXTransition& getHorizontalTransition() const { return horizontalTransition; }
-		const SlideYTransition& getVerticalTransition() const { return verticalTransition; }
-		const RotateTransition& getRotateTransition() const { return rotateTransition; }
+		const SlideXTransition& getHorizontalTransition() const { return mHorizontalTransition; }
+		const SlideYTransition& getVerticalTransition() const { return mVerticalTransition; }
+		const RotateTransition& getRotateTransition() const { return mRotateTransition; }
 
+		SlideXTransition& horizontalTransition() { return mHorizontalTransition; }
+		SlideYTransition& verticalTransition() { return mVerticalTransition; }
+		RotateTransition& rotateTransition() { return mRotateTransition; }
+
+		sf::Color& tone() { return this->mTone; }
 		void glDraw(int dx, int dy);
 	};
 
