@@ -1,7 +1,6 @@
 #include <string>
 #include <sstream>
 
-#include "CubesField.h"
 #include "CubesMechanic.h"
 #include "sfmlcubes.h"
 
@@ -335,13 +334,9 @@ int main()
 	{
 		// Create the main window
 		sfmlcubes::initMainWindow("Cubes", 800, 600);
-		sfmlcubes::Cube::initialize();
+		sfmlcubes::movingcubes::Cube::initialize();
 		sfmlcubes::initMainFont();
 		sfmlcubes::prepareScene();
-
-/*		sfmlcubes::board.setOrderIssuedNotifier(sfmlcubes::boardOrderIssuedNotifier);
-		sfmlcubes::board.setBeforeOrderIssuingNotifier(sfmlcubes::boardBeforeOrderIssuedNotifier);
-		sfmlcubes::board.setTransitionFinishedNotifier(sfmlcubes::boardTransitionFinishedNotifier);*/
 
 		sfmlcubes::board.createNewBlock();
 

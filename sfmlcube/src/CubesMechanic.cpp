@@ -12,8 +12,7 @@
 
 #include "Logger.h"
 #include "CubesMechanic.h"
-#include "Transition.h"
-#include "CubesField.h"
+#include "movingcubes/Shape.h"
 
 using namespace std;
 
@@ -49,12 +48,12 @@ namespace sfmlcubes
 
 		for (int i = 0; i < field.getWidth(); i++)
 		{
-			walls.getCubes().push_back(Cube(Cube::mtWall, i, field.getHeight() - 1, wallColor));
+			walls.getCubes().push_back(Cube(i, field.getHeight() - 1, Cube::mtWall, wallColor));
 		}
 		for (int j = 1; j < field.getHeight(); j++)
 		{
-			walls.getCubes().push_back(Cube(Cube::mtWall, 0, j, wallColor));
-			walls.getCubes().push_back(Cube(Cube::mtWall, field.getWidth() - 1, j, wallColor));
+			walls.getCubes().push_back(Cube(0, j, Cube::mtWall, wallColor));
+			walls.getCubes().push_back(Cube(field.getWidth() - 1, j, Cube::mtWall, wallColor));
 		}
 	}
 
@@ -163,7 +162,7 @@ namespace sfmlcubes
 					// The last line was fired, so we start a new group
 
 					// and then we create a new one
-					firingGroups.push_back(new CubesGroup(field));
+					firingGroups.push_back(new Shape(field));
 				}
 
 				// Adding the line to the current group
@@ -190,7 +189,7 @@ namespace sfmlcubes
 		fallen.getCubes().clear();
 
 		// Adding the new groups to our board
-		for (list<CubesGroup*>::iterator iter = firingGroups.begin(); iter != firingGroups.end(); iter++)
+		for (list<Shape*>::iterator iter = firingGroups.begin(); iter != firingGroups.end(); iter++)
 		{
 			field.getCubesGroups().push_back(*iter);
 		}
@@ -202,7 +201,7 @@ namespace sfmlcubes
 	{
 		while (firingGroups.size() > 0)
 		{
-			CubesGroup* cg = firingGroups.back();
+			Shape* cg = firingGroups.back();
 
 			for (list<Cube>::iterator iter = cg->getCubes().begin(); iter != cg->getCubes().end(); iter++)
 			{
@@ -321,10 +320,10 @@ namespace sfmlcubes
 		    fallen.cubeAt(7, 1).empty() &&
 		    fallen.cubeAt(6, 2).empty())
 		{
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 7, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 2, gen));
+			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
 
 			falling.setRotatingCenter(6, 1, crctCenterOfCube);
 			return true;
@@ -344,10 +343,10 @@ namespace sfmlcubes
 		    fallen.cubeAt(6, 3).empty() &&
 		    fallen.cubeAt(5, 3).empty())
 		{
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 2, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 3, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 3, gen));
+			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 3, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(5, 3, Cube::mtPlaying, gen));
 
 			falling.setRotatingCenter(6, 3, crctCornerOfCube);
 			return true;
@@ -367,10 +366,10 @@ namespace sfmlcubes
 		    fallen.cubeAt(5, 3).empty() &&
 		    fallen.cubeAt(6, 3).empty())
 		{
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 2, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 3, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 3, gen));
+			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(5, 2, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(5, 3, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 3, Cube::mtPlaying, gen));
 
 			falling.setRotatingCenter(6, 3, crctCornerOfCube);
 			return true;
@@ -390,10 +389,10 @@ namespace sfmlcubes
 		    fallen.cubeAt(6, 1).empty() &&
 		    fallen.cubeAt(7, 1).empty())
 		{
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 4, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 7, 1, gen));
+			falling.getCubes().push_back(Cube(4, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
 
 			falling.setRotatingCenter(6, 1, crctCornerOfCube);
 			return true;
@@ -413,10 +412,10 @@ namespace sfmlcubes
 		    fallen.cubeAt(6, 2).empty() &&
 		    fallen.cubeAt(7, 2).empty())
 		{
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 2, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 7, 2, gen));
+			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(7, 2, Cube::mtPlaying, gen));
 
 			falling.setRotatingCenter(7, 2, crctCornerOfCube);
 			return true;
@@ -436,10 +435,10 @@ namespace sfmlcubes
 		    fallen.cubeAt(6, 1).empty() &&
 		    fallen.cubeAt(7, 1).empty())
 		{
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 2, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 2, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 7, 1, gen));
+			falling.getCubes().push_back(Cube(5, 2, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
 
 			falling.setRotatingCenter(6, 2, crctCornerOfCube);
 			return true;
@@ -459,10 +458,10 @@ namespace sfmlcubes
 		    fallen.cubeAt(5, 2).empty() &&
 		    fallen.cubeAt(6, 2).empty())
 		{
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 1, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 5, 2, gen));
-			falling.getCubes().push_back(Cube(Cube::mtPlaying, 6, 2, gen));
+			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(5, 2, Cube::mtPlaying, gen));
+			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
 
 			falling.setRotatingCenter(6, 2, crctCornerOfCube);
 			return true;

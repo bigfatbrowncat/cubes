@@ -10,10 +10,14 @@
 
 namespace sfmlcubes
 {
-	enum CubeRotatingCenterType
+	namespace movingcubes
 	{
-		crctCenterOfCube, crctCornerOfCube
-	};
+		enum CubeRotatingCenterType
+
+		{
+			crctCenterOfCube, crctCornerOfCube
+		};
+	}
 }
 
 

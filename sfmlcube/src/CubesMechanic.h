@@ -10,7 +10,9 @@
 
 #include <list>
 
-#include "CubesField.h"
+#include "movingcubes/Field.h"
+
+using namespace sfmlcubes::movingcubes;
 
 namespace sfmlcubes
 {
@@ -61,8 +63,8 @@ namespace sfmlcubes
 
 		CubesMechanicState state;
 
-		CubesField field;
-		CubesGroup walls, falling, fallen;
+		Field field;
+		Shape walls, falling, fallen;
 
 		CubesMechanicHorizontalDirection horizontalDirection;
 		CubesMechanicVerticalDirection verticalDirection;
@@ -71,7 +73,7 @@ namespace sfmlcubes
 		/*bool linesAreFiring;
 		float linesFiringPhase;*/
 		list<int> linesToFire;
-		list<CubesGroup*> firingGroups;
+		list<Shape*> firingGroups;
 		int linesFired;
 		double time;
 		double momentWhenFallIssued;
@@ -107,7 +109,7 @@ namespace sfmlcubes
 		void fireLines();
 		bool createNewBlock();
 
-		CubesField& getField() { return field; }
+		Field& getField() { return field; }
 		//const CubesField& getFieldBackground() const { return background; }
 		CubesMechanicRotationDirection getRotationDirection() const { return rotationDirection; }
 		int getLinesFired() const { return linesFired; }
@@ -123,7 +125,7 @@ namespace sfmlcubes
 		void cleanFrees();
 
 		CubesMechanicState getState() const { return state; }
-		const CubesGroup& getFalling() const { return falling; }
+		const Shape& getFalling() const { return falling; }
 
 	};
 
