@@ -20,12 +20,12 @@ namespace sfmlcubes
 			{
 			private:
 				float sourceY;
-			protected:
-				virtual void updateObjects();
 			public:
-				SlideYTransition(Shape& shape, float longitude, PhaseProcessingFunction function, float sourceY);
-				SlideYTransition(Shape& shape);
+				SlideYTransition(float longitude, PhaseProcessingFunction function, float sourceY);
+				SlideYTransition();
 				virtual ~SlideYTransition();
+
+				virtual float getValue();
 			};
 		}
 	}

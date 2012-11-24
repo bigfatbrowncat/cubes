@@ -8,7 +8,6 @@
 #include <list>
 
 #include "SlideYTransition.h"
-#include "../Shape.h"
 
 using namespace std;
 
@@ -18,21 +17,19 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
-			SlideYTransition::SlideYTransition(Shape& shape, float longitude, PhaseProcessingFunction function, float sourceY) :
-					Transition(shape, longitude, function),	sourceY(sourceY)
+			SlideYTransition::SlideYTransition(float longitude, PhaseProcessingFunction function, float sourceY) :
+					Transition(longitude, function),	sourceY(sourceY)
 			{
-				updateObjects();
 			}
 
-			SlideYTransition::SlideYTransition(Shape& shape) :
-					Transition(shape), sourceY(0)
+			SlideYTransition::SlideYTransition() :
+					Transition(), sourceY(0)
 			{
-				updateObjects();
 			}
 
-			void SlideYTransition::updateObjects()
+			float SlideYTransition::getValue()
 			{
-				getShape().slidingY = (1 - getProcessedPhase()) * sourceY;
+				return (1 - getProcessedPhase()) * sourceY;
 			}
 
 			SlideYTransition::~SlideYTransition()

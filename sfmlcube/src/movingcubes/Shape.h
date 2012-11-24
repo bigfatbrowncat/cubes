@@ -29,9 +29,6 @@ namespace sfmlcubes
 
 		class Shape : public sf::NonCopyable
 		{
-			friend class transitions::SlideXTransition;
-			friend class transitions::SlideYTransition;
-			friend class transitions::RotateTransition;
 		private:
 			Field& field;
 			list<Cube> cubes;
@@ -51,9 +48,6 @@ namespace sfmlcubes
 			Shape(Field& field) :
 				field(field),
 
-				mHorizontalTransition(*this),
-				mVerticalTransition(*this),
-				mRotateTransition(*this),
 
 				slidingX(0),
 				slidingY(0),

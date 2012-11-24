@@ -18,13 +18,10 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		class Shape;
-
 		namespace transitions
 		{
 			class Transition
 			{
-				friend class Shape;
 			public:
 				enum PhaseProcessingFunction
 				{
@@ -34,18 +31,15 @@ namespace sfmlcubes
 				};
 
 			private:
-				Shape* shape;
 				bool inProgress;
 				float phase;
 				float longitude;
 				PhaseProcessingFunction function;
 			protected:
 				float getProcessedPhase() const;
-				Shape& getShape() { return *shape; }
-				virtual void updateObjects() {}
 			public:
-				Transition(Shape& group, float longitude, PhaseProcessingFunction function);
-				Transition(Shape& group);
+				Transition(float longitude, PhaseProcessingFunction function);
+				Transition();
 
 				void advanceStep(double delta);
 				virtual ~Transition();
@@ -53,6 +47,7 @@ namespace sfmlcubes
 				float getPhase() const { return phase; }
 				bool isInProgress() const { return inProgress; }
 
+				virtual float getValue() = 0;
 			};
 		}
 	}

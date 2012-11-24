@@ -16,8 +16,11 @@ namespace sfmlcubes
 		void Shape::advanceStep(double delta)
 		{
 			mRotateTransition.advanceStep(delta);
+			rotatingAngle = mRotateTransition.getValue();
 			mHorizontalTransition.advanceStep(delta);
+			slidingX = mHorizontalTransition.getValue();
 			mVerticalTransition.advanceStep(delta);
+			slidingY = mVerticalTransition.getValue();
 		}
 
 		bool Shape::transitionIsInProgress() const
@@ -135,7 +138,8 @@ namespace sfmlcubes
 		void Shape::moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude)
 		{
 			moveVerticalNoTransition(cells);
-			mVerticalTransition = SlideYTransition(*this, longitude, function, -cells);
+			mVerticalTransition = SlideYTransition(longitude, function, -cells);
+			slidingY = mVerticalTransition.getValue();
 		}
 
 		void Shape::moveHorizontalNoTransition(int cells)
@@ -152,7 +156,8 @@ namespace sfmlcubes
 		void Shape::moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude)
 		{
 			moveHorizontalNoTransition(cells);
-			mHorizontalTransition = SlideXTransition(*this, longitude, function, -cells);
+			mHorizontalTransition = SlideXTransition(longitude, function, -cells);
+			slidingX = mHorizontalTransition.getValue();
 		}
 
 		void Shape::rotateNoTransition(int angle)
@@ -205,7 +210,8 @@ namespace sfmlcubes
 		void Shape::rotate(int angle, Transition::PhaseProcessingFunction function, float longitude)
 		{
 			rotateNoTransition(angle);
-			mRotateTransition = RotateTransition(*this, longitude, function, -angle);
+			mRotateTransition = RotateTransition(longitude, function, -angle);
+			rotatingAngle = mRotateTransition.getValue();
 		}
 
 		list<Cube*> Shape::cubeAt(int i, int j)

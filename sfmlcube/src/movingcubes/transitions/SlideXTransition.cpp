@@ -8,7 +8,6 @@
 #include <list>
 
 #include "SlideXTransition.h"
-#include "../Shape.h"
 
 using namespace std;
 
@@ -18,21 +17,19 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
-			SlideXTransition::SlideXTransition(Shape& shape) :
-					Transition(shape), sourceX(0)
+			SlideXTransition::SlideXTransition() :
+					Transition(), sourceX(0)
 			{
-				updateObjects();
 			}
 
-			SlideXTransition::SlideXTransition(Shape& shape, float longitude, PhaseProcessingFunction function, float sourceX) :
-					Transition(shape, longitude, function), sourceX(sourceX)
+			SlideXTransition::SlideXTransition(float longitude, PhaseProcessingFunction function, float sourceX) :
+					Transition(longitude, function), sourceX(sourceX)
 			{
-				updateObjects();
 			}
 
-			void SlideXTransition::updateObjects()
+			float SlideXTransition::getValue()
 			{
-				getShape().slidingX = (1 - getProcessedPhase()) * sourceX;
+				return (1 - getProcessedPhase()) * sourceX;
 			}
 
 			SlideXTransition::~SlideXTransition()

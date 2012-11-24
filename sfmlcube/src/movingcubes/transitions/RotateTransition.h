@@ -22,12 +22,12 @@ namespace sfmlcubes
 			{
 			private:
 				int sourceAngle;
-			protected:
-				virtual void updateObjects();
 			public:
-				RotateTransition(Shape& shape, float longitude, PhaseProcessingFunction function, float sourceAngle);
-				RotateTransition(Shape& shape);
+				RotateTransition(float longitude, PhaseProcessingFunction function, float sourceAngle);
+				RotateTransition();
 				virtual ~RotateTransition();
+
+				virtual float getValue();
 			};
 		}
 	}

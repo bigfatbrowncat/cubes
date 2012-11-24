@@ -19,8 +19,7 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
-			Transition::Transition(Shape& shape, float longitude, PhaseProcessingFunction function) :
-					shape(&shape),
+			Transition::Transition(float longitude, PhaseProcessingFunction function) :
 					inProgress(false),
 					phase(0),
 					longitude(longitude),
@@ -28,8 +27,7 @@ namespace sfmlcubes
 			{
 			}
 
-			Transition::Transition(Shape& shape) :
-					shape(&shape),
+			Transition::Transition() :
 					inProgress(false),
 					phase(0),
 					longitude(1),
@@ -72,7 +70,6 @@ namespace sfmlcubes
 						inProgress = false;
 					}
 				}
-				updateObjects();
 			}
 
 
