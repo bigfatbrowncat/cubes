@@ -14,14 +14,6 @@
 
 namespace sfmlcubes
 {
-	enum CubesMechanicIssueResponse
-	{
-		cmirSuccess,
-		cmirAlreadyInProgress,
-		cmirFail,
-		cmirNothingToIssue
-	};
-
 	enum CubesMechanicHorizontalDirection
 	{
 		cmhdNone,
@@ -42,14 +34,6 @@ namespace sfmlcubes
 		cmrdCCW
 	};
 
-	enum CubesMechanicDiscreteAngle
-	{
-		cmda0		= 0,
-		cmda90CW	= 1,
-		cmda180CW	= 2,
-		cmda270CW	= 3
-	};
-
 	enum CubesMechanicCommand
 	{
 		cmcMoveDown = 0,
@@ -66,12 +50,10 @@ namespace sfmlcubes
 		cmsGameOver
 	};
 
-	typedef void OrderIssuedNotifier(CubesMechanicCommand order, CubesMechanicIssueResponse response);
-	typedef void TransitionFinishedNotifier(CubesMechanicCommand order);
-	typedef void BeforeOrderIssuingNotifier();
-
 	class CubesMechanic
 	{
+		static float FALLING_PERIOD;
+
 		CubesMechanicState state;
 
 		CubesField field;
@@ -86,6 +68,8 @@ namespace sfmlcubes
 		list<int> linesToFire;
 		list<CubesGroup*> firingGroups;
 		int linesFired;
+		double time;
+		double momentWhenFallIssued;
 /*
 		CubesMechanicDiscreteAngle sumRotationValue;
 
@@ -97,15 +81,6 @@ namespace sfmlcubes
 		int fallingRadius;
 		CubeRotatingCenterType fallingCRCT;*/
 
-		OrderIssuedNotifier* orderIssuedNotifier;
-		BeforeOrderIssuingNotifier* beforeOrderIssuingNotifier;
-		TransitionFinishedNotifier* transitionFinishedNotifier;
-
-		//list<CubesMechanicOrder> ordersQueue;
-
-		CubesMechanicIssueResponse executeNextOrder();
-		//bool ordersStarted;
-
 		bool anyCollisions();
 		void firingGroupsToFallen();
 
@@ -115,20 +90,6 @@ namespace sfmlcubes
 		void moveRight();
 		void moveLeft();
 		void rotate(CubesMechanicDiscreteAngle angle);
-
-
-		//void fireLines();
-
-/*		CubesMechanicIssueResponse startMovingDownTransition(bool fast);
-		CubesMechanicIssueResponse startMovingRightTransition();
-		CubesMechanicIssueResponse startMovingLeftTransition();
-		CubesMechanicIssueResponse startRotatingCWTransition();
-		CubesMechanicIssueResponse startFiringLinesTransition();*/
-
-/*		void setSliding(float slidingX, float slidingY);
-		void setRotation(int centerX, int centerY, CubeRotatingCenterType crct, float angle);
-		void setFiringLinesAlpha(float alpha);
-		void setFiringLinesSliding(float phase);*/
 
 		bool createTBlock();
 		bool createJBlock();
@@ -144,7 +105,7 @@ namespace sfmlcubes
 		bool canMoveDownFalling();
 		bool canMoveRightFalling();
 		bool canMoveLeftFalling();
-		bool canRotateCWFalling(int angle);
+		bool canRotateCWFalling(CubesMechanicDiscreteAngle angle);
 
 		void fireLines();
 		bool createNewBlock();
@@ -153,10 +114,6 @@ namespace sfmlcubes
 		//const CubesField& getFieldBackground() const { return background; }
 		CubesMechanicRotationDirection getRotationDirection() const { return rotationDirection; }
 		int getLinesFired() const { return linesFired; }
-
-		void setOrderIssuedNotifier(OrderIssuedNotifier& notifier) { orderIssuedNotifier = &notifier; }
-		void setBeforeOrderIssuingNotifier(BeforeOrderIssuingNotifier& notifier) { beforeOrderIssuingNotifier = &notifier; }
-		void setTransitionFinishedNotifier(TransitionFinishedNotifier& notifier) { transitionFinishedNotifier = &notifier; }
 
 		void freezeFalling();
 

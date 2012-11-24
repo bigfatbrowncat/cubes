@@ -65,7 +65,7 @@ namespace sfmlcubes
 				                 4.0 * mainWindow.getSize().y / 9 - gameOverText.getGlobalBounds().height / 2);
 
 		linesFiredText.setString("Lines fired");
-		linesFiredText.setCharacterSize(15 * k);
+		linesFiredText.setCharacterSize(17 * k);
 		linesFiredText.setFont(mainFont);
 		linesFiredText.setPosition(23.0 * mainWindow.getSize().x / 28 - linesFiredText.getGlobalBounds().width / 2,
 				                   1.0 * mainWindow.getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
@@ -132,7 +132,7 @@ namespace sfmlcubes
 	void drawBoard()
 	{
 		// Translating the board center to the center of the screen
-		float delta_x = board.getField().getWidth() / 2;
+		float delta_x = (board.getField().getWidth() - 0.5) / 2;
 		float delta_y = (board.getField().getHeight() - 0.5) / 2;
 		glTranslatef(-delta_x * Cube::cubesize, delta_y * Cube::cubesize, 0.f);
 

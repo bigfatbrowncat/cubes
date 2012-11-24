@@ -19,6 +19,8 @@ using namespace std;
 
 namespace sfmlcubes
 {
+	float CubesMechanic::FALLING_PERIOD = 1.0;
+
 	CubesMechanic::CubesMechanic(int width, int height):
 			state(cmsShapeFalling),
 			field(width, height),
@@ -95,11 +97,11 @@ namespace sfmlcubes
 		return res;
 	}
 
-	bool CubesMechanic::canRotateCWFalling(int angle)
+	bool CubesMechanic::canRotateCWFalling(CubesMechanicDiscreteAngle angle)
 	{
 		falling.rotateCWNoTransition(angle);
 		bool res = !anyCollisions();
-		falling.rotateCWNoTransition(-angle);
+		falling.rotateCWNoTransition((CubesMechanicDiscreteAngle)(-(int)angle));
 
 		return res;
 	}
@@ -209,172 +211,15 @@ namespace sfmlcubes
 		}
 	}
 
-/*	CubesMechanicIssueResponse CubesMechanic::startMovingDownTransition(bool fast)
-	{
-		if (!canMoveDown())
-		{
-			return cmirFail;
-		}
-		else if (verticalMovingDirection == cmvdDown || verticalMovingDirection == cmvdDownFast)
-		{
-			return cmirAlreadyInProgress;
-		}
-		else
-		{
-			if (fast)
-			{
-				verticalMovingDirection = cmvdDownFast;
-			}
-			else
-			{
-				verticalMovingDirection = cmvdDown;
-			}
-			verticalMovingPhase = 0;
-			return cmirSuccess;
-		}
-	}
-
-	CubesMechanicIssueResponse CubesMechanic::startMovingRightTransition()
-	{
-		if (!canMoveRight() || horizontalMovingDirection == cmhdLeft)
-		{
-			return cmirFail;
-		}
-		else if (horizontalMovingDirection == cmhdRight)
-		{
-			return cmirAlreadyInProgress;
-		}
-		else
-		{
-			horizontalMovingDirection = cmhdRight;
-			horizontalMovingPhase = 0;
-			return cmirSuccess;
-		}
-	}
-
-	CubesMechanicIssueResponse CubesMechanic::startMovingLeftTransition()
-	{
-		if (!canMoveLeft() || horizontalMovingDirection == cmhdRight)
-		{
-			return cmirFail;
-		}
-		else if (horizontalMovingDirection == cmhdLeft)
-		{
-			return cmirAlreadyInProgress;
-		}
-		else
-		{
-			horizontalMovingDirection = cmhdLeft;
-			horizontalMovingPhase = 0;
-			return cmirSuccess;
-		}
-	}
-
-	CubesMechanicIssueResponse CubesMechanic::startRotatingCWTransition()
-	{
-		if (!canRotate() || rotationDirection == cmrdCCW)
-		{
-			return cmirFail;
-		}
-		else if (rotationDirection == cmrdCW)
-		{
-			return cmirAlreadyInProgress;
-		}
-		else
-		{
-			rotationDirection = cmrdCW;
-			rotationPhase = 0;
-			return cmirSuccess;
-		}
-	}
-
-	CubesMechanicIssueResponse CubesMechanic::startFiringLinesTransition()
-	{
-		if (!countLinesToFire())
-		{
-			return cmirFail;
-		}
-		else if (linesAreFiring)
-		{
-			return cmirAlreadyInProgress;
-		}
-		else
-		{
-			linesAreFiring = true;
-			linesFiringPhase = 0;
-			return cmirSuccess;
-		}
-	}
-
-	void CubesMechanic::setSliding(float slidingX, float slidingY)
-	{
-		for (int i = 0; i < field.getWidth(); i++)
-		for (int j = 0; j < field.getHeight(); j++)
-		{
-			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
-			{
-				field.cubeAt(i, j).slidingX = slidingX;
-				field.cubeAt(i, j).slidingY = slidingY;
-			}
-		}
-	}
-
-	void CubesMechanic::setRotation(int centerX, int centerY, CubeRotatingCenterType crct, float angle)
-	{
-		for (int i = 0; i < field.getWidth(); i++)
-		for (int j = 0; j < field.getHeight(); j++)
-		{
-			if (!field.cubeAt(i, j).empty && field.cubeAt(i, j).freeMoving)
-			{
-				field.cubeAt(i, j).rotatingCenterX = centerX;
-				field.cubeAt(i, j).rotatingCenterY = centerY;
-				field.cubeAt(i, j).rotatingCenterType = crct;
-				field.cubeAt(i, j).rotatingAngle = angle;
-			}
-		}
-	}
-
-	void CubesMechanic::setFiringLinesAlpha(float alpha)
-	{
-		for (list<int>::iterator iter = linesToFire.begin(); iter != linesToFire.end(); iter++)
-		{
-			int j = *iter;
-			for (int i = 0; i < field.getWidth(); i++)
-			{
-				field.cubeAt(i, j).color.a = alpha * 255;
-			}
-		}
-	}
-	void CubesMechanic::setFiringLinesSliding(float phase)
-	{
-		int count = 0;
-		for (int j = field.getHeight() - 1; j >= count; j--)
-		{
-			// Check if this line is full
-			bool thisRowIsFull = true;
-			for (int i = 0; i < field.getWidth(); i++)
-			{
-				if (field.cubeAt(i, j).empty) thisRowIsFull = false;
-			}
-
-			if (thisRowIsFull)
-			{
-				count ++;
-			}
-			else
-			{
-				for (int i = 0; i < field.getWidth(); i++)
-				{
-					field.cubeAt(i, j).slidingY = phase * count;
-				}
-			}
-		}
-	}
-*/
-
 	void CubesMechanic::processTimeStep(float dt)
 	{
 		field.advanceStep(dt);
+		time += dt;
+		if (time - momentWhenFallIssued > FALLING_PERIOD)
+		{
+			momentWhenFallIssued = time;
+		}
+
 		switch (state)
 		{
 		case cmsShapeFalling:
@@ -424,9 +269,9 @@ namespace sfmlcubes
 			{
 				if (rotationDirection == cmrdCW)
 				{
-					if (canRotateCWFalling(1))
+					if (canRotateCWFalling(cmda90CW))
 					{
-						falling.rotateCW(1);
+						falling.rotateCW(cmda90CW);
 					}
 				}
 			}

@@ -166,7 +166,7 @@ namespace sfmlcubes
 	void CubesGroup::moveDownFast()
 	{
 		mVerticalTransition.setLongitude(FALLING_DOWN_FAST_LONGITUDE);
-		mVerticalTransition.setFunction(Transition::ppfParabolic);
+		mVerticalTransition.setFunction(Transition::ppfLinear);
 
 		moveDown(1);
 	}
@@ -174,7 +174,7 @@ namespace sfmlcubes
 	void CubesGroup::moveDownFired(int cells)
 	{
 		mVerticalTransition.setLongitude(FALLING_DOWN_FIRED_LONGITUDE);
-		mVerticalTransition.setFunction(Transition::ppfLinear);
+		mVerticalTransition.setFunction(Transition::ppfParabolic);
 
 		moveDown(cells);
 	}
@@ -224,7 +224,7 @@ namespace sfmlcubes
 	}
 
 
-	void CubesGroup::rotateCWNoTransition(int angle)
+	void CubesGroup::rotateCWNoTransition(CubesMechanicDiscreteAngle angle)
 	{
 		// Searching for anything in our radius
 		for (list<Cube>::iterator iter = getCubes().begin();
@@ -271,7 +271,7 @@ namespace sfmlcubes
 
 	}
 
-	void CubesGroup::rotateCW(int angle)
+	void CubesGroup::rotateCW(CubesMechanicDiscreteAngle angle)
 	{
 		rotateCWNoTransition(angle);
 		mRotateTransition.setSourceAngle(-angle);

@@ -21,6 +21,17 @@ using namespace std;
 
 namespace sfmlcubes
 {
+	enum CubesMechanicDiscreteAngle
+	{
+		cmda270CCW	= -3,
+		cmda180CCW	= -2,
+		cmda90CCW	= -1,
+		cmda0		= 0,
+		cmda90CW	= 1,
+		cmda180CW	= 2,
+		cmda270CW	= 3
+	};
+
 	class CubesField;
 
 	class CubesGroup : public sf::NonCopyable
@@ -85,7 +96,7 @@ namespace sfmlcubes
 		void moveDownNoTransition(int cells);
 		void moveRightNoTransition();
 		void moveLeftNoTransition();
-		void rotateCWNoTransition(int angle);
+		void rotateCWNoTransition(CubesMechanicDiscreteAngle angle);
 
 		void moveUp();
 		void moveDown(int cells);
@@ -95,7 +106,7 @@ namespace sfmlcubes
 
 		void moveRight();
 		void moveLeft();
-		void rotateCW(int angle);
+		void rotateCW(CubesMechanicDiscreteAngle angle);
 
 		int getLeft();
 		int getRight();
