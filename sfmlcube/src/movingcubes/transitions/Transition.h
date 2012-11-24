@@ -24,6 +24,7 @@ namespace sfmlcubes
 		{
 			class Transition
 			{
+				friend class Shape;
 			public:
 				enum PhaseProcessingFunction
 				{
@@ -32,35 +33,22 @@ namespace sfmlcubes
 					ppfParabolic
 				};
 
-
 			private:
-				Shape* group;
+				Shape* shape;
 				bool inProgress;
 				float phase;
 				float longitude;
 				PhaseProcessingFunction function;
 			protected:
 				float getProcessedPhase() const;
-				Shape& getGroup() { return *group; }
-				virtual void updateObjects() = 0;
+				Shape& getShape() { return *shape; }
+				virtual void updateObjects() {}
 			public:
+				Transition(Shape& group, float longitude, PhaseProcessingFunction function);
 				Transition(Shape& group);
 
-				void advanceStep(double deltaT);
+				void advanceStep(double delta);
 				virtual ~Transition();
-
-				void setFunction(PhaseProcessingFunction value)
-				{
-					if (inProgress) throw TRANSITION_IS_IN_PROGRESS_EXCEPTION;
-					function = value;
-				}
-				void setLongitude(float value)
-				{
-					if (inProgress) throw TRANSITION_IS_IN_PROGRESS_EXCEPTION;
-					longitude = value;
-				}
-
-				void reset();
 
 				float getPhase() const { return phase; }
 				bool isInProgress() const { return inProgress; }

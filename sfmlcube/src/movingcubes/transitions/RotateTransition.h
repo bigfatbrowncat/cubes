@@ -25,14 +25,9 @@ namespace sfmlcubes
 			protected:
 				virtual void updateObjects();
 			public:
-				RotateTransition(Shape& group);
+				RotateTransition(Shape& shape, float longitude, PhaseProcessingFunction function, float sourceAngle);
+				RotateTransition(Shape& shape);
 				virtual ~RotateTransition();
-
-				void setSourceAngle(float value)
-				{
-					if (isInProgress()) throw TRANSITION_IS_IN_PROGRESS_EXCEPTION;
-					sourceAngle = value;
-				}
 			};
 		}
 	}

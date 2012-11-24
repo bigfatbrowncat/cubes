@@ -104,7 +104,6 @@ namespace sfmlcubes
 			SlideYTransition& verticalTransition() { return mVerticalTransition; }
 			RotateTransition& rotateTransition() { return mRotateTransition; }
 
-			sf::Color& tone() { return this->mTone; }
 			void glDraw(int dx, int dy);
 		};
 	}

@@ -18,15 +18,21 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
-			SlideYTransition::SlideYTransition(Shape& group) :
-					Transition(group),
-					sourceY(0)
+			SlideYTransition::SlideYTransition(Shape& shape, float longitude, PhaseProcessingFunction function, float sourceY) :
+					Transition(shape, longitude, function),	sourceY(sourceY)
 			{
+				updateObjects();
+			}
+
+			SlideYTransition::SlideYTransition(Shape& shape) :
+					Transition(shape), sourceY(0)
+			{
+				updateObjects();
 			}
 
 			void SlideYTransition::updateObjects()
 			{
-				getGroup().slidingY = (1-getProcessedPhase()) * sourceY;
+				getShape().slidingY = (1 - getProcessedPhase()) * sourceY;
 			}
 
 			SlideYTransition::~SlideYTransition()

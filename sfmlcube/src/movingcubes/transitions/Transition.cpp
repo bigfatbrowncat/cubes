@@ -19,13 +19,21 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
+			Transition::Transition(Shape& shape, float longitude, PhaseProcessingFunction function) :
+					shape(&shape),
+					inProgress(false),
+					phase(0),
+					longitude(longitude),
+					function(function)
+			{
+			}
 
-			Transition::Transition(Shape& group) :
-					group(&group),
+			Transition::Transition(Shape& shape) :
+					shape(&shape),
 					inProgress(false),
 					phase(0),
 					longitude(1),
-					function(Transition::ppfLinear)
+					function(ppfLinear)
 			{
 			}
 
@@ -47,14 +55,7 @@ namespace sfmlcubes
 				}
 			}
 
-			void Transition::reset()
-			{
-				inProgress = false;
-				phase = 0;
-				updateObjects();
-			}
-
-			void Transition::advanceStep(double deltaT)
+			void Transition::advanceStep(double delta)
 			{
 				inProgress = true;
 				if (phase >= 1)
@@ -64,7 +65,7 @@ namespace sfmlcubes
 				}
 				else
 				{
-					phase += deltaT / longitude;
+					phase += delta / longitude;
 					if (phase > 1)
 					{
 						phase = 1;
@@ -77,7 +78,6 @@ namespace sfmlcubes
 
 			Transition::~Transition()
 			{
-				// TODO Auto-generated destructor stub
 			}
 		}
 	}

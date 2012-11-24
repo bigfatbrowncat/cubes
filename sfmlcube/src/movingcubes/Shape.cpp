@@ -134,12 +134,8 @@ namespace sfmlcubes
 
 		void Shape::moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude)
 		{
-			mVerticalTransition.setLongitude(longitude);
-			mVerticalTransition.setFunction(function);
-
 			moveVerticalNoTransition(cells);
-			mVerticalTransition.setSourceY(-cells);
-			mVerticalTransition.reset();
+			mVerticalTransition = SlideYTransition(*this, longitude, function, -cells);
 		}
 
 		void Shape::moveHorizontalNoTransition(int cells)
@@ -155,12 +151,8 @@ namespace sfmlcubes
 
 		void Shape::moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude)
 		{
-			mHorizontalTransition.setLongitude(longitude);
-			mHorizontalTransition.setFunction(function);
-
 			moveHorizontalNoTransition(cells);
-			mHorizontalTransition.setSourceX(-cells);
-			mHorizontalTransition.reset();
+			mHorizontalTransition = SlideXTransition(*this, longitude, function, -cells);
 		}
 
 		void Shape::rotateNoTransition(int angle)
@@ -212,12 +204,8 @@ namespace sfmlcubes
 
 		void Shape::rotate(int angle, Transition::PhaseProcessingFunction function, float longitude)
 		{
-			mRotateTransition.setLongitude(longitude);
-			mRotateTransition.setFunction(function);
-
 			rotateNoTransition(angle);
-			mRotateTransition.setSourceAngle(-angle);
-			mRotateTransition.reset();
+			mRotateTransition = RotateTransition(*this, longitude, function, -angle);
 		}
 
 		list<Cube*> Shape::cubeAt(int i, int j)

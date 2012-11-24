@@ -23,14 +23,9 @@ namespace sfmlcubes
 			protected:
 				virtual void updateObjects();
 			public:
-				SlideXTransition(Shape& group);
+				SlideXTransition(Shape& shape, float longitude, PhaseProcessingFunction function, float sourceX);
+				SlideXTransition(Shape& shape);
 				virtual ~SlideXTransition();
-
-				void setSourceX(float value)
-				{
-					if (isInProgress()) throw TRANSITION_IS_IN_PROGRESS_EXCEPTION;
-					sourceX = value;
-				}
 			};
 		}
 	}

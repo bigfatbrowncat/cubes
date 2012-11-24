@@ -19,15 +19,21 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
-			RotateTransition::RotateTransition(Shape& group) :
-					Transition(group),
-					sourceAngle(0)
+			RotateTransition::RotateTransition(Shape& shape, float longitude, PhaseProcessingFunction function, float sourceAngle) :
+					Transition(shape, longitude, function), sourceAngle(sourceAngle)
 			{
+				updateObjects();
+			}
+
+			RotateTransition::RotateTransition(Shape& shape) :
+					Transition(shape), sourceAngle(0)
+			{
+				updateObjects();
 			}
 
 			void RotateTransition::updateObjects()
 			{
-				getGroup().rotatingAngle = (1 - getProcessedPhase()) * sourceAngle;
+				getShape().rotatingAngle = (1 - getProcessedPhase()) * sourceAngle;
 			}
 
 			RotateTransition::~RotateTransition()
