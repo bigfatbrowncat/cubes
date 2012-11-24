@@ -11,9 +11,6 @@
 
 namespace sfmlcubes
 {
-//	float CubesGroup::LINES_FIRING_LONGITUDE = 1;
-//	float CubesGroup::LINES_FIRING_BLINKING_PART = 0.8;
-
 	void CubesGroup::advanceStep(double delta)
 	{
 		mRotateTransition.advanceStep(delta);
@@ -39,12 +36,12 @@ namespace sfmlcubes
 				int xx = (*citer).x + dx;
 				int yy = (*citer).y + dy;
 
-				glTranslatef(xx * Cube::cubesize, -yy * Cube::cubesize, 0.f);			// Translating the cube
+				glTranslatef(xx, -yy, 0.f);			// Translating the cube
 
 				// ** Sliding **
 
-				double hdistance = Cube::cubesize * slidingX;
-				double vdistance = Cube::cubesize * slidingY;
+				double hdistance = slidingX;
+				double vdistance = slidingY;
 				glTranslatef(hdistance, -vdistance, 0.f);
 
 				// ** Rotating **
@@ -52,19 +49,19 @@ namespace sfmlcubes
 				// Moving it back from rotating center
 				if (rotatingCenterType == crctCornerOfCube)
 				{
-					glTranslatef(-Cube::cubesize / 2, Cube::cubesize / 2, 0.f);
+					glTranslatef(-1.0 / 2, 1.0 / 2, 0.f);
 				}
-				glTranslatef(Cube::cubesize * (rotatingCenterX - xx), -Cube::cubesize * (rotatingCenterY - yy), 0.f);
+				glTranslatef(rotatingCenterX - xx, -(rotatingCenterY - yy), 0.f);
 
 				// Applying rotation
 				double angle = 90 * rotatingAngle;
 				glRotatef(angle, 0.f, 0.f, -1.f);
 
 				// Moving the cube to it's rotating center
-				glTranslatef(-Cube::cubesize * (rotatingCenterX - xx), Cube::cubesize * (rotatingCenterY - yy), 0.f);
+				glTranslatef(-(rotatingCenterX - xx), rotatingCenterY - yy, 0.f);
 				if (rotatingCenterType == crctCornerOfCube)
 				{
-					glTranslatef(Cube::cubesize / 2, -Cube::cubesize / 2, 0.f);
+					glTranslatef(1.0 / 2, -1.0 / 2, 0.f);
 				}
 
 				(*citer).glDraw();
@@ -164,7 +161,7 @@ namespace sfmlcubes
 		mHorizontalTransition.reset();
 	}
 
-	void CubesGroup::rotateNoTransition(CubesMechanicDiscreteAngle angle)
+	void CubesGroup::rotateNoTransition(int angle)
 	{
 		// Searching for anything in our radius
 		for (list<Cube>::iterator iter = getCubes().begin();
@@ -211,7 +208,7 @@ namespace sfmlcubes
 
 	}
 
-	void CubesGroup::rotate(CubesMechanicDiscreteAngle angle, Transition::PhaseProcessingFunction function, float longitude)
+	void CubesGroup::rotate(int angle, Transition::PhaseProcessingFunction function, float longitude)
 	{
 		mRotateTransition.setLongitude(longitude);
 		mRotateTransition.setFunction(function);

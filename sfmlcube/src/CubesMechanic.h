@@ -75,16 +75,6 @@ namespace sfmlcubes
 		int linesFired;
 		double time;
 		double momentWhenFallIssued;
-/*
-		CubesMechanicDiscreteAngle sumRotationValue;
-
-		bool cubeIsEmptyOrFreeAt(int i, int j);*/
-
-/*		float calculateRadius(int rotationCenterX, int rotationCenterY, CubeRotatingCenterType crct);
-		int fallingCenterX;
-		int fallingCenterY;
-		int fallingRadius;
-		CubeRotatingCenterType fallingCRCT;*/
 
 		bool anyCollisions();
 		void firingGroupsToFallen();
@@ -94,7 +84,7 @@ namespace sfmlcubes
 		void moveDown();
 		void moveRight();
 		void moveLeft();
-		void rotate(CubesMechanicDiscreteAngle angle);
+		void rotate(int angle);
 
 		bool createTBlock();
 		bool createJBlock();
@@ -110,7 +100,7 @@ namespace sfmlcubes
 		bool canMoveDownFalling();
 		bool canMoveRightFalling();
 		bool canMoveLeftFalling();
-		bool canRotateCWFalling(CubesMechanicDiscreteAngle angle);
+		bool canRotateFalling(int angle);
 
 		void moveDownFiredFalling();
 

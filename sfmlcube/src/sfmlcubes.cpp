@@ -126,17 +126,16 @@ namespace sfmlcubes
 	    setView();
 	}
 
-
-	//float frame = atan(slope * (horizontalPhase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
-
 	void drawBoard()
 	{
 		// Translating the board center to the center of the screen
 		float delta_x = (board.getField().getWidth() - 0.5) / 2;
 		float delta_y = (board.getField().getHeight() - 0.5) / 2;
-		glTranslatef(-delta_x * Cube::cubesize, delta_y * Cube::cubesize, 0.f);
+		float cubeSize = 30;
 
-		//board.getFieldBackground().glDraw(-1, -1);
+		glScalef(cubeSize, cubeSize, cubeSize);
+		glTranslatef(-delta_x, delta_y, 0.f);
+
 		board.getField().glDraw(0, 0);
 	}
 
@@ -336,7 +335,7 @@ int main()
 	{
 		// Create the main window
 		sfmlcubes::initMainWindow("Cubes", 800, 600);
-		sfmlcubes::Cube::initGlobal();
+		sfmlcubes::Cube::initialize();
 		sfmlcubes::initMainFont();
 		sfmlcubes::prepareScene();
 

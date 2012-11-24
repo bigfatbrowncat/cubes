@@ -14,37 +14,39 @@
 
 namespace sfmlcubes
 {
-	enum CubeModelType
-	{
-		cmtPlaying, cmtWall
-	};
-
 	struct Cube
 	{
 	public:
+		// Inner types
+		enum ModelType
+		{
+			mtVoid,		// Empty cube. Doesn't draw itself at all
+			mtPlaying,
+			mtWall
+		};
+
+	private:
 		// Static fields
-		static int cubesize;
 		static int PLAYING_CUBE_INDEX;
 		static int WALL_CUBE_INDEX;
 		static sf::Shader cubeShader;
 
 	public:
 		// Fields
-		CubeModelType modelType;
+		ModelType modelType;
 		sf::Color color;
 		int x, y;
 
 	public:
 		// Static functions
-		static void initGlobal();
+		static void initialize();
 
 	public:
 		// Functions
-		Cube(CubeModelType modelType, int x, int y, sf::Color color);
+		Cube(ModelType modelType, int x, int y, sf::Color color);
 		Cube();
 
 		void glDraw() const;
-
 	};
 
 }

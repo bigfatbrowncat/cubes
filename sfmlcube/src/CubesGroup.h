@@ -22,17 +22,6 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	enum CubesMechanicDiscreteAngle
-	{
-		cmda270CCW	= -3,
-		cmda180CCW	= -2,
-		cmda90CCW	= -1,
-		cmda0		= 0,
-		cmda90CW	= 1,
-		cmda180CW	= 2,
-		cmda270CW	= 3
-	};
-
 	class CubesField;
 
 	class CubesGroup : public sf::NonCopyable
@@ -72,12 +61,6 @@ namespace sfmlcubes
 		    rotatingCenterY(0),
 		    rotatingAngle(0)
 		{
-			/*mHorizontalTransition.setFunction(Transition::ppfLinear);
-			mHorizontalTransition.setLongitude(HORIZONTAL_MOVING_LONGITUDE);
-			mVerticalTransition.setFunction(Transition::ppfArctangent);
-			mVerticalTransition.setLongitude(FALLING_DOWN_LONGITUDE);
-			mRotateTransition.setFunction(Transition::ppfArctangent);
-			mRotateTransition.setLongitude(ROTATION_LONGITUDE);*/
 		}
 
 		list<Cube>& getCubes() { return cubes; }
@@ -87,11 +70,11 @@ namespace sfmlcubes
 
 		void moveVerticalNoTransition(int cells);
 		void moveHorizontalNoTransition(int cells);
-		void rotateNoTransition(CubesMechanicDiscreteAngle angle);
+		void rotateNoTransition(int angle);
 
 		void moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude);
 		void moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude);
-		void rotate(CubesMechanicDiscreteAngle angle, Transition::PhaseProcessingFunction function, float longitude);
+		void rotate(int angle, Transition::PhaseProcessingFunction function, float longitude);
 
 		int getLeft();
 		int getRight();
