@@ -16,6 +16,7 @@
 #include "SlideYTransition.h"
 #include "RotateTransition.h"
 #include "Cube.h"
+#include "Transition.h"
 
 using namespace std;
 
@@ -40,14 +41,6 @@ namespace sfmlcubes
 		friend class SlideYTransition;
 		friend class RotateTransition;
 	private:
-		static float ROTATION_LONGITUDE;
-		static float FALLING_DOWN_LONGITUDE;
-		static float FALLING_DOWN_FAST_LONGITUDE;
-		static float FALLING_DOWN_FIRED_LONGITUDE;
-		static float HORIZONTAL_MOVING_LONGITUDE;
-//		static float LINES_FIRING_LONGITUDE;
-//		static float LINES_FIRING_BLINKING_PART;
-
 		CubesField& field;
 		list<Cube> cubes;
 		SlideXTransition mHorizontalTransition;
@@ -79,12 +72,12 @@ namespace sfmlcubes
 		    rotatingCenterY(0),
 		    rotatingAngle(0)
 		{
-			mHorizontalTransition.setFunction(Transition::ppfLinear);
+			/*mHorizontalTransition.setFunction(Transition::ppfLinear);
 			mHorizontalTransition.setLongitude(HORIZONTAL_MOVING_LONGITUDE);
 			mVerticalTransition.setFunction(Transition::ppfArctangent);
 			mVerticalTransition.setLongitude(FALLING_DOWN_LONGITUDE);
 			mRotateTransition.setFunction(Transition::ppfArctangent);
-			mRotateTransition.setLongitude(ROTATION_LONGITUDE);
+			mRotateTransition.setLongitude(ROTATION_LONGITUDE);*/
 		}
 
 		list<Cube>& getCubes() { return cubes; }
@@ -92,21 +85,13 @@ namespace sfmlcubes
 		void advanceStep(double delta);
 		bool transitionIsInProgress() const;
 
-		void moveUpNoTransition();
-		void moveDownNoTransition(int cells);
-		void moveRightNoTransition();
-		void moveLeftNoTransition();
-		void rotateCWNoTransition(CubesMechanicDiscreteAngle angle);
+		void moveVerticalNoTransition(int cells);
+		void moveHorizontalNoTransition(int cells);
+		void rotateNoTransition(CubesMechanicDiscreteAngle angle);
 
-		void moveUp();
-		void moveDown(int cells);
-		void moveDownFast();
-		void moveDownFired(int cells);
-		void moveDownFalling();
-
-		void moveRight();
-		void moveLeft();
-		void rotateCW(CubesMechanicDiscreteAngle angle);
+		void moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude);
+		void moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude);
+		void rotate(CubesMechanicDiscreteAngle angle, Transition::PhaseProcessingFunction function, float longitude);
 
 		int getLeft();
 		int getRight();

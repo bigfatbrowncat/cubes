@@ -19,6 +19,11 @@ using namespace std;
 
 namespace sfmlcubes
 {
+	float CubesMechanic::ROTATION_LONGITUDE = 0.25;
+	float CubesMechanic::FALLING_DOWN_LONGITUDE = 0.1;
+	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.05;
+	float CubesMechanic::FALLING_DOWN_FIRED_LONGITUDE = 0.3;
+	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.08;
 	float CubesMechanic::FALLING_PERIOD = 1.0;
 
 	CubesMechanic::CubesMechanic(int width, int height):
@@ -72,40 +77,39 @@ namespace sfmlcubes
 
 	bool CubesMechanic::canMoveDownFalling()
 	{
-		falling.moveDownNoTransition(1);
+		falling.moveVerticalNoTransition(1);
 		bool res = !anyCollisions();
-		falling.moveUpNoTransition();
+		falling.moveVerticalNoTransition(-1);
 
 		return res;
 	}
 
 	bool CubesMechanic::canMoveLeftFalling()
 	{
-		falling.moveLeftNoTransition();
+		falling.moveHorizontalNoTransition(-1);
 		bool res = !anyCollisions();
-		falling.moveRightNoTransition();
+		falling.moveHorizontalNoTransition(1);
 
 		return res;
 	}
 
 	bool CubesMechanic::canMoveRightFalling()
 	{
-		falling.moveRightNoTransition();
+		falling.moveHorizontalNoTransition(1);
 		bool res = !anyCollisions();
-		falling.moveLeftNoTransition();
+		falling.moveHorizontalNoTransition(-1);
 
 		return res;
 	}
 
 	bool CubesMechanic::canRotateCWFalling(CubesMechanicDiscreteAngle angle)
 	{
-		falling.rotateCWNoTransition(angle);
+		falling.rotateNoTransition(angle);
 		bool res = !anyCollisions();
-		falling.rotateCWNoTransition((CubesMechanicDiscreteAngle)(-(int)angle));
+		falling.rotateNoTransition((CubesMechanicDiscreteAngle)(-(int)angle));
 
 		return res;
 	}
-
 
 /*	bool CubesMechanic::countLinesToFire()
 	{
@@ -145,7 +149,7 @@ namespace sfmlcubes
 				// First of all we close the recent group if it exists
 				if (!lastLineWasFired && firingGroups.size() > 0)
 				{
-					firingGroups.back()->moveDownFired(count);
+					firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
 				}
 
 				count ++;
@@ -177,7 +181,7 @@ namespace sfmlcubes
 		// close the last group
 		if (firingGroups.size() > 0)
 		{
-			if (count > 0) firingGroups.back()->moveDownFired(count);
+			if (count > 0) firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
 		}
 
 		linesFired += count;
@@ -233,14 +237,14 @@ namespace sfmlcubes
 				{
 					if (canMoveRightFalling())
 					{
-						falling.moveRight();
+						falling.moveHorizontal(1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
 					}
 				}
 				else if (horizontalDirection == cmhdLeft)
 				{
 					if (canMoveLeftFalling())
 					{
-						falling.moveLeft();
+						falling.moveHorizontal(-1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
 					}
 				}
 
@@ -252,17 +256,16 @@ namespace sfmlcubes
 				{
 					if (canMoveDownFalling())
 					{
-						falling.moveDownFalling();
+						falling.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
 					}
 				}
 				else if (verticalDirection == cmvdDownFast)
 				{
 					if (canMoveDownFalling())
 					{
-						falling.moveDownFast();
+						falling.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
 					}
 				}
-
 			}
 
 			if (!falling.getRotateTransition().isInProgress())
@@ -271,7 +274,7 @@ namespace sfmlcubes
 				{
 					if (canRotateCWFalling(cmda90CW))
 					{
-						falling.rotateCW(cmda90CW);
+						falling.rotate(cmda90CW, Transition::ppfArctangent, ROTATION_LONGITUDE);
 					}
 				}
 			}

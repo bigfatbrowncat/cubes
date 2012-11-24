@@ -52,6 +52,11 @@ namespace sfmlcubes
 
 	class CubesMechanic
 	{
+		static float ROTATION_LONGITUDE;
+		static float FALLING_DOWN_LONGITUDE;
+		static float FALLING_DOWN_FAST_LONGITUDE;
+		static float FALLING_DOWN_FIRED_LONGITUDE;
+		static float HORIZONTAL_MOVING_LONGITUDE;
 		static float FALLING_PERIOD;
 
 		CubesMechanicState state;
@@ -106,6 +111,8 @@ namespace sfmlcubes
 		bool canMoveRightFalling();
 		bool canMoveLeftFalling();
 		bool canRotateCWFalling(CubesMechanicDiscreteAngle angle);
+
+		void moveDownFiredFalling();
 
 		void fireLines();
 		bool createNewBlock();

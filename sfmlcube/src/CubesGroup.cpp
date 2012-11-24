@@ -11,11 +11,6 @@
 
 namespace sfmlcubes
 {
-	float CubesGroup::ROTATION_LONGITUDE = 0.25;
-	float CubesGroup::FALLING_DOWN_LONGITUDE = 0.1;
-	float CubesGroup::FALLING_DOWN_FAST_LONGITUDE = 0.05;
-	float CubesGroup::FALLING_DOWN_FIRED_LONGITUDE = 0.3;
-	float CubesGroup::HORIZONTAL_MOVING_LONGITUDE = 0.08;
 //	float CubesGroup::LINES_FIRING_LONGITUDE = 1;
 //	float CubesGroup::LINES_FIRING_BLINKING_PART = 0.8;
 
@@ -127,25 +122,7 @@ namespace sfmlcubes
 		return bottom;
 	}
 
-	void CubesGroup::moveUpNoTransition()
-	{
-		for (list<Cube>::iterator iter = getCubes().begin();
-			 iter != getCubes().end();
-			 iter ++)
-		{
-			(*iter).y --;
-		}
-		this->rotatingCenterY --;
-	}
-
-	void CubesGroup::moveUp()
-	{
-		moveUpNoTransition();
-		mVerticalTransition.setSourceY(1.0);
-		mVerticalTransition.reset();
-	}
-
-	void CubesGroup::moveDownNoTransition(int cells)
+	void CubesGroup::moveVerticalNoTransition(int cells)
 	{
 		for (list<Cube>::iterator iter = getCubes().begin();
 			 iter != getCubes().end();
@@ -156,75 +133,38 @@ namespace sfmlcubes
 		this->rotatingCenterY += cells;
 	}
 
-	void CubesGroup::moveDown(int cells)
+	void CubesGroup::moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude)
 	{
-		moveDownNoTransition(cells);
+		mVerticalTransition.setLongitude(longitude);
+		mVerticalTransition.setFunction(function);
+
+		moveVerticalNoTransition(cells);
 		mVerticalTransition.setSourceY(-cells);
 		mVerticalTransition.reset();
 	}
 
-	void CubesGroup::moveDownFast()
-	{
-		mVerticalTransition.setLongitude(FALLING_DOWN_FAST_LONGITUDE);
-		mVerticalTransition.setFunction(Transition::ppfLinear);
-
-		moveDown(1);
-	}
-
-	void CubesGroup::moveDownFired(int cells)
-	{
-		mVerticalTransition.setLongitude(FALLING_DOWN_FIRED_LONGITUDE);
-		mVerticalTransition.setFunction(Transition::ppfParabolic);
-
-		moveDown(cells);
-	}
-
-	void CubesGroup::moveDownFalling()
-	{
-		mVerticalTransition.setLongitude(FALLING_DOWN_LONGITUDE);
-		mVerticalTransition.setFunction(Transition::ppfArctangent);
-
-		moveDown(1);
-	}
-
-	void CubesGroup::moveRightNoTransition()
+	void CubesGroup::moveHorizontalNoTransition(int cells)
 	{
 		for (list<Cube>::iterator iter = getCubes().begin();
 			 iter != getCubes().end();
 			 iter ++)
 		{
-			(*iter).x ++;
+			(*iter).x += cells;
 		}
-		this->rotatingCenterX ++;
+		this->rotatingCenterX += cells;
 	}
 
-	void CubesGroup::moveRight()
+	void CubesGroup::moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude)
 	{
-		moveRightNoTransition();
-		mHorizontalTransition.setSourceX(-1.0);
+		mHorizontalTransition.setLongitude(longitude);
+		mHorizontalTransition.setFunction(function);
+
+		moveHorizontalNoTransition(cells);
+		mHorizontalTransition.setSourceX(-cells);
 		mHorizontalTransition.reset();
 	}
 
-	void CubesGroup::moveLeftNoTransition()
-	{
-		for (list<Cube>::iterator iter = getCubes().begin();
-			 iter != getCubes().end();
-			 iter ++)
-		{
-			(*iter).x --;
-		}
-		this->rotatingCenterX --;
-	}
-
-	void CubesGroup::moveLeft()
-	{
-		moveLeftNoTransition();
-		mHorizontalTransition.setSourceX(1.0);
-		mHorizontalTransition.reset();
-	}
-
-
-	void CubesGroup::rotateCWNoTransition(CubesMechanicDiscreteAngle angle)
+	void CubesGroup::rotateNoTransition(CubesMechanicDiscreteAngle angle)
 	{
 		// Searching for anything in our radius
 		for (list<Cube>::iterator iter = getCubes().begin();
@@ -271,14 +211,15 @@ namespace sfmlcubes
 
 	}
 
-	void CubesGroup::rotateCW(CubesMechanicDiscreteAngle angle)
+	void CubesGroup::rotate(CubesMechanicDiscreteAngle angle, Transition::PhaseProcessingFunction function, float longitude)
 	{
-		rotateCWNoTransition(angle);
+		mRotateTransition.setLongitude(longitude);
+		mRotateTransition.setFunction(function);
+
+		rotateNoTransition(angle);
 		mRotateTransition.setSourceAngle(-angle);
 		mRotateTransition.reset();
 	}
-
-
 
 	list<Cube*> CubesGroup::cubeAt(int i, int j)
 	{
