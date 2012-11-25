@@ -292,7 +292,7 @@ namespace sfmlcubes
 				// so we can freeze the falling shape
 				// and generate a new one
 				board.freezeFalling();
-				board.fireLines();
+				board.collectLinesToFire();
 				momentWhenFallIssued = curTime;
 			}
 			else if (!board.canMoveDownFalling())

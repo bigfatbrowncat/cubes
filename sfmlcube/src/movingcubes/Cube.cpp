@@ -52,6 +52,13 @@ namespace sfmlcubes
 		{
 		}
 
+		bool Cube::operator == (const Cube& other)
+		{
+			return this->color == other.color &&
+			       this->x == other.x &&
+			       this->y == other.y &&
+			       this->modelType == other.modelType;
+		}
 
 		void Cube::glDraw() const
 		{
@@ -59,7 +66,7 @@ namespace sfmlcubes
 			{
 				// Drawing the cube
 
-				cubeShader.setParameter("color", (float)color.r / 255, (float)color.g / 255, (float)color.b / 255, (float)color.a / 255);
+				cubeShader.setParameter("diffuse", (float)color.r / 255, (float)color.g / 255, (float)color.b / 255, (float)color.a / 255);
 				cubeShader.setParameter("texture", sf::Shader::CurrentTexture);
 				cubeShader.setParameter("light0", 200, 300, 200, 1);
 				cubeShader.bind();

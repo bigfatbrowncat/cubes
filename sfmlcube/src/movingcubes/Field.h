@@ -12,7 +12,6 @@
 #include <list>
 
 #include "Shape.h"
-#include "CubeRotatingCenterType.h"
 
 using namespace std;
 

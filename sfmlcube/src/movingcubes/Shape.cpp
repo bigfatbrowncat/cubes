@@ -17,10 +17,15 @@ namespace sfmlcubes
 		{
 			mRotateTransition.advanceStep(delta);
 			rotatingAngle = mRotateTransition.getValue();
+
 			mHorizontalTransition.advanceStep(delta);
 			slidingX = mHorizontalTransition.getValue();
+
 			mVerticalTransition.advanceStep(delta);
 			slidingY = mVerticalTransition.getValue();
+
+			mBlinkingTransition.advanceStep(delta);
+			transparency = mBlinkingTransition.getValue();
 		}
 
 		bool Shape::transitionIsInProgress() const
@@ -52,7 +57,7 @@ namespace sfmlcubes
 					// ** Rotating **
 
 					// Moving it back from rotating center
-					if (rotatingCenterType == crctCornerOfCube)
+					if (rotatingCenterType == Cube::rctCorner)
 					{
 						glTranslatef(-1.0 / 2, 1.0 / 2, 0.f);
 					}
@@ -64,11 +69,14 @@ namespace sfmlcubes
 
 					// Moving the cube to it's rotating center
 					glTranslatef(-(rotatingCenterX - xx), rotatingCenterY - yy, 0.f);
-					if (rotatingCenterType == crctCornerOfCube)
+					if (rotatingCenterType == Cube::rctCorner)
 					{
 						glTranslatef(1.0 / 2, -1.0 / 2, 0.f);
 					}
 
+					sf::Color ambient = ambientStatic * ambientDynamic;
+					Cube::cubeShader.setParameter("ambient", (float)ambient.r / 255, (float)ambient.g / 255, (float)ambient.b / 255, (float)ambient.a / 255);
+					Cube::cubeShader.setParameter("transparency", transparency);
 					(*citer).glDraw();
 				}
 				glPopMatrix();
@@ -138,7 +146,7 @@ namespace sfmlcubes
 		void Shape::moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude)
 		{
 			moveVerticalNoTransition(cells);
-			mVerticalTransition = SlideYTransition(longitude, function, -cells);
+			mVerticalTransition = Transition(longitude, function, -cells);
 			slidingY = mVerticalTransition.getValue();
 		}
 
@@ -156,7 +164,7 @@ namespace sfmlcubes
 		void Shape::moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude)
 		{
 			moveHorizontalNoTransition(cells);
-			mHorizontalTransition = SlideXTransition(longitude, function, -cells);
+			mHorizontalTransition = Transition(longitude, function, -cells);
 			slidingX = mHorizontalTransition.getValue();
 		}
 
@@ -174,7 +182,7 @@ namespace sfmlcubes
 				ik[0] = (*iter).x;
 				jk[0] = (*iter).y;
 
-				if (rotatingCenterType == crctCenterOfCube)
+				if (rotatingCenterType == Cube::rctCenter)
 				{
 					// Making the 90 degrees rotating group
 					for (int k = 1; k < 4; k++)
@@ -183,7 +191,7 @@ namespace sfmlcubes
 						jk[k] = j0 + ik[k - 1] - i0;
 					}
 				}
-				else if (rotatingCenterType == crctCornerOfCube)
+				else if (rotatingCenterType == Cube::rctCorner)
 				{
 					// Making the 90 degrees rotating group
 					for (int k = 1; k < 4; k++)
@@ -210,8 +218,14 @@ namespace sfmlcubes
 		void Shape::rotate(int angle, Transition::PhaseProcessingFunction function, float longitude)
 		{
 			rotateNoTransition(angle);
-			mRotateTransition = RotateTransition(longitude, function, -angle);
+			mRotateTransition = Transition(longitude, function, -angle);
 			rotatingAngle = mRotateTransition.getValue();
+		}
+
+		void Shape::blink(float longitude, int blinks)
+		{
+			mBlinkingTransition = Transition(longitude, Transition::ppfAbsSine, blinks);
+			transparency = mBlinkingTransition.getValue();
 		}
 
 		list<Cube*> Shape::cubeAt(int i, int j)

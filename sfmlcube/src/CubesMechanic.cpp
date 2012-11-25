@@ -23,6 +23,7 @@ namespace sfmlcubes
 	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.05;
 	float CubesMechanic::FALLING_DOWN_FIRED_LONGITUDE = 0.3;
 	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.08;
+	float CubesMechanic::BLINKING_LONGITUDE = 0.6;
 	float CubesMechanic::FALLING_PERIOD = 1.0;
 
 	CubesMechanic::CubesMechanic(int width, int height):
@@ -44,7 +45,7 @@ namespace sfmlcubes
 		field.getCubesGroups().push_back(&fallen);
 		field.getCubesGroups().push_back(&falling);
 
-		sf::Color wallColor = sf::Color(32, 32, 32);
+		sf::Color wallColor = sf::Color(96, 96, 96);
 
 		for (int i = 0; i < field.getWidth(); i++)
 		{
@@ -128,9 +129,11 @@ namespace sfmlcubes
 		return linesToFire.size() > 0;
 	}*/
 
-
-	void CubesMechanic::fireLines()
+	void CubesMechanic::collectLinesToFire()
 	{
+		firingGroups.clear();
+		firingLineCounts.clear();
+
 		bool lastLineWasFired = true;
 		int count = 0;
 		for (int j = field.getHeight() - 1; j >= count; j--)
@@ -148,7 +151,7 @@ namespace sfmlcubes
 				// First of all we close the recent group if it exists
 				if (!lastLineWasFired && firingGroups.size() > 0)
 				{
-					firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
+					firingLineCounts.insert(pair<Shape*, int> (firingGroups.back(), count) );
 				}
 
 				count ++;
@@ -170,7 +173,10 @@ namespace sfmlcubes
 				{
 					if (!fallen.cubeAt(i, j).empty())
 					{
+						// Adding the cube to the current firing group
 						firingGroups.back()->getCubes().push_back(*(fallen.cubeAt(i, j).back()));
+						// Removing the cube from the fallens
+						fallen.getCubes().remove(*(fallen.cubeAt(i, j).back()));
 					}
 				}
 				lastLineWasFired = false;
@@ -180,13 +186,14 @@ namespace sfmlcubes
 		// close the last group
 		if (firingGroups.size() > 0)
 		{
-			if (count > 0) firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
+			if (count > 0)
+			{
+				firingLineCounts.insert(pair<Shape*, int> (firingGroups.back(), count) );
+			}
+				//firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
 		}
 
 		linesFired += count;
-
-		// Clearing the fallen part of the board
-		fallen.getCubes().clear();
 
 		// Adding the new groups to our board
 		for (list<Shape*>::iterator iter = firingGroups.begin(); iter != firingGroups.end(); iter++)
@@ -194,7 +201,27 @@ namespace sfmlcubes
 			field.getCubesGroups().push_back(*iter);
 		}
 
-		state = cmsLinesFiring;
+		if (firingGroups.size() > 0 && (*firingLineCounts.begin()).second != 0)
+		{
+			// Starting the blinking of the firing lines
+			fallen.blink(BLINKING_LONGITUDE, 3);
+			state = cmsLinesToFireBlinking;
+		}
+		else
+		{
+			state = cmsLinesFiring;
+		}
+	}
+
+	void CubesMechanic::removeFiredAwayLines()
+	{
+		for (map<Shape*, int>::iterator iter = firingLineCounts.begin(); iter != firingLineCounts.end(); iter++)
+		{
+			(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
+		}
+
+		// Clearing the fallen part of the board
+		fallen.getCubes().clear();
 	}
 
 	void CubesMechanic::firingGroupsToFallen()
@@ -278,7 +305,14 @@ namespace sfmlcubes
 				}
 			}
 			break;
+		case cmsLinesToFireBlinking:
+			if (!this->fallen.getBlinkingTransition().isInProgress())
+			{
+				removeFiredAwayLines();
+				state = cmsLinesFiring;
+			}
 
+			break;
 		case cmsLinesFiring:
 			if (!field.anyTransitionsInProgress())
 			{
@@ -325,7 +359,7 @@ namespace sfmlcubes
 			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
 			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(6, 1, crctCenterOfCube);
+			falling.setRotatingCenter(6, 1, Cube::rctCenter);
 			return true;
 		}
 		else
@@ -348,7 +382,7 @@ namespace sfmlcubes
 			falling.getCubes().push_back(Cube(6, 3, Cube::mtPlaying, gen));
 			falling.getCubes().push_back(Cube(5, 3, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(6, 3, crctCornerOfCube);
+			falling.setRotatingCenter(6, 3, Cube::rctCorner);
 			return true;
 		}
 		else
@@ -371,7 +405,7 @@ namespace sfmlcubes
 			falling.getCubes().push_back(Cube(5, 3, Cube::mtPlaying, gen));
 			falling.getCubes().push_back(Cube(6, 3, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(6, 3, crctCornerOfCube);
+			falling.setRotatingCenter(6, 3, Cube::rctCorner);
 			return true;
 		}
 		else
@@ -394,7 +428,7 @@ namespace sfmlcubes
 			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
 			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(6, 1, crctCornerOfCube);
+			falling.setRotatingCenter(6, 1, Cube::rctCorner);
 			return true;
 		}
 		else
@@ -417,7 +451,7 @@ namespace sfmlcubes
 			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
 			falling.getCubes().push_back(Cube(7, 2, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(7, 2, crctCornerOfCube);
+			falling.setRotatingCenter(7, 2, Cube::rctCorner);
 			return true;
 		}
 		else
@@ -440,7 +474,7 @@ namespace sfmlcubes
 			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
 			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(6, 2, crctCornerOfCube);
+			falling.setRotatingCenter(6, 2, Cube::rctCorner);
 			return true;
 		}
 		else
@@ -463,7 +497,7 @@ namespace sfmlcubes
 			falling.getCubes().push_back(Cube(5, 2, Cube::mtPlaying, gen));
 			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(6, 2, crctCornerOfCube);
+			falling.setRotatingCenter(6, 2, Cube::rctCorner);
 			return true;
 		}
 		else

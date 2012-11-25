@@ -19,11 +19,12 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
-			Transition::Transition(float longitude, PhaseProcessingFunction function) :
+			Transition::Transition(float longitude, PhaseProcessingFunction function, float sourceValue) :
 					inProgress(false),
 					phase(0),
 					longitude(longitude),
-					function(function)
+					function(function),
+					sourceValue(sourceValue)
 			{
 			}
 
@@ -31,7 +32,8 @@ namespace sfmlcubes
 					inProgress(false),
 					phase(0),
 					longitude(1),
-					function(ppfLinear)
+					function(ppfLinear),
+					sourceValue(0)
 			{
 			}
 
@@ -47,6 +49,8 @@ namespace sfmlcubes
 					return phase * phase;
 				case ppfArctangent:
 					return atan(slope * (phase - 0.5)*3.14159*2) / (2 * atan(slope * 3.14159)) + 0.5;
+				case ppfAbsSine:
+					return abs(cos(-sourceValue * 3.14159 * phase));
 				default:
 					Logger::DEFAULT.logError("Strange case in RotateTransition::updateObjects");
 					return 0;
@@ -72,6 +76,21 @@ namespace sfmlcubes
 				}
 			}
 
+			float Transition::getValue()
+			{
+				if (function != ppfConstant && function != ppfAbsSine)
+				{
+					return (1.0 - getProcessedPhase()) * sourceValue;
+				}
+				else if (function == ppfConstant)
+				{
+					return sourceValue;
+				}
+				else
+				{
+					return getProcessedPhase();
+				}
+			}
 
 			Transition::~Transition()
 			{

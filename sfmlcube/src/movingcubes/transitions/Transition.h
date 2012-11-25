@@ -25,9 +25,11 @@ namespace sfmlcubes
 			public:
 				enum PhaseProcessingFunction
 				{
+					ppfConstant,
 					ppfLinear,
 					ppfArctangent,
-					ppfParabolic
+					ppfParabolic,
+					ppfAbsSine
 				};
 
 			private:
@@ -35,10 +37,11 @@ namespace sfmlcubes
 				float phase;
 				float longitude;
 				PhaseProcessingFunction function;
+				float sourceValue;
 			protected:
 				float getProcessedPhase() const;
 			public:
-				Transition(float longitude, PhaseProcessingFunction function);
+				Transition(float longitude, PhaseProcessingFunction function, float sourceValue);
 				Transition();
 
 				void advanceStep(double delta);
@@ -47,7 +50,7 @@ namespace sfmlcubes
 				float getPhase() const { return phase; }
 				bool isInProgress() const { return inProgress; }
 
-				virtual float getValue() = 0;
+				virtual float getValue();
 			};
 		}
 	}

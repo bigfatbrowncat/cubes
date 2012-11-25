@@ -10,8 +10,6 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "CubeRotatingCenterType.h"
-
 namespace sfmlcubes
 {
 	namespace movingcubes
@@ -27,10 +25,16 @@ namespace sfmlcubes
 				mtWall
 			};
 
+			enum RotatingCenterType
+			{
+				rctCenter, rctCorner
+			};
+
 		private:
 			// Static fields
 			static int PLAYING_CUBE_INDEX;
 			static int WALL_CUBE_INDEX;
+		public:
 			static sf::Shader cubeShader;
 
 		public:
@@ -49,6 +53,8 @@ namespace sfmlcubes
 			Cube();
 
 			void glDraw() const;
+
+			bool operator == (const Cube& other);
 		};
 	}
 }

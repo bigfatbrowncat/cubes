@@ -13,9 +13,6 @@
 #include <SFML/System/NonCopyable.hpp>
 
 #include "transitions/Transition.h"
-#include "transitions/SlideXTransition.h"
-#include "transitions/SlideYTransition.h"
-#include "transitions/RotateTransition.h"
 #include "Cube.h"
 
 using namespace std;
@@ -32,30 +29,40 @@ namespace sfmlcubes
 		private:
 			Field& field;
 			list<Cube> cubes;
-			SlideXTransition mHorizontalTransition;
-			SlideYTransition mVerticalTransition;
-			RotateTransition mRotateTransition;
+			Transition mHorizontalTransition;
+			Transition mVerticalTransition;
+			Transition mRotateTransition;
+			Transition mBlinkingTransition;
 
+			// ** Animations **
 			// Sliding
 			float slidingX, slidingY;
-
 			// Rotating animation
-			CubeRotatingCenterType rotatingCenterType;
+			Cube::RotatingCenterType rotatingCenterType;
 			int rotatingCenterX, rotatingCenterY;
 			float rotatingAngle;	// 1 = 90 degrees
-			sf::Color mTone;
+
+			// Ambient color
+			sf::Color ambientStatic;
+			sf::Color ambientDynamic;
+			float transparency;
 		public:
 			Shape(Field& field) :
 				field(field),
 
+				mBlinkingTransition(1, Transition::ppfConstant, 1),
 
 				slidingX(0),
 				slidingY(0),
 
-				rotatingCenterType(crctCenterOfCube),
+				rotatingCenterType(Cube::rctCenter),
 				rotatingCenterX(0),
 				rotatingCenterY(0),
-				rotatingAngle(0)
+				rotatingAngle(0),
+
+				ambientStatic(128, 128, 128, 255),
+				ambientDynamic(255, 255, 255, 255),
+				transparency(1.0)
 			{
 			}
 
@@ -71,6 +78,7 @@ namespace sfmlcubes
 			void moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude);
 			void moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude);
 			void rotate(int angle, Transition::PhaseProcessingFunction function, float longitude);
+			void blink(float longitude, int blinks);
 
 			int getLeft();
 			int getRight();
@@ -79,7 +87,7 @@ namespace sfmlcubes
 
 			list<Cube*> cubeAt(int i, int j);
 
-			void setRotatingCenter(int centerX, int centerY, CubeRotatingCenterType value)
+			void setRotatingCenter(int centerX, int centerY, Cube::RotatingCenterType value)
 			{
 				rotatingCenterX = centerX;
 				rotatingCenterY = centerY;
@@ -88,15 +96,12 @@ namespace sfmlcubes
 
 			int getRotatingCenterX() const { return rotatingCenterX; }
 			int getRotatingCenterY() const { return rotatingCenterY; }
-			CubeRotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
+			Cube::RotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
 
-			const SlideXTransition& getHorizontalTransition() const { return mHorizontalTransition; }
-			const SlideYTransition& getVerticalTransition() const { return mVerticalTransition; }
-			const RotateTransition& getRotateTransition() const { return mRotateTransition; }
-
-			SlideXTransition& horizontalTransition() { return mHorizontalTransition; }
-			SlideYTransition& verticalTransition() { return mVerticalTransition; }
-			RotateTransition& rotateTransition() { return mRotateTransition; }
+			const Transition& getHorizontalTransition() const { return mHorizontalTransition; }
+			const Transition& getVerticalTransition() const { return mVerticalTransition; }
+			const Transition& getRotateTransition() const { return mRotateTransition; }
+			const Transition& getBlinkingTransition() const { return mBlinkingTransition; }
 
 			void glDraw(int dx, int dy);
 		};

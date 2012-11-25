@@ -9,6 +9,7 @@
 #define CUBESMECHANIC_H_
 
 #include <list>
+#include <map>
 
 #include "movingcubes/Field.h"
 
@@ -48,6 +49,7 @@ namespace sfmlcubes
 	enum CubesMechanicState
 	{
 		cmsShapeFalling,
+		cmsLinesToFireBlinking,
 		cmsLinesFiring,
 		cmsGameOver
 	};
@@ -59,6 +61,7 @@ namespace sfmlcubes
 		static float FALLING_DOWN_FAST_LONGITUDE;
 		static float FALLING_DOWN_FIRED_LONGITUDE;
 		static float HORIZONTAL_MOVING_LONGITUDE;
+		static float BLINKING_LONGITUDE;
 		static float FALLING_PERIOD;
 
 		CubesMechanicState state;
@@ -74,6 +77,7 @@ namespace sfmlcubes
 		float linesFiringPhase;*/
 		list<int> linesToFire;
 		list<Shape*> firingGroups;
+		map<Shape*, int> firingLineCounts;
 		int linesFired;
 		double time;
 		double momentWhenFallIssued;
@@ -106,7 +110,8 @@ namespace sfmlcubes
 
 		void moveDownFiredFalling();
 
-		void fireLines();
+		void collectLinesToFire();
+		void removeFiredAwayLines();
 		bool createNewBlock();
 
 		Field& getField() { return field; }
