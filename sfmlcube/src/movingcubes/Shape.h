@@ -22,12 +22,9 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		class Field;
-
-		class Shape : public sf::NonCopyable
+		class Shape
 		{
 		private:
-			Field& field;
 			list<Cube> cubes;
 		public:
 			// Sliding
@@ -42,9 +39,7 @@ namespace sfmlcubes
 			sf::Color ambientDynamic;
 			float transparency;
 
-			Shape(Field& field) :
-				field(field),
-
+			Shape() :
 				slidingX(0),
 				slidingY(0),
 

@@ -29,9 +29,6 @@ namespace sfmlcubes
 	CubesMechanic::CubesMechanic(int width, int height):
 			state(cmsShapeFalling),
 			field(width, height),
-			walls(field),
-			falling(field),
-			fallen(field),
 
 			horizontalDirection(cmhdNone),
 			verticalDirection(cmvdNone),
@@ -126,7 +123,7 @@ namespace sfmlcubes
 					// The last line was fired, so we start a new group
 
 					// and then we create a new one
-					Shape* s = new Shape(field);
+					Shape* s = new Shape();
 					ShapeKinematics* sd = new ShapeKinematics();
 					sd->setShape(*s);
 
