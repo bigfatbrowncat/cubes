@@ -248,6 +248,7 @@ namespace sfmlcubes
 		time += dt;
 		if (time - momentWhenFallIssued > FALLING_PERIOD)
 		{
+			turnOn(cmcMoveDown);
 			momentWhenFallIssued = time;
 		}
 
@@ -285,6 +286,11 @@ namespace sfmlcubes
 					{
 						falling.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
 					}
+					else
+					{
+						freezeFalling();
+						collectLinesToFire();
+					}
 				}
 				else if (verticalDirection == cmvdDownFast)
 				{
@@ -320,6 +326,7 @@ namespace sfmlcubes
 				firingGroupsToFallen();
 				if (createNewBlock())
 				{
+					momentWhenFallIssued = time;
 					state = cmsShapeFalling;
 				}
 				else
@@ -333,6 +340,8 @@ namespace sfmlcubes
 			// Doing nothing
 			break;
 		}
+
+		turnOff(cmcMoveDown);
 	}
 
 	sf::Color generateBlockcolor()

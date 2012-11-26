@@ -8,8 +8,6 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	static float fallingPeriod = 1.0;	// seconds
-
 	// Global application-level singletones
 	static sf::RenderWindow mainWindow;
 	static sf::Font mainFont;
@@ -20,7 +18,6 @@ namespace sfmlcubes
 	static sf::Text linesFiredValueText;
 
 	static CubesMechanic board(12, 21);
-	static float momentWhenFallIssued = 0;
 
 	static float recentMoment = 0;
 
@@ -279,40 +276,11 @@ namespace sfmlcubes
 	void updateStatesAndTiming()
 	{
 		float curTime = clock.getElapsedTime().asSeconds();
-		float timeSinceFallIssued = curTime - momentWhenFallIssued;
 
 		float dt = curTime - recentMoment;
 		recentMoment = curTime;
 
-		if (timeSinceFallIssued > fallingPeriod)
-		{
-			if (!board.canMoveDownFalling() && !board.getFalling().transitionIsInProgress())
-			{
-				// No transition in progress now,
-				// so we can freeze the falling shape
-				// and generate a new one
-				board.freezeFalling();
-				board.collectLinesToFire();
-				momentWhenFallIssued = curTime;
-			}
-			else if (!board.canMoveDownFalling())
-			{
-				// A transition is still in progress.
-				// We should turn all transition commands off
-				board.turnOff(cmcMoveLeft);
-				board.turnOff(cmcMoveRight);
-				board.turnOff(cmcRotateCW);
-			}
-			else
-			{
-				// Moving down
-				board.turnOn(cmcMoveDown);
-				momentWhenFallIssued = curTime;
-			}
-		}
-
 		board.processTimeStep(dt);
-		board.turnOff(cmcMoveDown);
 	}
 
 	void run()
