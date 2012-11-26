@@ -29,7 +29,6 @@ namespace sfmlcubes
 			Field(int width, int height): width(width), height(height) {}
 			virtual ~Field() {}
 
-			void advanceStep(double delta);
 			bool anyTransitionsInProgress();
 
 			list<Shape*>& getCubesGroups() { return cubesGroups; }

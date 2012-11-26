@@ -18,27 +18,6 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		void Field::advanceStep(double delta)
-		{
-			for (list<Shape*>::const_iterator iter = getCubesGroups().begin();
-				 iter != getCubesGroups().end();
-				 iter ++)
-			{
-				(*iter)->advanceStep(delta);
-			}
-		}
-
-		bool Field::anyTransitionsInProgress()
-		{
-			for (list<Shape*>::const_iterator iter = getCubesGroups().begin();
-				 iter != getCubesGroups().end();
-				 iter ++)
-			{
-				if ((*iter)->transitionIsInProgress()) return true;
-			}
-			return false;
-		}
-
 		list<Cube*> Field::cubeAt(int i, int j)
 		{
 			list<Cube*> sum;

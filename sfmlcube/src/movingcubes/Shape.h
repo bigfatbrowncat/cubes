@@ -29,12 +29,7 @@ namespace sfmlcubes
 		private:
 			Field& field;
 			list<Cube> cubes;
-			Transition mHorizontalTransition;
-			Transition mVerticalTransition;
-			Transition mRotateTransition;
-			Transition mBlinkingTransition;
-
-			// ** Animations **
+		public:
 			// Sliding
 			float slidingX, slidingY;
 			// Rotating animation
@@ -46,11 +41,9 @@ namespace sfmlcubes
 			sf::Color ambientStatic;
 			sf::Color ambientDynamic;
 			float transparency;
-		public:
+
 			Shape(Field& field) :
 				field(field),
-
-				mBlinkingTransition(1, Transition::ppfConstant, 1),
 
 				slidingX(0),
 				slidingY(0),
@@ -68,17 +61,9 @@ namespace sfmlcubes
 
 			list<Cube>& getCubes() { return cubes; }
 
-			void advanceStep(double delta);
-			bool transitionIsInProgress() const;
-
 			void moveVerticalNoTransition(int cells);
 			void moveHorizontalNoTransition(int cells);
 			void rotateNoTransition(int angle);
-
-			void moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude);
-			void moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude);
-			void rotate(int angle, Transition::PhaseProcessingFunction function, float longitude);
-			void blink(float longitude, int blinks);
 
 			int getLeft();
 			int getRight();
@@ -97,11 +82,6 @@ namespace sfmlcubes
 			int getRotatingCenterX() const { return rotatingCenterX; }
 			int getRotatingCenterY() const { return rotatingCenterY; }
 			Cube::RotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
-
-			const Transition& getHorizontalTransition() const { return mHorizontalTransition; }
-			const Transition& getVerticalTransition() const { return mVerticalTransition; }
-			const Transition& getRotateTransition() const { return mRotateTransition; }
-			const Transition& getBlinkingTransition() const { return mBlinkingTransition; }
 
 			void glDraw(int dx, int dy);
 		};

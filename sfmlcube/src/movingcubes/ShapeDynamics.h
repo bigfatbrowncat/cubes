@@ -5,8 +5,8 @@
  *      Author: imizus
  */
 
-#ifndef SHAPEDYNAMIC_H_
-#define SHAPEDYNAMIC_H_
+#ifndef SHAPEDYNAMICS_H_
+#define SHAPEDYNAMICS_H_
 
 #include <list>
 
@@ -19,13 +19,13 @@ namespace sfmlcubes
 	namespace movingcubes
 	{
 
-		class ShapeDynamic
+		class ShapeDynamics
 		{
 		private:
 			Shape* shape;
 			list<Shape*> obstacles;
 		public:
-			ShapeDynamic();
+			ShapeDynamics();
 
 			void setShape(Shape& shape);
 			void addObstacle(Shape& obstacle);
@@ -38,7 +38,7 @@ namespace sfmlcubes
 			bool canMoveLeft();
 			bool canRotate(int angle);
 
-			virtual ~ShapeDynamic();
+			virtual ~ShapeDynamics();
 		};
 
 	}

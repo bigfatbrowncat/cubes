@@ -41,10 +41,15 @@ namespace sfmlcubes
 			//horizontalMovingDirection(cmhdNone)
 
 	{
-		// Creating dynamic for the falling object
-		fallingDynamic.setShape(falling);
-		fallingDynamic.addObstacle(fallen);
-		fallingDynamic.addObstacle(walls);
+		// Creating kinematics for the falling object
+		fallingKinematics.setShape(falling);
+		// Creating kinematics for the fallen object
+		fallenKinematics.setShape(fallen);
+
+		// Creating dynamics for the falling object
+		fallingDynamics.setShape(falling);
+		fallingDynamics.addObstacle(fallen);
+		fallingDynamics.addObstacle(walls);
 
 		field.getCubesGroups().push_back(&walls);
 		field.getCubesGroups().push_back(&fallen);
@@ -86,8 +91,9 @@ namespace sfmlcubes
 
 	void CubesMechanic::collectLinesToFire()
 	{
-		firingGroups.clear();
-		firingLineCounts.clear();
+//		firingGroups.clear();
+//		firingGroupsDynamics.clear();
+//		firingLineCounts.clear();
 
 		bool lastLineWasFired = true;
 		int count = 0;
@@ -106,7 +112,7 @@ namespace sfmlcubes
 				// First of all we close the recent group if it exists
 				if (!lastLineWasFired && firingGroups.size() > 0)
 				{
-					firingLineCounts.insert(pair<Shape*, int> (firingGroups.back(), count) );
+					firingLineCounts.insert(pair<ShapeKinematics*, int> (firingGroupsDynamics.back(), count) );
 				}
 
 				count ++;
@@ -120,7 +126,12 @@ namespace sfmlcubes
 					// The last line was fired, so we start a new group
 
 					// and then we create a new one
-					firingGroups.push_back(new Shape(field));
+					Shape* s = new Shape(field);
+					ShapeKinematics* sd = new ShapeKinematics();
+					sd->setShape(*s);
+
+					firingGroups.push_back(s);
+					firingGroupsDynamics.push_back(sd);
 				}
 
 				// Adding the line to the current group
@@ -143,7 +154,7 @@ namespace sfmlcubes
 		{
 			if (count > 0)
 			{
-				firingLineCounts.insert(pair<Shape*, int> (firingGroups.back(), count) );
+				firingLineCounts.insert(pair<ShapeKinematics*, int> (firingGroupsDynamics.back(), count) );
 			}
 				//firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
 		}
@@ -159,7 +170,7 @@ namespace sfmlcubes
 		if (count > 0)
 		{
 			// Starting the blinking of the firing lines
-			fallen.blink(BLINKING_LONGITUDE, 3);
+			fallenKinematics.blink(BLINKING_LONGITUDE, 3);
 			state = cmsLinesToFireBlinking;
 		}
 		else
@@ -170,7 +181,7 @@ namespace sfmlcubes
 
 	void CubesMechanic::removeFiredAwayLines()
 	{
-		for (map<Shape*, int>::iterator iter = firingLineCounts.begin(); iter != firingLineCounts.end(); iter++)
+		for (map<ShapeKinematics*, int>::iterator iter = firingLineCounts.begin(); iter != firingLineCounts.end(); iter++)
 		{
 			(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
 			linesFired += (*iter).second;
@@ -178,6 +189,15 @@ namespace sfmlcubes
 
 		// Clearing the fallen part of the board
 		fallen.getCubes().clear();
+	}
+
+	bool CubesMechanic::anyFiringTransitionsInProgress()
+	{
+		for (list<ShapeKinematics*>::iterator iter = firingGroupsDynamics.begin(); iter != firingGroupsDynamics.end(); iter++)
+		{
+			if ((*iter)->transitionIsInProgress()) return true;
+		}
+		return false;
 	}
 
 	void CubesMechanic::firingGroupsToFallen()
@@ -195,11 +215,26 @@ namespace sfmlcubes
 			firingGroups.remove(cg);
 			delete cg;
 		}
+
+		while (firingGroupsDynamics.size() > 0)
+		{
+			ShapeKinematics* kin = firingGroupsDynamics.back();
+			firingGroupsDynamics.remove(kin);
+			firingLineCounts.erase(kin);
+			delete kin;
+		}
 	}
 
 	void CubesMechanic::processTimeStep(float dt)
 	{
-		field.advanceStep(dt);
+		fallingKinematics.advanceStep(dt);
+		fallenKinematics.advanceStep(dt);
+		for (list<ShapeKinematics*>::iterator iter = firingGroupsDynamics.begin(); iter != firingGroupsDynamics.end(); iter++)
+		{
+			(*iter)->advanceStep(dt);
+		}
+		//field.advanceStep(dt);
+
 		time += dt;
 		if (time - momentWhenFallIssued > FALLING_PERIOD)
 		{
@@ -214,32 +249,32 @@ namespace sfmlcubes
 			// We can move vertically, horizontally and rotate at the same time,
 			// so let's check our states and run commands
 
-			if (!falling.getHorizontalTransition().isInProgress())
+			if (!fallingKinematics.getHorizontalTransition().isInProgress())
 			{
 				if (horizontalDirection == cmhdRight)
 				{
-					if (fallingDynamic.canMoveRight())
+					if (fallingDynamics.canMoveRight())
 					{
-						falling.moveHorizontal(1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
+						fallingKinematics.moveHorizontal(1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
 					}
 				}
 				else if (horizontalDirection == cmhdLeft)
 				{
-					if (fallingDynamic.canMoveLeft())
+					if (fallingDynamics.canMoveLeft())
 					{
-						falling.moveHorizontal(-1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
+						fallingKinematics.moveHorizontal(-1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
 					}
 				}
 
 			}
 
-			if (!falling.getVerticalTransition().isInProgress())
+			if (!fallingKinematics.getVerticalTransition().isInProgress())
 			{
 				if (verticalDirection == cmvdDown)
 				{
-					if (fallingDynamic.canMoveDown())
+					if (fallingDynamics.canMoveDown())
 					{
-						falling.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
+						fallingKinematics.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
 					}
 					else
 					{
@@ -249,26 +284,26 @@ namespace sfmlcubes
 				}
 				else if (verticalDirection == cmvdDownFast)
 				{
-					if (fallingDynamic.canMoveDown())
+					if (fallingDynamics.canMoveDown())
 					{
-						falling.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
+						fallingKinematics.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
 					}
 				}
 			}
 
-			if (!falling.getRotateTransition().isInProgress())
+			if (!fallingKinematics.getRotateTransition().isInProgress())
 			{
 				if (rotationDirection == cmrdCW)
 				{
-					if (fallingDynamic.canRotate(1))
+					if (fallingDynamics.canRotate(1))
 					{
-						falling.rotate(1, Transition::ppfArctangent, ROTATION_LONGITUDE);
+						fallingKinematics.rotate(1, Transition::ppfArctangent, ROTATION_LONGITUDE);
 					}
 				}
 			}
 			break;
 		case cmsLinesToFireBlinking:
-			if (!this->fallen.getBlinkingTransition().isInProgress())
+			if (!fallenKinematics.getBlinkingTransition().isInProgress())
 			{
 				removeFiredAwayLines();
 				state = cmsLinesFiring;
@@ -276,7 +311,7 @@ namespace sfmlcubes
 
 			break;
 		case cmsLinesFiring:
-			if (!field.anyTransitionsInProgress())
+			if (!anyFiringTransitionsInProgress())
 			{
 				firingGroupsToFallen();
 				if (createNewBlock())

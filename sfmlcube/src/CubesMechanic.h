@@ -12,7 +12,8 @@
 #include <map>
 
 #include "movingcubes/Field.h"
-#include "movingcubes/ShapeDynamic.h"
+#include "movingcubes/ShapeKinematics.h"
+#include "movingcubes/ShapeDynamics.h"
 
 using namespace sfmlcubes::movingcubes;
 
@@ -67,7 +68,9 @@ namespace sfmlcubes
 
 		CubesMechanicState state;
 
-		ShapeDynamic fallingDynamic;
+		ShapeDynamics fallingDynamics;
+		ShapeKinematics fallingKinematics;
+		ShapeKinematics fallenKinematics;
 		Field field;
 		Shape walls, falling, fallen;
 
@@ -79,7 +82,8 @@ namespace sfmlcubes
 		float linesFiringPhase;*/
 		list<int> linesToFire;
 		list<Shape*> firingGroups;
-		map<Shape*, int> firingLineCounts;
+		list<ShapeKinematics*> firingGroupsDynamics;
+		map<ShapeKinematics*, int> firingLineCounts;
 		int linesFired;
 		double time;
 		double momentWhenFallIssued;
@@ -109,6 +113,7 @@ namespace sfmlcubes
 
 		void collectLinesToFire();
 		void removeFiredAwayLines();
+		bool anyFiringTransitionsInProgress();
 		bool createNewBlock();
 
 		Field& getField() { return field; }

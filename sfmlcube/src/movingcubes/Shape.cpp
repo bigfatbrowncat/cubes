@@ -13,28 +13,6 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		void Shape::advanceStep(double delta)
-		{
-			mRotateTransition.advanceStep(delta);
-			rotatingAngle = mRotateTransition.getValue();
-
-			mHorizontalTransition.advanceStep(delta);
-			slidingX = mHorizontalTransition.getValue();
-
-			mVerticalTransition.advanceStep(delta);
-			slidingY = mVerticalTransition.getValue();
-
-			mBlinkingTransition.advanceStep(delta);
-			transparency = mBlinkingTransition.getValue();
-		}
-
-		bool Shape::transitionIsInProgress() const
-		{
-			return mRotateTransition.isInProgress() ||
-				   mHorizontalTransition.isInProgress() ||
-				   mVerticalTransition.isInProgress();
-		}
-
 		void Shape::glDraw(int dx, int dy)
 		{
 			for (list<Cube>::const_iterator citer = getCubes().begin();
@@ -143,13 +121,6 @@ namespace sfmlcubes
 			this->rotatingCenterY += cells;
 		}
 
-		void Shape::moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude)
-		{
-			moveVerticalNoTransition(cells);
-			mVerticalTransition = Transition(longitude, function, -cells);
-			slidingY = mVerticalTransition.getValue();
-		}
-
 		void Shape::moveHorizontalNoTransition(int cells)
 		{
 			for (list<Cube>::iterator iter = getCubes().begin();
@@ -159,13 +130,6 @@ namespace sfmlcubes
 				(*iter).x += cells;
 			}
 			this->rotatingCenterX += cells;
-		}
-
-		void Shape::moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude)
-		{
-			moveHorizontalNoTransition(cells);
-			mHorizontalTransition = Transition(longitude, function, -cells);
-			slidingX = mHorizontalTransition.getValue();
 		}
 
 		void Shape::rotateNoTransition(int angle)
@@ -213,19 +177,6 @@ namespace sfmlcubes
 				}
 			}
 
-		}
-
-		void Shape::rotate(int angle, Transition::PhaseProcessingFunction function, float longitude)
-		{
-			rotateNoTransition(angle);
-			mRotateTransition = Transition(longitude, function, -angle);
-			rotatingAngle = mRotateTransition.getValue();
-		}
-
-		void Shape::blink(float longitude, int blinks)
-		{
-			mBlinkingTransition = Transition(longitude, Transition::ppfAbsSine, blinks);
-			transparency = mBlinkingTransition.getValue();
 		}
 
 		list<Cube*> Shape::cubeAt(int i, int j)

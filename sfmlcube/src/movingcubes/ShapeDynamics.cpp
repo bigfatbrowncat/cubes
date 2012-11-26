@@ -5,35 +5,35 @@
  *      Author: imizus
  */
 
-#include "ShapeDynamic.h"
+#include "ShapeDynamics.h"
 
 namespace sfmlcubes
 {
 	namespace movingcubes
 	{
 
-		ShapeDynamic::ShapeDynamic()
+		ShapeDynamics::ShapeDynamics()
 		{
 		}
 
-		void ShapeDynamic::setShape(Shape& shape)
+		void ShapeDynamics::setShape(Shape& shape)
 		{
 			this->shape = &shape;
 		}
-		void ShapeDynamic::addObstacle(Shape& obstacle)
+		void ShapeDynamics::addObstacle(Shape& obstacle)
 		{
 			obstacles.push_back(&obstacle);
 		}
-		void ShapeDynamic::removeObstacle(Shape& obstacle)
+		void ShapeDynamics::removeObstacle(Shape& obstacle)
 		{
 			obstacles.remove(&obstacle);
 		}
-		void ShapeDynamic::clearObstacles()
+		void ShapeDynamics::clearObstacles()
 		{
 			obstacles.clear();
 		}
 
-		bool ShapeDynamic::anyCollisions()
+		bool ShapeDynamics::anyCollisions()
 		{
 			for (list<Cube>::const_iterator citer = shape->getCubes().begin(); citer != shape->getCubes().end(); citer++)
 			{
@@ -50,7 +50,7 @@ namespace sfmlcubes
 			return false;
 		}
 
-		bool ShapeDynamic::canMoveDown()
+		bool ShapeDynamics::canMoveDown()
 		{
 			shape->moveVerticalNoTransition(1);
 			bool res = !anyCollisions();
@@ -59,7 +59,7 @@ namespace sfmlcubes
 			return res;
 		}
 
-		bool ShapeDynamic::canMoveLeft()
+		bool ShapeDynamics::canMoveLeft()
 		{
 			shape->moveHorizontalNoTransition(-1);
 			bool res = !anyCollisions();
@@ -68,7 +68,7 @@ namespace sfmlcubes
 			return res;
 		}
 
-		bool ShapeDynamic::canMoveRight()
+		bool ShapeDynamics::canMoveRight()
 		{
 			shape->moveHorizontalNoTransition(1);
 			bool res = !anyCollisions();
@@ -77,7 +77,7 @@ namespace sfmlcubes
 			return res;
 		}
 
-		bool ShapeDynamic::canRotate(int angle)
+		bool ShapeDynamics::canRotate(int angle)
 		{
 			shape->rotateNoTransition(angle);
 			bool res = !anyCollisions();
@@ -87,7 +87,7 @@ namespace sfmlcubes
 		}
 
 
-		ShapeDynamic::~ShapeDynamic()
+		ShapeDynamics::~ShapeDynamics()
 		{
 			// TODO Auto-generated destructor stub
 		}
