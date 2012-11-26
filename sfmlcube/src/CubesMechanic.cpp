@@ -193,7 +193,7 @@ namespace sfmlcubes
 				//firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
 		}
 
-		linesFired += count;
+		//linesFired += count;
 
 		// Adding the new groups to our board
 		for (list<Shape*>::iterator iter = firingGroups.begin(); iter != firingGroups.end(); iter++)
@@ -201,7 +201,7 @@ namespace sfmlcubes
 			field.getCubesGroups().push_back(*iter);
 		}
 
-		if (firingGroups.size() > 0 && (*firingLineCounts.begin()).second != 0)
+		if (count > 0)
 		{
 			// Starting the blinking of the firing lines
 			fallen.blink(BLINKING_LONGITUDE, 3);
@@ -218,6 +218,7 @@ namespace sfmlcubes
 		for (map<Shape*, int>::iterator iter = firingLineCounts.begin(); iter != firingLineCounts.end(); iter++)
 		{
 			(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
+			linesFired += (*iter).second;
 		}
 
 		// Clearing the fallen part of the board
