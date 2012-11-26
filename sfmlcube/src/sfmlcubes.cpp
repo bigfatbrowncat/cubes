@@ -1,5 +1,6 @@
 #include <string>
 #include <sstream>
+#include <unistd.h>
 
 #include "CubesMechanic.h"
 #include "sfmlcubes.h"

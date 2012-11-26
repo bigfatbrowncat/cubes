@@ -41,6 +41,11 @@ namespace sfmlcubes
 			//horizontalMovingDirection(cmhdNone)
 
 	{
+		// Creating dynamic for the falling object
+		fallingDynamic.setShape(falling);
+		fallingDynamic.addObstacle(fallen);
+		fallingDynamic.addObstacle(walls);
+
 		field.getCubesGroups().push_back(&walls);
 		field.getCubesGroups().push_back(&fallen);
 		field.getCubesGroups().push_back(&falling);
@@ -60,56 +65,6 @@ namespace sfmlcubes
 
 	CubesMechanic::~CubesMechanic() { }
 
-	bool CubesMechanic::anyCollisions()
-	{
-		for (list<Cube>::const_iterator citer = falling.getCubes().begin(); citer != falling.getCubes().end(); citer++)
-		{
-			int i = (*citer).x;
-			int j = (*citer).y;
-
-			// Checking if there is a cube or a wall under our cube
-			if (!fallen.cubeAt(i, j).empty() ||
-			    !walls.cubeAt(i, j).empty()) return true;
-		}
-
-		return false;
-	}
-
-	bool CubesMechanic::canMoveDownFalling()
-	{
-		falling.moveVerticalNoTransition(1);
-		bool res = !anyCollisions();
-		falling.moveVerticalNoTransition(-1);
-
-		return res;
-	}
-
-	bool CubesMechanic::canMoveLeftFalling()
-	{
-		falling.moveHorizontalNoTransition(-1);
-		bool res = !anyCollisions();
-		falling.moveHorizontalNoTransition(1);
-
-		return res;
-	}
-
-	bool CubesMechanic::canMoveRightFalling()
-	{
-		falling.moveHorizontalNoTransition(1);
-		bool res = !anyCollisions();
-		falling.moveHorizontalNoTransition(-1);
-
-		return res;
-	}
-
-	bool CubesMechanic::canRotateFalling(int angle)
-	{
-		falling.rotateNoTransition(angle);
-		bool res = !anyCollisions();
-		falling.rotateNoTransition(-angle);
-
-		return res;
-	}
 
 /*	bool CubesMechanic::countLinesToFire()
 	{
@@ -263,14 +218,14 @@ namespace sfmlcubes
 			{
 				if (horizontalDirection == cmhdRight)
 				{
-					if (canMoveRightFalling())
+					if (fallingDynamic.canMoveRight())
 					{
 						falling.moveHorizontal(1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
 					}
 				}
 				else if (horizontalDirection == cmhdLeft)
 				{
-					if (canMoveLeftFalling())
+					if (fallingDynamic.canMoveLeft())
 					{
 						falling.moveHorizontal(-1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
 					}
@@ -282,7 +237,7 @@ namespace sfmlcubes
 			{
 				if (verticalDirection == cmvdDown)
 				{
-					if (canMoveDownFalling())
+					if (fallingDynamic.canMoveDown())
 					{
 						falling.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
 					}
@@ -294,7 +249,7 @@ namespace sfmlcubes
 				}
 				else if (verticalDirection == cmvdDownFast)
 				{
-					if (canMoveDownFalling())
+					if (fallingDynamic.canMoveDown())
 					{
 						falling.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
 					}
@@ -305,7 +260,7 @@ namespace sfmlcubes
 			{
 				if (rotationDirection == cmrdCW)
 				{
-					if (canRotateFalling(1))
+					if (fallingDynamic.canRotate(1))
 					{
 						falling.rotate(1, Transition::ppfArctangent, ROTATION_LONGITUDE);
 					}

@@ -12,6 +12,7 @@
 #include <map>
 
 #include "movingcubes/Field.h"
+#include "movingcubes/ShapeDynamic.h"
 
 using namespace sfmlcubes::movingcubes;
 
@@ -66,6 +67,7 @@ namespace sfmlcubes
 
 		CubesMechanicState state;
 
+		ShapeDynamic fallingDynamic;
 		Field field;
 		Shape walls, falling, fallen;
 
@@ -102,11 +104,6 @@ namespace sfmlcubes
 	public:
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();
-
-		bool canMoveDownFalling();
-		bool canMoveRightFalling();
-		bool canMoveLeftFalling();
-		bool canRotateFalling(int angle);
 
 		void moveDownFiredFalling();
 

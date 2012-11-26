@@ -226,7 +226,7 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 		unsigned int texture = 0;
 		bool ismat=false;
 		strcpy(filename,"\0");
-		std::cout << tmp.size() << std::endl;
+//		std::cout << tmp.size() << std::endl;
 		for(unsigned int i=0;i<tmp.size();i++)
 		{
 			if(tmp[i][0]=='#')
