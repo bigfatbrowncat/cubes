@@ -41,10 +41,6 @@ namespace sfmlcubes
 		WallsController& wallsController;
 		FallenController& fallenController;
 
-/*		FallingShapeHorizontalDirection horizontalDirection;
-		FallingShapeVerticalDirection verticalDirection;
-		FallingShapeRotationDirection rotationDirection;*/
-
 		bool fastFalling, movingRight, movingLeft, fallDownPending, rotatingCW;
 		FallingShapeControllerState state;
 	protected:
@@ -57,8 +53,6 @@ namespace sfmlcubes
 		bool createOBlock(const sf::Color& gen, const Shape& fallen);
 		bool createSBlock(const sf::Color& gen, const Shape& fallen);
 		bool createZBlock(const sf::Color& gen, const Shape& fallen);
-
-		bool createNewBlock();
 
 	public:
 		FallingShapeController(WallsController& wallsController, FallenController& fallenController);
@@ -75,6 +69,9 @@ namespace sfmlcubes
 		void turnOffRotateCW();
 
 		const Shape& getFallingShape() const { return falling; }
+		FallingShapeControllerState getState() const { return state; }
+
+		bool createNewBlock();
 
 		virtual ~FallingShapeController();
 	};

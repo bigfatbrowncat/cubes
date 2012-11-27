@@ -201,12 +201,21 @@ namespace sfmlcubes
 		switch (state)
 		{
 		case cmsShapeFalling:
+
 			if (time - momentWhenFallIssued > FALLING_PERIOD)
 			{
 				fallingShapeController.fallDown();
 				momentWhenFallIssued = time;
 			}
 
+			if (fallingShapeController.getState() == fscsLanded)
+			{
+				fallenController.mergeShape(fallingShapeController.getFallingShape());
+				if (!fallingShapeController.createNewBlock())
+				{
+					state = cmsGameOver;
+				}
+			}
 
 			break;
 		case cmsLinesToFireBlinking:

@@ -21,6 +21,7 @@ namespace sfmlcubes
 		FallenController();
 
 		const Shape& getFallen() const { return fallen; }
+		void mergeShape(const Shape& other) { fallen += other; }
 
 		virtual ~FallenController();
 	};

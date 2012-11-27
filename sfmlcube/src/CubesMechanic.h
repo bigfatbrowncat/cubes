@@ -44,6 +44,7 @@ namespace sfmlcubes
 		static float BLINKING_LONGITUDE;
 		static float FALLING_PERIOD;
 
+		int width, height;
 		CubesMechanicState state;
 
 /*		ShapeDynamics fallingDynamics;
@@ -56,9 +57,9 @@ namespace sfmlcubes
 		CubesMechanicVerticalDirection verticalDirection;
 		CubesMechanicRotationDirection rotationDirection;*/
 
-		FallingShapeController fallingShapeController;
-		FallenController fallenController;
 		WallsController wallsController;
+		FallenController fallenController;
+		FallingShapeController fallingShapeController;
 
 
 		/*bool linesAreFiring;
@@ -89,7 +90,6 @@ namespace sfmlcubes
 		bool createSBlock();
 		bool createOBlock();
 
-		int width, height;
 	public:
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();

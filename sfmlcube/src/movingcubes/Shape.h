@@ -59,6 +59,8 @@ namespace sfmlcubes
 			{
 				cubes.push_back(cube);
 			}
+
+
 			void clear() { cubes.clear(); }
 
 			void moveVerticalNoTransition(int cells);
@@ -87,6 +89,8 @@ namespace sfmlcubes
 
 			bool operator == (const Shape& other);
 			bool operator != (const Shape& other);
+
+			Shape& operator += (const Shape& other);
 		};
 	}
 }

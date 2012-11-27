@@ -88,6 +88,17 @@ namespace sfmlcubes
 			return !((*this) == other);
 		}
 
+		Shape& Shape::operator += (const Shape& other)
+		{
+			for (list<Cube>::const_iterator iter = other.cubes.begin();
+				 iter != other.cubes.end();
+				 iter ++)
+			{
+				addCube(*iter);
+			}
+			return *this;
+		}
+
 		int Shape::getLeft()
 		{
 			int left = (*getCubes().begin()).x;

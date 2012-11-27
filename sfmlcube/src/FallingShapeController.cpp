@@ -23,9 +23,9 @@ namespace sfmlcubes
 
 
 	FallingShapeController::FallingShapeController(WallsController& wallsController, FallenController& fallenController) :
-		state(fscsLanded),
 		wallsController(wallsController),
-		fallenController(fallenController)
+		fallenController(fallenController),
+		state(fscsFlying)
 	{
 		fallingKinematics.setShape(falling);
 		fallingDynamics.setShape(falling);
@@ -36,6 +36,8 @@ namespace sfmlcubes
 	void FallingShapeController::processTimeStep(float dt)
 	{
 		fallingKinematics.advanceStep(dt);
+		updateObstacles();
+		fallingDynamics.setShape(falling);
 
 		if (!fallingKinematics.getHorizontalTransition().isInProgress())
 		{
@@ -58,22 +60,29 @@ namespace sfmlcubes
 
 		if (!fallingKinematics.getVerticalTransition().isInProgress())
 		{
-			bool canFallDown = false;
-			if (fallDownPending)
+			if (fallDownPending || fastFalling)
 			{
-				if (fallingDynamics.canMoveDown())
+				bool canFallDown = false;
+				if (fallDownPending)
 				{
-					fallingKinematics.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
-					canFallDown = true;
+					if (fallingDynamics.canMoveDown())
+					{
+						fallingKinematics.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
+						canFallDown = true;
+					}
+					fallDownPending = false;
 				}
-				fallDownPending = false;
-			}
-			else if (fastFalling)
-			{
-				if (fallingDynamics.canMoveDown())
+				else if (fastFalling)
 				{
-					fallingKinematics.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
-					canFallDown = true;
+					if (fallingDynamics.canMoveDown())
+					{
+						fallingKinematics.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
+						canFallDown = true;
+					}
+				}
+				if (!canFallDown)
+				{
+					state = fscsLanded;
 				}
 			}
 		}
@@ -289,31 +298,49 @@ namespace sfmlcubes
 
 	bool FallingShapeController::createNewBlock()
 	{
+		falling.clear();
+
 		sf::Color gen = generateBlockcolor();
 		const Shape& fallen = fallenController.getFallen();
 
 		int r = rand() * 7 / RAND_MAX;
+		bool result;
 		switch (r)
 		{
 		case 0:
-			return createOBlock(gen, fallen);
+			result = createOBlock(gen, fallen);
+			break;
 		case 1:
-			return createSBlock(gen, fallen);
+			result = createSBlock(gen, fallen);
+			break;
 		case 2:
-			return createLBlock(gen, fallen);
+			result = createLBlock(gen, fallen);
+			break;
 		case 3:
-			return createJBlock(gen, fallen);
+			result = createJBlock(gen, fallen);
+			break;
 		case 4:
-			return createIBlock(gen, fallen);
+			result = createIBlock(gen, fallen);
+			break;
 		case 5:
-			return createTBlock(gen, fallen);
+			result = createTBlock(gen, fallen);
+			break;
 		case 6:
-			return createSBlock(gen, fallen);
+			result = createSBlock(gen, fallen);
+			break;
 		case 7:
-			return createZBlock(gen, fallen);
+			result = createZBlock(gen, fallen);
+			break;
 		default:
-			return false;
+			result = false;
+			break;
 		}
+		if (result)
+		{
+			state = fscsFlying;
+		}
+
+		return result;
 
 		/*Cube c = sfmlcubes::Cube(sf::Color::Red, true);
 		c.slidingX = -0.5;
