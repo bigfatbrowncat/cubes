@@ -55,6 +55,8 @@ namespace sfmlcubes
 			void glDraw() const;
 
 			bool operator == (const Cube& other);
+			bool operator != (const Cube& other);
+
 		};
 	}
 }

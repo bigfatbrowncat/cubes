@@ -13,7 +13,7 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		void Shape::glDraw(int dx, int dy)
+		void Shape::glDraw(int dx, int dy) const
 		{
 			for (list<Cube>::const_iterator citer = getCubes().begin();
 				 citer != getCubes().end();
@@ -62,10 +62,36 @@ namespace sfmlcubes
 
 		}
 
+		bool Shape::operator == (const Shape& other)
+		{
+			if (cubes.size() != other.getCubes().size())
+			{
+				return false;
+			}
+
+			for (list<Cube>::const_iterator citer = getCubes().begin();
+				 citer != getCubes().end();
+				 citer ++)
+			{
+				list<Cube> cx = other.cubeAt((*citer).x, (*citer).y);
+				if (!cx.empty())
+				{
+					if (cx.back() != (*citer)) return false;
+				}
+			}
+
+			return true;
+		}
+
+		bool Shape::operator != (const Shape& other)
+		{
+			return !((*this) == other);
+		}
+
 		int Shape::getLeft()
 		{
 			int left = (*getCubes().begin()).x;
-			for (list<Cube>::iterator iter = getCubes().begin();
+			for (list<Cube>::const_iterator iter = getCubes().begin();
 				 iter != getCubes().end();
 				 iter ++)
 			{
@@ -77,7 +103,7 @@ namespace sfmlcubes
 		int Shape::getRight()
 		{
 			int right = (*getCubes().begin()).x;
-			for (list<Cube>::iterator iter = getCubes().begin();
+			for (list<Cube>::const_iterator iter = getCubes().begin();
 				 iter != getCubes().end();
 				 iter ++)
 			{
@@ -89,7 +115,7 @@ namespace sfmlcubes
 		int Shape::getTop()
 		{
 			int top = (*getCubes().begin()).x;
-			for (list<Cube>::iterator iter = getCubes().begin();
+			for (list<Cube>::const_iterator iter = getCubes().begin();
 				 iter != getCubes().end();
 				 iter ++)
 			{
@@ -101,7 +127,7 @@ namespace sfmlcubes
 		int Shape::getBottom()
 		{
 			int bottom = (*getCubes().begin()).x;
-			for (list<Cube>::iterator iter = getCubes().begin();
+			for (list<Cube>::const_iterator iter = getCubes().begin();
 				 iter != getCubes().end();
 				 iter ++)
 			{
@@ -112,8 +138,8 @@ namespace sfmlcubes
 
 		void Shape::moveVerticalNoTransition(int cells)
 		{
-			for (list<Cube>::iterator iter = getCubes().begin();
-				 iter != getCubes().end();
+			for (list<Cube>::iterator iter = cubes.begin();
+				 iter != cubes.end();
 				 iter ++)
 			{
 				(*iter).y += cells;
@@ -123,8 +149,8 @@ namespace sfmlcubes
 
 		void Shape::moveHorizontalNoTransition(int cells)
 		{
-			for (list<Cube>::iterator iter = getCubes().begin();
-				 iter != getCubes().end();
+			for (list<Cube>::iterator iter = cubes.begin();
+				 iter != cubes.end();
 				 iter ++)
 			{
 				(*iter).x += cells;
@@ -135,8 +161,8 @@ namespace sfmlcubes
 		void Shape::rotateNoTransition(int angle)
 		{
 			// Searching for anything in our radius
-			for (list<Cube>::iterator iter = getCubes().begin();
-				 iter != getCubes().end();
+			for (list<Cube>::iterator iter = cubes.begin();
+				 iter != cubes.end();
 				 iter ++)
 			{
 				// Calculating 3 images for our position
@@ -179,16 +205,14 @@ namespace sfmlcubes
 
 		}
 
-		list<Cube*> Shape::cubeAt(int i, int j)
+		list<Cube> Shape::cubeAt(int i, int j) const
 		{
-			list<Cube*> res;
-			for (list<Cube>::iterator iter = getCubes().begin();
-				 iter != getCubes().end();
-				 iter ++)
+			list<Cube> res;
+			for (list<Cube>::const_iterator iter = getCubes().begin(); iter != getCubes().end(); iter ++)
 			{
 				if ((*iter).x == i && (*iter).y == j)
 				{
-					res.push_back(&(*iter));
+					res.push_back(*iter);
 				}
 			}
 			return res;

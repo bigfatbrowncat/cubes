@@ -18,15 +18,15 @@ namespace sfmlcubes
 
 		void ShapeDynamics::setShape(Shape& shape)
 		{
-			this->shape = &shape;
+			this->shape = shape;
 		}
-		void ShapeDynamics::addObstacle(Shape& obstacle)
+		void ShapeDynamics::addObstacle(const Shape& obstacle)
 		{
-			obstacles.push_back(&obstacle);
+			obstacles.push_back(obstacle);
 		}
-		void ShapeDynamics::removeObstacle(Shape& obstacle)
+		void ShapeDynamics::removeObstacle(const Shape& obstacle)
 		{
-			obstacles.remove(&obstacle);
+			obstacles.remove(obstacle);
 		}
 		void ShapeDynamics::clearObstacles()
 		{
@@ -35,15 +35,15 @@ namespace sfmlcubes
 
 		bool ShapeDynamics::anyCollisions()
 		{
-			for (list<Cube>::const_iterator citer = shape->getCubes().begin(); citer != shape->getCubes().end(); citer++)
+			for (list<Cube>::const_iterator citer = shape.getCubes().begin(); citer != shape.getCubes().end(); citer++)
 			{
 				int i = (*citer).x;
 				int j = (*citer).y;
 
 				// Checking if there is a cube of an obstacle under our cube
-				for (list<Shape*>::const_iterator sciter = obstacles.begin(); sciter != obstacles.end(); sciter++)
+				for (list<Shape>::const_iterator sciter = obstacles.begin(); sciter != obstacles.end(); sciter++)
 				{
-					if (!(*sciter)->cubeAt(i, j).empty()) return true;
+					if (!(*sciter).cubeAt(i, j).empty()) return true;
 				}
 			}
 
@@ -52,36 +52,36 @@ namespace sfmlcubes
 
 		bool ShapeDynamics::canMoveDown()
 		{
-			shape->moveVerticalNoTransition(1);
+			shape.moveVerticalNoTransition(1);
 			bool res = !anyCollisions();
-			shape->moveVerticalNoTransition(-1);
+			shape.moveVerticalNoTransition(-1);
 
 			return res;
 		}
 
 		bool ShapeDynamics::canMoveLeft()
 		{
-			shape->moveHorizontalNoTransition(-1);
+			shape.moveHorizontalNoTransition(-1);
 			bool res = !anyCollisions();
-			shape->moveHorizontalNoTransition(1);
+			shape.moveHorizontalNoTransition(1);
 
 			return res;
 		}
 
 		bool ShapeDynamics::canMoveRight()
 		{
-			shape->moveHorizontalNoTransition(1);
+			shape.moveHorizontalNoTransition(1);
 			bool res = !anyCollisions();
-			shape->moveHorizontalNoTransition(-1);
+			shape.moveHorizontalNoTransition(-1);
 
 			return res;
 		}
 
 		bool ShapeDynamics::canRotate(int angle)
 		{
-			shape->rotateNoTransition(angle);
+			shape.rotateNoTransition(angle);
 			bool res = !anyCollisions();
-			shape->rotateNoTransition(-angle);
+			shape.rotateNoTransition(-angle);
 
 			return res;
 		}

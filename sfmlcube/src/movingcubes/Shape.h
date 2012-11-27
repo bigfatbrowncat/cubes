@@ -54,7 +54,12 @@ namespace sfmlcubes
 			{
 			}
 
-			list<Cube>& getCubes() { return cubes; }
+			const list<Cube>& getCubes() const { return cubes; }
+			void addCube(const Cube& cube)
+			{
+				cubes.push_back(cube);
+			}
+			void clear() { cubes.clear(); }
 
 			void moveVerticalNoTransition(int cells);
 			void moveHorizontalNoTransition(int cells);
@@ -65,7 +70,7 @@ namespace sfmlcubes
 			int getTop();
 			int getBottom();
 
-			list<Cube*> cubeAt(int i, int j);
+			list<Cube> cubeAt(int i, int j) const;
 
 			void setRotatingCenter(int centerX, int centerY, Cube::RotatingCenterType value)
 			{
@@ -78,7 +83,10 @@ namespace sfmlcubes
 			int getRotatingCenterY() const { return rotatingCenterY; }
 			Cube::RotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
 
-			void glDraw(int dx, int dy);
+			void glDraw(int dx, int dy) const;
+
+			bool operator == (const Shape& other);
+			bool operator != (const Shape& other);
 		};
 	}
 }

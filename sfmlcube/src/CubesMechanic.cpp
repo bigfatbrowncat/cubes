@@ -18,51 +18,17 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	float CubesMechanic::ROTATION_LONGITUDE = 0.25;
-	float CubesMechanic::FALLING_DOWN_LONGITUDE = 0.1;
-	float CubesMechanic::FALLING_DOWN_FAST_LONGITUDE = 0.05;
 	float CubesMechanic::FALLING_DOWN_FIRED_LONGITUDE = 0.3;
-	float CubesMechanic::HORIZONTAL_MOVING_LONGITUDE = 0.08;
 	float CubesMechanic::BLINKING_LONGITUDE = 0.6;
 	float CubesMechanic::FALLING_PERIOD = 1.0;
 
 	CubesMechanic::CubesMechanic(int width, int height):
+			width(width), height(height),
 			state(cmsShapeFalling),
-			field(width, height),
-
-			horizontalDirection(cmhdNone),
-			verticalDirection(cmvdNone),
-			rotationDirection(cmrdNone)
-
-			//verticalMovingDirection(cmvdNone),
-			//horizontalMovingDirection(cmhdNone)
-
+			wallsController(width, height),
+			fallenController(),
+			fallingShapeController(wallsController, fallenController)
 	{
-		// Creating kinematics for the falling object
-		fallingKinematics.setShape(falling);
-		// Creating kinematics for the fallen object
-		fallenKinematics.setShape(fallen);
-
-		// Creating dynamics for the falling object
-		fallingDynamics.setShape(falling);
-		fallingDynamics.addObstacle(fallen);
-		fallingDynamics.addObstacle(walls);
-
-		field.getCubesGroups().push_back(&walls);
-		field.getCubesGroups().push_back(&fallen);
-		field.getCubesGroups().push_back(&falling);
-
-		sf::Color wallColor = sf::Color(96, 96, 96);
-
-		for (int i = 0; i < field.getWidth(); i++)
-		{
-			walls.getCubes().push_back(Cube(i, field.getHeight() - 1, Cube::mtWall, wallColor));
-		}
-		for (int j = 1; j < field.getHeight(); j++)
-		{
-			walls.getCubes().push_back(Cube(0, j, Cube::mtWall, wallColor));
-			walls.getCubes().push_back(Cube(field.getWidth() - 1, j, Cube::mtWall, wallColor));
-		}
 	}
 
 	CubesMechanic::~CubesMechanic() { }
@@ -84,14 +50,10 @@ namespace sfmlcubes
 			}
 		}
 		return linesToFire.size() > 0;
-	}*/
+	}
 
 	void CubesMechanic::collectLinesToFire()
 	{
-//		firingGroups.clear();
-//		firingGroupsDynamics.clear();
-//		firingLineCounts.clear();
-
 		bool lastLineWasFired = true;
 		int count = 0;
 		for (int j = field.getHeight() - 1; j >= count; j--)
@@ -221,94 +183,42 @@ namespace sfmlcubes
 			delete kin;
 		}
 	}
-
+*/
 	void CubesMechanic::processTimeStep(float dt)
 	{
-		fallingKinematics.advanceStep(dt);
+		/*fallingKinematics.advanceStep(dt);
 		fallenKinematics.advanceStep(dt);
 		for (list<ShapeKinematics*>::iterator iter = firingGroupsDynamics.begin(); iter != firingGroupsDynamics.end(); iter++)
 		{
 			(*iter)->advanceStep(dt);
-		}
+		}*/
 		//field.advanceStep(dt);
 
+		fallingShapeController.processTimeStep(dt);
+
 		time += dt;
-		if (time - momentWhenFallIssued > FALLING_PERIOD)
-		{
-			turnOn(cmcMoveDown);
-			momentWhenFallIssued = time;
-		}
 
 		switch (state)
 		{
 		case cmsShapeFalling:
-
-			// We can move vertically, horizontally and rotate at the same time,
-			// so let's check our states and run commands
-
-			if (!fallingKinematics.getHorizontalTransition().isInProgress())
+			if (time - momentWhenFallIssued > FALLING_PERIOD)
 			{
-				if (horizontalDirection == cmhdRight)
-				{
-					if (fallingDynamics.canMoveRight())
-					{
-						fallingKinematics.moveHorizontal(1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
-					}
-				}
-				else if (horizontalDirection == cmhdLeft)
-				{
-					if (fallingDynamics.canMoveLeft())
-					{
-						fallingKinematics.moveHorizontal(-1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
-					}
-				}
-
+				fallingShapeController.fallDown();
+				momentWhenFallIssued = time;
 			}
 
-			if (!fallingKinematics.getVerticalTransition().isInProgress())
-			{
-				if (verticalDirection == cmvdDown)
-				{
-					if (fallingDynamics.canMoveDown())
-					{
-						fallingKinematics.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
-					}
-					else
-					{
-						freezeFalling();
-						collectLinesToFire();
-					}
-				}
-				else if (verticalDirection == cmvdDownFast)
-				{
-					if (fallingDynamics.canMoveDown())
-					{
-						fallingKinematics.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
-					}
-				}
-			}
 
-			if (!fallingKinematics.getRotateTransition().isInProgress())
-			{
-				if (rotationDirection == cmrdCW)
-				{
-					if (fallingDynamics.canRotate(1))
-					{
-						fallingKinematics.rotate(1, Transition::ppfArctangent, ROTATION_LONGITUDE);
-					}
-				}
-			}
 			break;
 		case cmsLinesToFireBlinking:
-			if (!fallenKinematics.getBlinkingTransition().isInProgress())
+/*			if (!fallenKinematics.getBlinkingTransition().isInProgress())
 			{
 				removeFiredAwayLines();
 				state = cmsLinesFiring;
 			}
-
+*/
 			break;
 		case cmsLinesFiring:
-			if (!anyFiringTransitionsInProgress())
+/*			if (!anyFiringTransitionsInProgress())
 			{
 				firingGroupsToFallen();
 				if (createNewBlock())
@@ -320,267 +230,40 @@ namespace sfmlcubes
 				{
 					state = cmsGameOver;
 				}
-			}
+			}*/
 			break;
 
 		case cmsGameOver:
 			// Doing nothing
 			break;
 		}
-
-		turnOff(cmcMoveDown);
 	}
 
-	sf::Color generateBlockcolor()
-	{
-		int k = 4;
 
-		float r = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-		float g = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-		float b = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-
-		return sf::Color(255 * r, 255 * g, 255 * b);
-	}
-
-	bool CubesMechanic::createTBlock()
-	{
-		sf::Color gen = generateBlockcolor();
-
-		if (fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(7, 1).empty() &&
-		    fallen.cubeAt(6, 2).empty())
-		{
-			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 1, Cube::rctCenter);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool CubesMechanic::createJBlock()
-	{
-		sf::Color gen = generateBlockcolor();
-
-		if (fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(6, 2).empty() &&
-		    fallen.cubeAt(6, 3).empty() &&
-		    fallen.cubeAt(5, 3).empty())
-		{
-			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 3, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(5, 3, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 3, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool CubesMechanic::createLBlock()
-	{
-		sf::Color gen = generateBlockcolor();
-
-		if (fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(5, 2).empty() &&
-		    fallen.cubeAt(5, 3).empty() &&
-		    fallen.cubeAt(6, 3).empty())
-		{
-			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(5, 2, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(5, 3, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 3, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 3, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool CubesMechanic::createIBlock()
-	{
-		sf::Color gen = generateBlockcolor();
-
-		if (fallen.cubeAt(4, 1).empty() &&
-		    fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(7, 1).empty())
-		{
-			falling.getCubes().push_back(Cube(4, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 1, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool CubesMechanic::createZBlock()
-	{
-		sf::Color gen = generateBlockcolor();
-
-		if (fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(6, 2).empty() &&
-		    fallen.cubeAt(7, 2).empty())
-		{
-			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(7, 2, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(7, 2, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool CubesMechanic::createSBlock()
-	{
-		sf::Color gen = generateBlockcolor();
-
-		if (fallen.cubeAt(5, 2).empty() &&
-		    fallen.cubeAt(6, 2).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(7, 1).empty())
-		{
-			falling.getCubes().push_back(Cube(5, 2, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(7, 1, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 2, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool CubesMechanic::createOBlock()
-	{
-		sf::Color gen = generateBlockcolor();
-
-		if (fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(5, 2).empty() &&
-		    fallen.cubeAt(6, 2).empty())
-		{
-			falling.getCubes().push_back(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(5, 2, Cube::mtPlaying, gen));
-			falling.getCubes().push_back(Cube(6, 2, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 2, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool CubesMechanic::createNewBlock()
-	{
-		int r = rand() * 7 / RAND_MAX;
-		switch (r)
-		{
-		case 0:
-			return createOBlock();
-		case 1:
-			return createSBlock();
-		case 2:
-			return createLBlock();
-		case 3:
-			return createJBlock();
-		case 4:
-			return createIBlock();
-		case 5:
-			return createTBlock();
-		case 6:
-			return createSBlock();
-		case 7:
-			return createZBlock();
-		default:
-			return false;
-		}
-
-		/*Cube c = sfmlcubes::Cube(sf::Color::Red, true);
-		c.slidingX = -0.5;
-		c.slidingY = -0.2;
-		c.rotatingAngle = 0.3;
-		field.cubeAt(0, 0) = c;
-		field.cubeAt(0, 1) = sfmlcubes::Cube(sf::Color::Green, true);
-		field.cubeAt(0, 2) = sfmlcubes::Cube(sf::Color::Blue, true);
-		field.cubeAt(1, 1) = sfmlcubes::Cube(sf::Color::White, true);
-		*/
-	}
-
-	void CubesMechanic::freezeFalling()
+/*	void CubesMechanic::freezeFalling()
 	{
 		for (list<Cube>::iterator iter = falling.getCubes().begin(); iter != falling.getCubes().end(); iter++)
 		{
 			fallen.getCubes().push_back(*iter);
 		}
 		falling.getCubes().clear();
-	}
+	}*/
 
 	void CubesMechanic::turnOff(CubesMechanicCommand command)
 	{
 		switch (command)
 		{
-		case cmcMoveDown:
-			if (verticalDirection == cmvdDown)
-			{
-				verticalDirection = cmvdNone;
-			}
-			break;
 		case cmcMoveDownFast:
-			if (verticalDirection == cmvdDownFast)
-			{
-				verticalDirection = cmvdNone;
-			}
+			fallingShapeController.turnOffFastFalling();
 			break;
 		case cmcMoveLeft:
-			if (horizontalDirection == cmhdLeft)
-			{
-				horizontalDirection = cmhdNone;
-			}
+			fallingShapeController.turnOffLeft();
 			break;
 		case cmcMoveRight:
-			if (horizontalDirection == cmhdRight)
-			{
-				horizontalDirection = cmhdNone;
-			}
+			fallingShapeController.turnOffRight();
 			break;
 		case cmcRotateCW:
-			if (rotationDirection == cmrdCW)
-			{
-				rotationDirection = cmrdNone;
-			}
+			fallingShapeController.turnOffRotateCW();
 			break;
 		}
 	}
@@ -589,35 +272,17 @@ namespace sfmlcubes
 	{
 		switch (command)
 		{
-		case cmcMoveDown:
-			if (verticalDirection == cmvdNone)
-			{
-				verticalDirection = cmvdDown;
-			}
-			break;
 		case cmcMoveDownFast:
-			if (verticalDirection == cmvdNone)
-			{
-				verticalDirection = cmvdDownFast;
-			}
+			fallingShapeController.turnOnFastFalling();
 			break;
 		case cmcMoveLeft:
-			if (horizontalDirection == cmhdNone)
-			{
-				horizontalDirection = cmhdLeft;
-			}
+			fallingShapeController.turnOnLeft();
 			break;
 		case cmcMoveRight:
-			if (horizontalDirection == cmhdNone)
-			{
-				horizontalDirection = cmhdRight;
-			}
+			fallingShapeController.turnOnRight();
 			break;
 		case cmcRotateCW:
-			if (rotationDirection == cmrdNone)
-			{
-				rotationDirection = cmrdCW;
-			}
+			fallingShapeController.turnOnRotateCW();
 			break;
 		}
 	}

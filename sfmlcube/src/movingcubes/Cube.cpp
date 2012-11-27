@@ -54,10 +54,14 @@ namespace sfmlcubes
 
 		bool Cube::operator == (const Cube& other)
 		{
-			return this->color == other.color &&
-			       this->x == other.x &&
+			return this->x == other.x &&
 			       this->y == other.y &&
 			       this->modelType == other.modelType;
+		}
+
+		bool Cube::operator != (const Cube& other)
+		{
+			return !((*this) == other);
 		}
 
 		void Cube::glDraw() const

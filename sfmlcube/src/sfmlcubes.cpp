@@ -126,14 +126,14 @@ namespace sfmlcubes
 	void drawBoard()
 	{
 		// Translating the board center to the center of the screen
-		float delta_x = (board.getField().getWidth() - 0.5) / 2;
-		float delta_y = (board.getField().getHeight() - 0.5) / 2;
+		float delta_x = (board.getWidth() - 0.5) / 2;
+		float delta_y = (board.getHeight() - 0.5) / 2;
 		float cubeSize = 30;
 
 		glScalef(cubeSize, cubeSize, cubeSize);
 		glTranslatef(-delta_x, delta_y, 0.f);
 
-		board.getField().glDraw(0, 0);
+		board.glDraw(0, 0);
 	}
 
 	void drawScene(const sf::RenderTarget& win, float xangle, float yangle, float zangle)
@@ -307,7 +307,7 @@ int main()
 		sfmlcubes::initMainFont();
 		sfmlcubes::prepareScene();
 
-		sfmlcubes::board.createNewBlock();
+//		sfmlcubes::board.createNewBlock();
 
 		sfmlcubes::run();
 	}
