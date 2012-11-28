@@ -25,7 +25,11 @@ namespace sfmlcubes
 			state(cmsShapeFalling),
 			wallsController(width, height),
 			fallenController(1, 1, width - 2, height - 2),
-			fallingShapeController(wallsController, fallenController)
+			fallingShapeController(wallsController, fallenController),
+
+			time(0),
+			momentWhenFallIssued(0),
+			paused(false)
 	{
 	}
 
@@ -34,49 +38,52 @@ namespace sfmlcubes
 
 	void CubesMechanic::processTimeStep(float dt)
 	{
-		fallingShapeController.processTimeStep(dt);
-		fallenController.processTimeStep(dt);
-
-		time += dt;
-
-		switch (state)
+		if (!paused)
 		{
-		case cmsShapeFalling:
+			fallingShapeController.processTimeStep(dt);
+			fallenController.processTimeStep(dt);
 
-			if (time - momentWhenFallIssued > FALLING_PERIOD)
+			time += dt;
+
+			switch (state)
 			{
-				fallingShapeController.fallDown();
-				momentWhenFallIssued = time;
-			}
+			case cmsShapeFalling:
 
-			if (fallingShapeController.getState() == fscsLanded)
-			{
-				fallenController.mergeShape(fallingShapeController.getShape());
-				fallingShapeController.clearShape();
-				fallenController.fireFullLines();
-				state = cmsLinesFiring;
-			}
-
-			break;
-
-		case cmsLinesFiring:
-			if (fallenController.getState() == FallenController::sPassive)
-			{
-				if (fallingShapeController.createNewShape())
+				if (time - momentWhenFallIssued > FALLING_PERIOD)
 				{
+					fallingShapeController.fallDown();
 					momentWhenFallIssued = time;
-					state = cmsShapeFalling;
 				}
-				else
-				{
-					state = cmsGameOver;
-				}
-			}
-			break;
 
-		case cmsGameOver:
-			// Doing nothing
-			break;
+				if (fallingShapeController.getState() == fscsLanded)
+				{
+					fallenController.mergeShape(fallingShapeController.getShape());
+					fallingShapeController.clearShape();
+					fallenController.fireFullLines();
+					state = cmsLinesFiring;
+				}
+
+				break;
+
+			case cmsLinesFiring:
+				if (fallenController.getState() == FallenController::sPassive)
+				{
+					if (fallingShapeController.createNewShape())
+					{
+						momentWhenFallIssued = time;
+						state = cmsShapeFalling;
+					}
+					else
+					{
+						state = cmsGameOver;
+					}
+				}
+				break;
+
+			case cmsGameOver:
+				// Doing nothing
+				break;
+			}
 		}
 	}
 
@@ -96,6 +103,9 @@ namespace sfmlcubes
 		case cmcRotateCW:
 			fallingShapeController.turnOffRotateCW();
 			break;
+		case cmcPause:
+			paused = false;
+			break;
 		}
 	}
 
@@ -114,6 +124,9 @@ namespace sfmlcubes
 			break;
 		case cmcRotateCW:
 			fallingShapeController.turnOnRotateCW();
+			break;
+		case cmcPause:
+			paused = true;
 			break;
 		}
 	}

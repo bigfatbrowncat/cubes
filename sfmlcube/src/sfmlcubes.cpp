@@ -14,6 +14,7 @@ namespace sfmlcubes
 	static sf::Font mainFont;
 	static sf::Clock clock;
 
+	static sf::Text pauseText;
 	static sf::Text gameOverText;
 	static sf::Text linesFiredText;
 	static sf::Text linesFiredValueText;
@@ -53,7 +54,13 @@ namespace sfmlcubes
 
 	void updateText()
 	{
-		float k = (float)mainWindow.getSize().x / 640;
+		float k = (float)mainWindow.getSize().y / 480;
+
+		pauseText.setString("Pause");
+		pauseText.setCharacterSize(30 * k);
+		pauseText.setFont(mainFont);
+		pauseText.setPosition(1.0 * mainWindow.getSize().x / 2 - pauseText.getGlobalBounds().width / 2,
+				                 4.0 * mainWindow.getSize().y / 9 - pauseText.getGlobalBounds().height / 2);
 
 		gameOverText.setString("Game Over");
 		gameOverText.setCharacterSize(30 * k);
@@ -90,6 +97,16 @@ namespace sfmlcubes
 			sfmlcubes::mainWindow.setTitle("Cubes — Game Over");
 			mainWindow.draw(gameOverText, sf::RenderStates::Default);
 		}
+		else if (board.isPaused())
+		{
+			sfmlcubes::mainWindow.setTitle("Cubes — Paused");
+			mainWindow.draw(pauseText, sf::RenderStates::Default);
+		}
+		else
+		{
+			sfmlcubes::mainWindow.setTitle("Cubes");
+		}
+
 		mainWindow.popGLStates();
 	}
 
@@ -199,6 +216,14 @@ namespace sfmlcubes
     		}
     		break;
     	case sf::Keyboard::Space:
+    		if (!board.isPaused())
+    		{
+    			board.turnOn(cmcPause);
+    		}
+    		else
+    		{
+    			board.turnOff(cmcPause);
+    		}
     		break;
     	default:
     		break;

@@ -310,7 +310,7 @@ namespace sfmlcubes
 		sf::Color gen = generateBlockcolor();
 		const Shape& fallen = fallenController.getShape();
 
-		int r = rand() * 7 / RAND_MAX;
+		int r = (float)rand() / RAND_MAX * 8;
 		bool result;
 		switch (r)
 		{
