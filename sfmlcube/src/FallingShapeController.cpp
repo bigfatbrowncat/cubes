@@ -176,7 +176,7 @@ namespace sfmlcubes
 			falling.addCube(Cube(6, 3, Cube::mtPlaying, gen));
 			falling.addCube(Cube(5, 3, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(6, 3, Cube::rctCorner);
+			falling.setRotatingCenter(6, 2, Cube::rctCenter);
 			return true;
 		}
 		else
@@ -197,7 +197,7 @@ namespace sfmlcubes
 			falling.addCube(Cube(5, 3, Cube::mtPlaying, gen));
 			falling.addCube(Cube(6, 3, Cube::mtPlaying, gen));
 
-			falling.setRotatingCenter(6, 3, Cube::rctCorner);
+			falling.setRotatingCenter(5, 2, Cube::rctCenter);
 			return true;
 		}
 		else
