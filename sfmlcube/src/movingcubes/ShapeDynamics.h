@@ -10,6 +10,7 @@
 
 #include <list>
 
+#include "ShapeContainer.h"
 #include "Shape.h"
 
 using namespace std;
@@ -22,14 +23,14 @@ namespace sfmlcubes
 		class ShapeDynamics
 		{
 		private:
-			Shape shape;
-			list<Shape> obstacles;
+			ShapeContainer& shapeContainer;
+			list<const ShapeContainer*> obstacles;
+			bool anyCollisions(const Shape& shape);
 		public:
-			ShapeDynamics();
+			ShapeDynamics(ShapeContainer& shapeContainer);
 
-			void setShape(Shape& shape);
-			void addObstacle(const Shape& obstacle);
-			void removeObstacle(const Shape& obstacle);
+			void addObstacle(const ShapeContainer& obstacle);
+			void removeObstacle(const ShapeContainer& obstacle);
 			void clearObstacles();
 
 			bool anyCollisions();

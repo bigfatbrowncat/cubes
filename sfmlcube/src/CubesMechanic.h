@@ -124,8 +124,8 @@ namespace sfmlcubes
 
 		void glDraw(int dx, int dy)
 		{
-			wallsController.getWalls().glDraw(dx, dy);
-			fallenController.getFallen().glDraw(dx, dy);
+			wallsController.getShape().glDraw(dx, dy);
+			fallenController.getShape().glDraw(dx, dy);
 			fallingShapeController.getFallingShape().glDraw(dx, dy);
 		}
 	};

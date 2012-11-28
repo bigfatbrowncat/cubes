@@ -14,30 +14,24 @@ namespace sfmlcubes
 	float FallingShapeController::FALLING_DOWN_FAST_LONGITUDE = 0.05;
 	float FallingShapeController::HORIZONTAL_MOVING_LONGITUDE = 0.08;
 
-	void FallingShapeController::updateObstacles()
-	{
-		fallingDynamics.clearObstacles();
-		fallingDynamics.addObstacle(wallsController.getWalls());
-		fallingDynamics.addObstacle(fallenController.getFallen());
-	}
-
 
 	FallingShapeController::FallingShapeController(WallsController& wallsController, FallenController& fallenController) :
 		wallsController(wallsController),
 		fallenController(fallenController),
+
+		fallingKinematics(*this),
+		fallingDynamics(*this),
+
 		state(fscsFlying)
 	{
-		fallingKinematics.setShape(falling);
-		fallingDynamics.setShape(falling);
-
+		fallingDynamics.addObstacle(fallenController);
+		fallingDynamics.addObstacle(wallsController);
 		createNewBlock();
 	}
 
 	void FallingShapeController::processTimeStep(float dt)
 	{
 		fallingKinematics.advanceStep(dt);
-		updateObstacles();
-		fallingDynamics.setShape(falling);
 
 		if (!fallingKinematics.getHorizontalTransition().isInProgress())
 		{
@@ -301,7 +295,7 @@ namespace sfmlcubes
 		falling.clear();
 
 		sf::Color gen = generateBlockcolor();
-		const Shape& fallen = fallenController.getFallen();
+		const Shape& fallen = fallenController.getShape();
 
 		int r = rand() * 7 / RAND_MAX;
 		bool result;

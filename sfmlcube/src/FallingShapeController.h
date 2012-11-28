@@ -26,7 +26,7 @@ namespace sfmlcubes
 		fscsLanded
 	};
 
-	class FallingShapeController
+	class FallingShapeController : public ShapeContainer
 	{
 		static float ROTATION_LONGITUDE;
 		static float FALLING_DOWN_LONGITUDE;
@@ -35,11 +35,12 @@ namespace sfmlcubes
 
 	private:
 		Shape falling;
-		ShapeKinematics fallingKinematics;
-		ShapeDynamics fallingDynamics;
 
 		WallsController& wallsController;
 		FallenController& fallenController;
+
+		ShapeKinematics fallingKinematics;
+		ShapeDynamics fallingDynamics;
 
 		bool fastFalling, movingRight, movingLeft, fallDownPending, rotatingCW;
 		FallingShapeControllerState state;
@@ -56,6 +57,9 @@ namespace sfmlcubes
 
 	public:
 		FallingShapeController(WallsController& wallsController, FallenController& fallenController);
+
+		const Shape& getShape() const { return falling; }
+		void setShape(const Shape& shape) { falling = shape; }
 
 		void processTimeStep(float dt);
 		void fallDown();

@@ -10,6 +10,7 @@
 
 #include "transitions/Transition.h"
 #include "Shape.h"
+#include "ShapeContainer.h"
 
 using namespace sfmlcubes::movingcubes::transitions;
 
@@ -20,16 +21,14 @@ namespace sfmlcubes
 		class ShapeKinematics
 		{
 		private:
-			Shape* shape;
+			ShapeContainer& shapeContainer;
 
 			Transition mHorizontalTransition;
 			Transition mVerticalTransition;
 			Transition mRotateTransition;
 			Transition mBlinkingTransition;
 		public:
-			ShapeKinematics();
-
-			void setShape(Shape& shape);
+			ShapeKinematics(ShapeContainer& shapeContainer);
 
 			void advanceStep(double delta);
 			bool transitionIsInProgress() const;
