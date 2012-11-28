@@ -32,166 +32,8 @@ namespace sfmlcubes
 	CubesMechanic::~CubesMechanic() { }
 
 
-/*	bool CubesMechanic::countLinesToFire()
-	{
-		linesToFire.clear();
-		for (int j = 0; j < field.getHeight(); j++)
-		{
-			bool thisRowIsFull = true;
-			for (int i = 0; i < field.getWidth(); i++)
-			{
-				if (field.cubeAt(i, j).empty()) thisRowIsFull = false;
-			}
-			if (thisRowIsFull)
-			{
-				linesToFire.push_back(j);
-			}
-		}
-		return linesToFire.size() > 0;
-	}
-
-	void CubesMechanic::collectLinesToFire()
-	{
-		bool lastLineWasFired = true;
-		int count = 0;
-		for (int j = field.getHeight() - 1; j >= count; j--)
-		{
-
-			// Check if this line is full
-			bool thisRowIsFull = true;
-			for (int i = 1; i < field.getWidth() - 1; i++)
-			{
-				if (fallen.cubeAt(i, j).empty()) thisRowIsFull = false;
-			}
-
-			if (thisRowIsFull)
-			{
-				// First of all we close the recent group if it exists
-				if (!lastLineWasFired && firingGroups.size() > 0)
-				{
-					firingLineCounts.insert(pair<ShapeKinematics*, int> (firingGroupsDynamics.back(), count) );
-				}
-
-				count ++;
-				lastLineWasFired = true;
-			}
-			else
-			{
-				// This line isn't fired
-				if (lastLineWasFired)
-				{
-					// The last line was fired, so we start a new group
-
-					// and then we create a new one
-					Shape* s = new Shape();
-					ShapeKinematics* sd = new ShapeKinematics();
-					sd->setShape(*s);
-
-					firingGroups.push_back(s);
-					firingGroupsDynamics.push_back(sd);
-				}
-
-				// Adding the line to the current group
-				for (int i = 1; i < field.getWidth() - 1; i++)
-				{
-					if (!fallen.cubeAt(i, j).empty())
-					{
-						// Adding the cube to the current firing group
-						firingGroups.back()->getCubes().push_back(*(fallen.cubeAt(i, j).back()));
-						// Removing the cube from the fallens
-						fallen.getCubes().remove(*(fallen.cubeAt(i, j).back()));
-					}
-				}
-				lastLineWasFired = false;
-			}
-		}
-
-		// close the last group
-		if (firingGroups.size() > 0)
-		{
-			if (count > 0)
-			{
-				firingLineCounts.insert(pair<ShapeKinematics*, int> (firingGroupsDynamics.back(), count) );
-			}
-				//firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
-		}
-
-		//linesFired += count;
-
-		// Adding the new groups to our board
-		for (list<Shape*>::iterator iter = firingGroups.begin(); iter != firingGroups.end(); iter++)
-		{
-			field.getCubesGroups().push_back(*iter);
-		}
-
-		if (count > 0)
-		{
-			// Starting the blinking of the firing lines
-			fallenKinematics.blink(BLINKING_LONGITUDE, 3);
-			state = cmsLinesToFireBlinking;
-		}
-		else
-		{
-			state = cmsLinesFiring;
-		}
-	}
-
-	void CubesMechanic::removeFiredAwayLines()
-	{
-		for (map<ShapeKinematics*, int>::iterator iter = firingLineCounts.begin(); iter != firingLineCounts.end(); iter++)
-		{
-			(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
-			linesFired += (*iter).second;
-		}
-
-		// Clearing the fallen part of the board
-		fallen.getCubes().clear();
-	}
-
-	bool CubesMechanic::anyFiringTransitionsInProgress()
-	{
-		for (list<ShapeKinematics*>::iterator iter = firingGroupsDynamics.begin(); iter != firingGroupsDynamics.end(); iter++)
-		{
-			if ((*iter)->transitionIsInProgress()) return true;
-		}
-		return false;
-	}
-
-	void CubesMechanic::firingGroupsToFallen()
-	{
-		while (firingGroups.size() > 0)
-		{
-			Shape* cg = firingGroups.back();
-
-			for (list<Cube>::iterator iter = cg->getCubes().begin(); iter != cg->getCubes().end(); iter++)
-			{
-				fallen.getCubes().push_back(*iter);
-			}
-
-			field.getCubesGroups().remove(cg);
-			firingGroups.remove(cg);
-			delete cg;
-		}
-
-		while (firingGroupsDynamics.size() > 0)
-		{
-			ShapeKinematics* kin = firingGroupsDynamics.back();
-			firingGroupsDynamics.remove(kin);
-			firingLineCounts.erase(kin);
-			delete kin;
-		}
-	}
-*/
 	void CubesMechanic::processTimeStep(float dt)
 	{
-		/*fallingKinematics.advanceStep(dt);
-		fallenKinematics.advanceStep(dt);
-		for (list<ShapeKinematics*>::iterator iter = firingGroupsDynamics.begin(); iter != firingGroupsDynamics.end(); iter++)
-		{
-			(*iter)->advanceStep(dt);
-		}*/
-		//field.advanceStep(dt);
-
 		fallingShapeController.processTimeStep(dt);
 		fallenController.processTimeStep(dt);
 
@@ -222,6 +64,7 @@ namespace sfmlcubes
 			{
 				if (fallingShapeController.createNewShape())
 				{
+					momentWhenFallIssued = time;
 					state = cmsShapeFalling;
 				}
 				else
@@ -236,16 +79,6 @@ namespace sfmlcubes
 			break;
 		}
 	}
-
-
-/*	void CubesMechanic::freezeFalling()
-	{
-		for (list<Cube>::iterator iter = falling.getCubes().begin(); iter != falling.getCubes().end(); iter++)
-		{
-			fallen.getCubes().push_back(*iter);
-		}
-		falling.getCubes().clear();
-	}*/
 
 	void CubesMechanic::turnOff(CubesMechanicCommand command)
 	{
@@ -283,5 +116,21 @@ namespace sfmlcubes
 			fallingShapeController.turnOnRotateCW();
 			break;
 		}
+	}
+
+	void CubesMechanic::glDraw(int dx, int dy)
+	{
+		wallsController.getShape().glDraw(dx, dy);
+		fallingShapeController.getShape().glDraw(dx, dy);
+
+		list<Shape> shps = fallenController.getShapes();
+
+		for (list<Shape>::const_iterator iter = shps.begin();
+		     iter != shps.end();
+		     iter++)
+		{
+			(*iter).glDraw(dx, dy);
+		}
+
 	}
 }
