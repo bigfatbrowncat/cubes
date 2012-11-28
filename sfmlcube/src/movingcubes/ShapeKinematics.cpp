@@ -13,7 +13,7 @@ namespace sfmlcubes
 	{
 		ShapeKinematics::ShapeKinematics(ShapeContainer& shapeContainer) :
 			shapeContainer(shapeContainer),
-			mBlinkingTransition(1, Transition::ppfConstant, 1)
+			mBlinkingTransition(0.001, Transition::ppfConstant, 1)
 		{
 		}
 

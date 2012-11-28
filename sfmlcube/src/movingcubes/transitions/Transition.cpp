@@ -31,7 +31,7 @@ namespace sfmlcubes
 			Transition::Transition() :
 					inProgress(false),
 					phase(0),
-					longitude(1),
+					longitude(0.001),
 					function(ppfLinear),
 					sourceValue(0)
 			{

@@ -18,15 +18,13 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	float CubesMechanic::FALLING_DOWN_FIRED_LONGITUDE = 0.3;
-	float CubesMechanic::BLINKING_LONGITUDE = 0.6;
 	float CubesMechanic::FALLING_PERIOD = 1.0;
 
 	CubesMechanic::CubesMechanic(int width, int height):
 			width(width), height(height),
 			state(cmsShapeFalling),
 			wallsController(width, height),
-			fallenController(),
+			fallenController(1, 1, width - 2, height - 2),
 			fallingShapeController(wallsController, fallenController)
 	{
 	}
@@ -195,6 +193,7 @@ namespace sfmlcubes
 		//field.advanceStep(dt);
 
 		fallingShapeController.processTimeStep(dt);
+		fallenController.processTimeStep(dt);
 
 		time += dt;
 
@@ -210,36 +209,26 @@ namespace sfmlcubes
 
 			if (fallingShapeController.getState() == fscsLanded)
 			{
-				fallenController.mergeShape(fallingShapeController.getFallingShape());
-				if (!fallingShapeController.createNewBlock())
-				{
-					state = cmsGameOver;
-				}
+				fallenController.mergeShape(fallingShapeController.getShape());
+				fallingShapeController.clearShape();
+				fallenController.fireFullLines();
+				state = cmsLinesFiring;
 			}
 
 			break;
-		case cmsLinesToFireBlinking:
-/*			if (!fallenKinematics.getBlinkingTransition().isInProgress())
-			{
-				removeFiredAwayLines();
-				state = cmsLinesFiring;
-			}
-*/
-			break;
+
 		case cmsLinesFiring:
-/*			if (!anyFiringTransitionsInProgress())
+			if (fallenController.getState() == FallenController::sPassive)
 			{
-				firingGroupsToFallen();
-				if (createNewBlock())
+				if (fallingShapeController.createNewShape())
 				{
-					momentWhenFallIssued = time;
 					state = cmsShapeFalling;
 				}
 				else
 				{
 					state = cmsGameOver;
 				}
-			}*/
+			}
 			break;
 
 		case cmsGameOver:

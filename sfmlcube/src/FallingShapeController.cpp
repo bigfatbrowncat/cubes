@@ -26,70 +26,80 @@ namespace sfmlcubes
 	{
 		fallingDynamics.addObstacle(fallenController);
 		fallingDynamics.addObstacle(wallsController);
-		createNewBlock();
+		createNewShape();
 	}
 
 	void FallingShapeController::processTimeStep(float dt)
 	{
 		fallingKinematics.advanceStep(dt);
 
-		if (!fallingKinematics.getHorizontalTransition().isInProgress())
+		switch (state)
 		{
-			if (movingRight)
-			{
-				if (fallingDynamics.canMoveRight())
-				{
-					fallingKinematics.moveHorizontal(1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
-				}
-			}
-			else if (movingLeft)
-			{
-				if (fallingDynamics.canMoveLeft())
-				{
-					fallingKinematics.moveHorizontal(-1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
-				}
-			}
 
-		}
+		case fscsFlying:
 
-		if (!fallingKinematics.getVerticalTransition().isInProgress())
-		{
-			if (fallDownPending || fastFalling)
+			if (!fallingKinematics.getHorizontalTransition().isInProgress())
 			{
-				bool canFallDown = false;
-				if (fallDownPending)
+				if (movingRight)
 				{
-					if (fallingDynamics.canMoveDown())
+					if (fallingDynamics.canMoveRight())
 					{
-						fallingKinematics.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
-						canFallDown = true;
-					}
-					fallDownPending = false;
-				}
-				else if (fastFalling)
-				{
-					if (fallingDynamics.canMoveDown())
-					{
-						fallingKinematics.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
-						canFallDown = true;
+						fallingKinematics.moveHorizontal(1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
 					}
 				}
-				if (!canFallDown)
+				else if (movingLeft)
 				{
-					state = fscsLanded;
+					if (fallingDynamics.canMoveLeft())
+					{
+						fallingKinematics.moveHorizontal(-1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
+					}
 				}
-			}
-		}
 
-		if (!fallingKinematics.getRotateTransition().isInProgress())
-		{
-			if (rotatingCW)
+			}
+
+			if (!fallingKinematics.getVerticalTransition().isInProgress())
 			{
-				if (fallingDynamics.canRotate(1))
+				if (fallDownPending || fastFalling)
 				{
-					fallingKinematics.rotate(1, Transition::ppfArctangent, ROTATION_LONGITUDE);
+					bool canFallDown = false;
+					if (fallDownPending)
+					{
+						if (fallingDynamics.canMoveDown())
+						{
+							fallingKinematics.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
+							canFallDown = true;
+						}
+						fallDownPending = false;
+					}
+					else if (fastFalling)
+					{
+						if (fallingDynamics.canMoveDown())
+						{
+							fallingKinematics.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
+							canFallDown = true;
+						}
+					}
+					if (!canFallDown)
+					{
+						state = fscsLanded;
+					}
 				}
 			}
+
+			if (!fallingKinematics.getRotateTransition().isInProgress())
+			{
+				if (rotatingCW)
+				{
+					if (fallingDynamics.canRotate(1))
+					{
+						fallingKinematics.rotate(1, Transition::ppfArctangent, ROTATION_LONGITUDE);
+					}
+				}
+			}
+			break;
+		case fscsLanded:
+			// Do nothing
+			break;
 		}
 
 	}
@@ -290,10 +300,13 @@ namespace sfmlcubes
 		}
 	}
 
-	bool FallingShapeController::createNewBlock()
+	void FallingShapeController::clearShape()
 	{
 		falling.clear();
+	}
 
+	bool FallingShapeController::createNewShape()
+	{
 		sf::Color gen = generateBlockcolor();
 		const Shape& fallen = fallenController.getShape();
 

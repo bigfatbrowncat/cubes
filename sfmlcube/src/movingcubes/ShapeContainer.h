@@ -8,12 +8,12 @@
 #ifndef SHAPEOWNER_H_
 #define SHAPEOWNER_H_
 
-#include "Shape.h"
-
 namespace sfmlcubes
 {
 	namespace movingcubes
 	{
+		class Shape;
+
 		/**
 		 * This is an interface for an owner of a shape.
 		 * It should provide it's contents to anyone who needs it.

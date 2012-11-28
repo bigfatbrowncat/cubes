@@ -14,6 +14,7 @@
 
 #include "transitions/Transition.h"
 #include "Cube.h"
+#include "ShapeContainer.h"
 
 using namespace std;
 using namespace sfmlcubes::movingcubes::transitions;
@@ -22,7 +23,7 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		class Shape
+		class Shape : public ShapeContainer
 		{
 		private:
 			list<Cube> cubes;
@@ -59,6 +60,17 @@ namespace sfmlcubes
 			{
 				cubes.push_back(cube);
 			}
+			void removeCube(int x, int y)
+			{
+				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end(); iter++)
+				{
+					if ((*iter).x == x && (*iter).y == y)
+					{
+						cubes.remove(*iter);
+						return;
+					}
+				}
+			}
 
 
 			void clear() { cubes.clear(); }
@@ -66,6 +78,9 @@ namespace sfmlcubes
 			void moveVerticalNoTransition(int cells);
 			void moveHorizontalNoTransition(int cells);
 			void rotateNoTransition(int angle);
+
+			virtual const Shape& getShape() const { return *this; }
+			virtual void setShape(const Shape& shape) { *this = shape; }
 
 			int getLeft();
 			int getRight();

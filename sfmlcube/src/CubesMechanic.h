@@ -33,15 +33,12 @@ namespace sfmlcubes
 	enum CubesMechanicState
 	{
 		cmsShapeFalling,
-		cmsLinesToFireBlinking,
 		cmsLinesFiring,
 		cmsGameOver
 	};
 
 	class CubesMechanic
 	{
-		static float FALLING_DOWN_FIRED_LONGITUDE;
-		static float BLINKING_LONGITUDE;
 		static float FALLING_PERIOD;
 
 		int width, height;
@@ -61,14 +58,12 @@ namespace sfmlcubes
 		FallenController fallenController;
 		FallingShapeController fallingShapeController;
 
-
 		/*bool linesAreFiring;
 		float linesFiringPhase;*/
-		list<int> linesToFire;
+/*		list<int> linesToFire;
 		list<Shape*> firingGroups;
 		list<ShapeKinematics*> firingGroupsDynamics;
-		map<ShapeKinematics*, int> firingLineCounts;
-		int linesFired;
+		map<ShapeKinematics*, int> firingLineCounts;*/
 		double time;
 		double momentWhenFallIssued;
 
@@ -104,7 +99,7 @@ namespace sfmlcubes
 //		Field& getField() { return field; }
 		//const CubesField& getFieldBackground() const { return background; }
 //		FallingShapeRotationDirection getRotationDirection() const { return rotationDirection; }
-		int getLinesFired() const { return linesFired; }
+		int getLinesFired() const { return fallenController.getLinesFired(); }
 
 		int getWidth() const { return width; }
 		int getHeight() const { return height; }
@@ -125,8 +120,17 @@ namespace sfmlcubes
 		void glDraw(int dx, int dy)
 		{
 			wallsController.getShape().glDraw(dx, dy);
-			fallenController.getShape().glDraw(dx, dy);
-			fallingShapeController.getFallingShape().glDraw(dx, dy);
+			fallingShapeController.getShape().glDraw(dx, dy);
+
+			list<Shape> shps = fallenController.getShapes();
+
+			for (list<Shape>::const_iterator iter = shps.begin();
+			     iter != shps.end();
+			     iter++)
+			{
+				(*iter).glDraw(dx, dy);
+			}
+
 		}
 	};
 
