@@ -64,7 +64,7 @@ namespace sfmlcubes
 		void turnOffLeft();
 		void turnOffRotateCW();
 
-		bool launchNewShape(const Shape& shape);
+		void launchNewShape(const Shape& shape);
 
 		FallingShapeControllerState getState() const { return state; }
 

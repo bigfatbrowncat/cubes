@@ -140,7 +140,7 @@ namespace sfmlcubes
 		rotatingCW = false;
 	}
 
-	bool FallingShapeController::launchNewShape(const Shape& shape)
+	void FallingShapeController::launchNewShape(const Shape& shape)
 	{
 		falling = shape;
 		state = fscsFlying;

@@ -75,12 +75,6 @@ namespace sfmlcubes
 		linesFiredText.setPosition(23.0 * mainWindow.getSize().x / 28 - linesFiredText.getGlobalBounds().width / 2,
 				                   1.0 * mainWindow.getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
 
-		nextShapeText.setString("Next shape");
-		nextShapeText.setCharacterSize(17 * k);
-		nextShapeText.setFont(mainFont);
-		nextShapeText.setPosition(23.0 * mainWindow.getSize().x / 28 - nextShapeText.getGlobalBounds().width / 2,
-				                   3.0 * mainWindow.getSize().y / 8 - nextShapeText.getGlobalBounds().height / 2);
-
 		stringstream ss;
 		ss << board.getLinesFired();
 		linesFiredValueText.setString(ss.str());
@@ -90,7 +84,11 @@ namespace sfmlcubes
 		linesFiredValueText.setPosition(24.0 * mainWindow.getSize().x / 28 - linesFiredValueText.getGlobalBounds().width / 2,
 				                   1.0 * mainWindow.getSize().y / 8 + linesFiredText.getGlobalBounds().height + 2.0 * k);
 
-
+		nextShapeText.setString("Next shape");
+		nextShapeText.setCharacterSize(17 * k);
+		nextShapeText.setFont(mainFont);
+		nextShapeText.setPosition(23.0 * mainWindow.getSize().x / 28 - nextShapeText.getGlobalBounds().width / 2,
+				                   3.0 * mainWindow.getSize().y / 8 - nextShapeText.getGlobalBounds().height / 2);
 	}
 
 	void drawText()
@@ -152,12 +150,13 @@ namespace sfmlcubes
 	{
 		float k = (float)mainWindow.getSize().y / 480;
 
-	    glMatrixMode(GL_MODELVIEW);
-	    glLoadIdentity();
-	    glTranslatef(0.f, 0.f, -300.f);
-
 		glPushMatrix();
 		{
+			setPerspective();
+		    glMatrixMode(GL_MODELVIEW);
+		    glLoadIdentity();
+		    glTranslatef(0.f, 0.f, -300.f);
+
 		    //glRotatef(0, 1.f, 0.f, 0.f);
 		    //glRotatef(0, 0.f, 1.f, 0.f);
 		    //glRotatef(0, 0.f, 0.f, 1.f);
@@ -177,18 +176,37 @@ namespace sfmlcubes
 	    glPushMatrix();
 		{
 	    	Shape dealingShape = board.getShapeDealer().getShape();
+
+	    	glMatrixMode(GL_PROJECTION);
+	    	glLoadIdentity();
+	    	gluPerspective(50.f, 1, 1, 1000);
+
+			float cubeSize = 33;
+/*			float delta_x =  +
+	                         nextShapeText.getGlobalBounds().width - k * cubeSize * (dealingShape.getRight() + 1);
+
+			float delta_y =   +
+			                 nextShapeText.getGlobalBounds().height - k * cubeSize * (dealingShape.getTop() - 0.5);*/
+
+	    	glViewport(23.0 * mainWindow.getSize().x / 28 - nextShapeText.getGlobalBounds().width / 4,
+	    	           3.0 * mainWindow.getSize().y / 8 + nextShapeText.getGlobalBounds().height - 2 * k,
+	    	           nextShapeText.getGlobalBounds().width,
+	    	           nextShapeText.getGlobalBounds().width);
+
+	    	glMatrixMode(GL_MODELVIEW);
+	    	glLoadIdentity();
+		    glTranslatef(0.f, 0.f, -200.f);	        //gluPerspective()
+
+		    //gluPerspective(100.f, 1, 1.f, 1000.f);
+
 			// Translating the board center to the center of the screen
-			float cubeSize = 30 * 0.7;
-			float delta_x = - (float)mainWindow.getSize().x / 2 + 23.0 * mainWindow.getSize().x / 28 +
-	                          nextShapeText.getGlobalBounds().width - cubeSize * (dealingShape.getRight() + 1);
 
-			float delta_y = - (float)mainWindow.getSize().y / 2 + 3.0 * mainWindow.getSize().y / 8 +
-			                  nextShapeText.getGlobalBounds().height + 2 * k + cubeSize * (-dealingShape.getTop() + 0.5);
-
-			glTranslatef(delta_x, -delta_y, 0.f);
+			glTranslatef(cubeSize * 1.4,
+			             cubeSize * 2,
+			             0.f);
 			glScalef(cubeSize, cubeSize, cubeSize);
 
-			dealingShape.glDraw(0, 0);
+			dealingShape.glDraw(-dealingShape.getRight(), -dealingShape.getTop());
 		}
 		glPopMatrix();
 	}
