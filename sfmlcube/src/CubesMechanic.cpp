@@ -68,15 +68,20 @@ namespace sfmlcubes
 			case cmsLinesFiring:
 				if (fallenController.getState() == FallenController::sPassive)
 				{
-					if (fallingShapeController.createNewShape())
+					Shape newShape = shapeGenerator.createNewShape();
+					if (fallenController.anyCollisions(newShape))
 					{
-						momentWhenFallIssued = time;
-						state = cmsShapeFalling;
+						// Our new shape collides with fallen ones.
+						// That means the game is over
+						state = cmsGameOver;
 					}
 					else
 					{
-						state = cmsGameOver;
+						// Launching the new shape as a falling one
+						fallingShapeController.launchNewShape(newShape);
+						state = cmsShapeFalling;
 					}
+
 				}
 				break;
 

@@ -47,14 +47,6 @@ namespace sfmlcubes
 	protected:
 		void updateObstacles();
 
-		bool createTBlock(const sf::Color& gen, const Shape& fallen);
-		bool createJBlock(const sf::Color& gen, const Shape& fallen);
-		bool createLBlock(const sf::Color& gen, const Shape& fallen);
-		bool createIBlock(const sf::Color& gen, const Shape& fallen);
-		bool createOBlock(const sf::Color& gen, const Shape& fallen);
-		bool createSBlock(const sf::Color& gen, const Shape& fallen);
-		bool createZBlock(const sf::Color& gen, const Shape& fallen);
-
 	public:
 		FallingShapeController(WallsController& wallsController, FallenController& fallenController);
 
@@ -72,10 +64,11 @@ namespace sfmlcubes
 		void turnOffLeft();
 		void turnOffRotateCW();
 
+		bool launchNewShape(const Shape& shape);
+
 		FallingShapeControllerState getState() const { return state; }
 
 		void clearShape();
-		bool createNewShape();
 
 		virtual ~FallingShapeController();
 	};

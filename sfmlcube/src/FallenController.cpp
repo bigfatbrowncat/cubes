@@ -5,7 +5,12 @@
  *      Author: imizus
  */
 
+#include "movingcubes/ShapeDynamics.h"
+
+#include "Logger.h"
 #include "FallenController.h"
+
+using namespace sfmlcubes::movingcubes;
 
 namespace sfmlcubes
 {
@@ -48,6 +53,21 @@ namespace sfmlcubes
 			}
 			break;
 		}
+	}
+
+	bool FallenController::anyCollisions(const Shape& shape)
+	{
+		ShapeDynamics sd(shape);
+
+		for (list<Shape*>::const_iterator iter = fallenNotFiredParts.begin();
+		     iter != fallenNotFiredParts.end();
+		     iter ++)
+		{
+			sd.addObstacle(**iter);
+		}
+		sd.addObstacle(fallen);
+
+		return sd.anyCollisions();
 	}
 
 	void FallenController::collectLinesToFire()

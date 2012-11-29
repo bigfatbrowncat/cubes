@@ -65,6 +65,7 @@ namespace sfmlcubes
 		void setShape(const Shape& shape) { fallen = shape; }
 
 		void processTimeStep(float dt);
+		bool anyCollisions(const Shape& shape);
 
 		void mergeShape(const Shape& other) { fallen += other; }
 		void fireFullLines() { collectLinesToFire(); }

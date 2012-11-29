@@ -23,11 +23,11 @@ namespace sfmlcubes
 		class ShapeDynamics
 		{
 		private:
-			ShapeContainer& shapeContainer;
+			const ShapeContainer& shapeContainer;
 			list<const ShapeContainer*> obstacles;
 			bool anyCollisions(const Shape& shape);
 		public:
-			ShapeDynamics(ShapeContainer& shapeContainer);
+			ShapeDynamics(const ShapeContainer& shapeContainer);
 
 			void addObstacle(const ShapeContainer& obstacle);
 			void removeObstacle(const ShapeContainer& obstacle);

@@ -12,7 +12,7 @@ namespace sfmlcubes
 	namespace movingcubes
 	{
 
-		ShapeDynamics::ShapeDynamics(ShapeContainer& shapeContainer) :
+		ShapeDynamics::ShapeDynamics(const ShapeContainer& shapeContainer) :
 				shapeContainer(shapeContainer)
 		{
 		}

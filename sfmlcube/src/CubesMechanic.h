@@ -17,6 +17,7 @@
 #include "WallsController.h"
 #include "FallenController.h"
 #include "FallingShapeController.h"
+#include "ShapeGenerator.h"
 
 using namespace sfmlcubes::movingcubes;
 
@@ -48,6 +49,7 @@ namespace sfmlcubes
 		WallsController wallsController;
 		FallenController fallenController;
 		FallingShapeController fallingShapeController;
+		ShapeGenerator shapeGenerator;
 
 		double time;
 		double momentWhenFallIssued;

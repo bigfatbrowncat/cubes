@@ -94,12 +94,12 @@ namespace sfmlcubes
 		mainWindow.draw(linesFiredValueText, sf::RenderStates::Default);
 		if (board.getState() == cmsGameOver)
 		{
-			sfmlcubes::mainWindow.setTitle("Cubes — Game Over");
+			sfmlcubes::mainWindow.setTitle("Cubes (Game Over)");
 			mainWindow.draw(gameOverText, sf::RenderStates::Default);
 		}
 		else if (board.isPaused())
 		{
-			sfmlcubes::mainWindow.setTitle("Cubes — Paused");
+			sfmlcubes::mainWindow.setTitle("Cubes (Paused)");
 			mainWindow.draw(pauseText, sf::RenderStates::Default);
 		}
 		else

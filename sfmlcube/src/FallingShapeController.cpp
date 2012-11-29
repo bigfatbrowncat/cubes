@@ -22,11 +22,10 @@ namespace sfmlcubes
 		fallingKinematics(*this),
 		fallingDynamics(*this),
 
-		state(fscsFlying)
+		state(fscsLanded)
 	{
 		fallingDynamics.addObstacle(fallenController);
 		fallingDynamics.addObstacle(wallsController);
-		createNewShape();
 	}
 
 	void FallingShapeController::processTimeStep(float dt)
@@ -141,225 +140,16 @@ namespace sfmlcubes
 		rotatingCW = false;
 	}
 
-
-	sf::Color generateBlockcolor()
+	bool FallingShapeController::launchNewShape(const Shape& shape)
 	{
-		int k = 4;
-
-		float r = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-		float g = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-		float b = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-
-		return sf::Color(255 * r, 255 * g, 255 * b);
-	}
-
-	bool FallingShapeController::createTBlock(const sf::Color& gen, const Shape& fallen)
-	{
-		if (fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(7, 1).empty() &&
-		    fallen.cubeAt(6, 2).empty())
-		{
-			falling.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(7, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 2, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 1, Cube::rctCenter);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool FallingShapeController::createJBlock(const sf::Color& gen, const Shape& fallen)
-	{
-		if (fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(6, 2).empty() &&
-		    fallen.cubeAt(6, 3).empty() &&
-		    fallen.cubeAt(5, 3).empty())
-		{
-			falling.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 2, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 3, Cube::mtPlaying, gen));
-			falling.addCube(Cube(5, 3, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 2, Cube::rctCenter);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool FallingShapeController::createLBlock(const sf::Color& gen, const Shape& fallen)
-	{
-		if (fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(5, 2).empty() &&
-		    fallen.cubeAt(5, 3).empty() &&
-		    fallen.cubeAt(6, 3).empty())
-		{
-			falling.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(5, 2, Cube::mtPlaying, gen));
-			falling.addCube(Cube(5, 3, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 3, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(5, 2, Cube::rctCenter);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool FallingShapeController::createIBlock(const sf::Color& gen, const Shape& fallen)
-	{
-		if (fallen.cubeAt(4, 1).empty() &&
-		    fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(7, 1).empty())
-		{
-			falling.addCube(Cube(4, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(7, 1, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 1, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool FallingShapeController::createZBlock(const sf::Color& gen, const Shape& fallen)
-	{
-		if (fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(6, 2).empty() &&
-		    fallen.cubeAt(7, 2).empty())
-		{
-			falling.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 2, Cube::mtPlaying, gen));
-			falling.addCube(Cube(7, 2, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(7, 2, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool FallingShapeController::createSBlock(const sf::Color& gen, const Shape& fallen)
-	{
-		if (fallen.cubeAt(5, 2).empty() &&
-		    fallen.cubeAt(6, 2).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(7, 1).empty())
-		{
-			falling.addCube(Cube(5, 2, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 2, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(7, 1, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 2, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool FallingShapeController::createOBlock(const sf::Color& gen, const Shape& fallen)
-	{
-		if (fallen.cubeAt(5, 1).empty() &&
-		    fallen.cubeAt(6, 1).empty() &&
-		    fallen.cubeAt(5, 2).empty() &&
-		    fallen.cubeAt(6, 2).empty())
-		{
-			falling.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-			falling.addCube(Cube(5, 2, Cube::mtPlaying, gen));
-			falling.addCube(Cube(6, 2, Cube::mtPlaying, gen));
-
-			falling.setRotatingCenter(6, 2, Cube::rctCorner);
-			return true;
-		}
-		else
-		{
-			return false;
-		}
+		falling = shape;
+		state = fscsFlying;
 	}
 
 	void FallingShapeController::clearShape()
 	{
 		falling.clear();
 	}
-
-	bool FallingShapeController::createNewShape()
-	{
-		sf::Color gen = generateBlockcolor();
-		const Shape& fallen = fallenController.getShape();
-
-		int r = (float)rand() / RAND_MAX * 8;
-		bool result;
-		switch (r)
-		{
-		case 0:
-			result = createOBlock(gen, fallen);
-			break;
-		case 1:
-			result = createSBlock(gen, fallen);
-			break;
-		case 2:
-			result = createLBlock(gen, fallen);
-			break;
-		case 3:
-			result = createJBlock(gen, fallen);
-			break;
-		case 4:
-			result = createIBlock(gen, fallen);
-			break;
-		case 5:
-			result = createTBlock(gen, fallen);
-			break;
-		case 6:
-			result = createSBlock(gen, fallen);
-			break;
-		case 7:
-			result = createZBlock(gen, fallen);
-			break;
-		default:
-			result = false;
-			break;
-		}
-		if (result)
-		{
-			state = fscsFlying;
-		}
-
-		return result;
-
-		/*Cube c = sfmlcubes::Cube(sf::Color::Red, true);
-		c.slidingX = -0.5;
-		c.slidingY = -0.2;
-		c.rotatingAngle = 0.3;
-		field.cubeAt(0, 0) = c;
-		field.cubeAt(0, 1) = sfmlcubes::Cube(sf::Color::Green, true);
-		field.cubeAt(0, 2) = sfmlcubes::Cube(sf::Color::Blue, true);
-		field.cubeAt(1, 1) = sfmlcubes::Cube(sf::Color::White, true);
-		*/
-	}
-
 
 	FallingShapeController::~FallingShapeController()
 	{
