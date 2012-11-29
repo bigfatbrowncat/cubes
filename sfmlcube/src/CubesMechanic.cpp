@@ -68,7 +68,10 @@ namespace sfmlcubes
 			case cmsLinesFiring:
 				if (fallenController.getState() == FallenController::sPassive)
 				{
-					Shape newShape = shapeGenerator.createNewShape();
+					Shape newShape = shapeDealer.dealNext();
+					newShape.moveHorizontalNoTransition(6);
+					newShape.moveVerticalNoTransition(1);
+
 					if (fallenController.anyCollisions(newShape))
 					{
 						// Our new shape collides with fallen ones.

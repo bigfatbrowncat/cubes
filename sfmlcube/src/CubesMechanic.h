@@ -17,7 +17,7 @@
 #include "WallsController.h"
 #include "FallenController.h"
 #include "FallingShapeController.h"
-#include "ShapeGenerator.h"
+#include "ShapeDealer.h"
 
 using namespace sfmlcubes::movingcubes;
 
@@ -49,7 +49,7 @@ namespace sfmlcubes
 		WallsController wallsController;
 		FallenController fallenController;
 		FallingShapeController fallingShapeController;
-		ShapeGenerator shapeGenerator;
+		ShapeDealer shapeDealer;
 
 		double time;
 		double momentWhenFallIssued;
@@ -60,6 +60,7 @@ namespace sfmlcubes
 		virtual ~CubesMechanic();
 
 		int getLinesFired() const { return fallenController.getLinesFired(); }
+		const ShapeDealer& getShapeDealer() const { return shapeDealer; }
 
 		int getWidth() const { return width; }
 		int getHeight() const { return height; }

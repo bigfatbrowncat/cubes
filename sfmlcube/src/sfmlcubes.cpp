@@ -17,6 +17,7 @@ namespace sfmlcubes
 	static sf::Text pauseText;
 	static sf::Text gameOverText;
 	static sf::Text linesFiredText;
+	static sf::Text nextShapeText;
 	static sf::Text linesFiredValueText;
 
 	static CubesMechanic board(12, 21);
@@ -74,6 +75,12 @@ namespace sfmlcubes
 		linesFiredText.setPosition(23.0 * mainWindow.getSize().x / 28 - linesFiredText.getGlobalBounds().width / 2,
 				                   1.0 * mainWindow.getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
 
+		nextShapeText.setString("Next shape");
+		nextShapeText.setCharacterSize(17 * k);
+		nextShapeText.setFont(mainFont);
+		nextShapeText.setPosition(23.0 * mainWindow.getSize().x / 28 - nextShapeText.getGlobalBounds().width / 2,
+				                   3.0 * mainWindow.getSize().y / 8 - nextShapeText.getGlobalBounds().height / 2);
+
 		stringstream ss;
 		ss << board.getLinesFired();
 		linesFiredValueText.setString(ss.str());
@@ -92,6 +99,7 @@ namespace sfmlcubes
 		updateText();
 		mainWindow.draw(linesFiredText, sf::RenderStates::Default);
 		mainWindow.draw(linesFiredValueText, sf::RenderStates::Default);
+		mainWindow.draw(nextShapeText, sf::RenderStates::Default);
 		if (board.getState() == cmsGameOver)
 		{
 			sfmlcubes::mainWindow.setTitle("Cubes (Game Over)");
@@ -142,18 +150,50 @@ namespace sfmlcubes
 
 	void drawBoard()
 	{
-		// Translating the board center to the center of the screen
-		float delta_x = (board.getWidth() - 0.5) / 2;
-		float delta_y = (board.getHeight() - 0.5) / 2;
-		float cubeSize = 30;
+		float k = (float)mainWindow.getSize().y / 480;
 
-		glScalef(cubeSize, cubeSize, cubeSize);
-		glTranslatef(-delta_x, delta_y, 0.f);
+	    glMatrixMode(GL_MODELVIEW);
+	    glLoadIdentity();
+	    glTranslatef(0.f, 0.f, -300.f);
 
-		board.glDraw(0, 0);
+		glPushMatrix();
+		{
+		    //glRotatef(0, 1.f, 0.f, 0.f);
+		    //glRotatef(0, 0.f, 1.f, 0.f);
+		    //glRotatef(0, 0.f, 0.f, 1.f);
+
+			// Translating the board center to the center of the screen
+			float delta_x = (board.getWidth() - 0.5) / 2;
+			float delta_y = (board.getHeight() - 0.5) / 2;
+			float cubeSize = 30;
+
+			glScalef(cubeSize, cubeSize, cubeSize);
+			glTranslatef(-delta_x, delta_y, 0.f);
+
+			board.glDraw(0, 0);
+		}
+		glPopMatrix();
+
+	    glPushMatrix();
+		{
+	    	Shape dealingShape = board.getShapeDealer().getShape();
+			// Translating the board center to the center of the screen
+			float cubeSize = 30 * 0.7;
+			float delta_x = - (float)mainWindow.getSize().x / 2 + 23.0 * mainWindow.getSize().x / 28 +
+	                          nextShapeText.getGlobalBounds().width - cubeSize * (dealingShape.getRight() + 1);
+
+			float delta_y = - (float)mainWindow.getSize().y / 2 + 3.0 * mainWindow.getSize().y / 8 +
+			                  nextShapeText.getGlobalBounds().height + 2 * k + cubeSize * (-dealingShape.getTop() + 0.5);
+
+			glTranslatef(delta_x, -delta_y, 0.f);
+			glScalef(cubeSize, cubeSize, cubeSize);
+
+			dealingShape.glDraw(0, 0);
+		}
+		glPopMatrix();
 	}
 
-	void drawScene(const sf::RenderTarget& win, float xangle, float yangle, float zangle)
+	void drawScene(const sf::RenderTarget& win)
 	{
 		mainWindow.setActive(true);
 
@@ -168,12 +208,7 @@ namespace sfmlcubes
         //glCullFace(GL_BACK);
 
 	    // Apply some transformations
-	    glMatrixMode(GL_MODELVIEW);
-	    glLoadIdentity();
-	    glTranslatef(0.f, 0.f, -300.f);
-	    glRotatef(xangle, 1.f, 0.f, 0.f);
-	    glRotatef(yangle, 0.f, 1.f, 0.f);
-	    glRotatef(zangle, 0.f, 0.f, 1.f);
+
 
 	    // Drawing the cube
 	    drawBoard();
@@ -294,7 +329,7 @@ namespace sfmlcubes
 
 	void draw()
 	{
-		drawScene(mainWindow, 0, 0, 0);
+		drawScene(mainWindow);
 		drawText();
 		mainWindow.display();
 	}

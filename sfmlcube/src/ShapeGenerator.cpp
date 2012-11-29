@@ -30,84 +30,84 @@ namespace sfmlcubes
 	Shape ShapeGenerator::createTBlock(const sf::Color& gen)
 	{
 		Shape res;
-		res.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(7, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 2, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, 1, Cube::mtPlaying, gen));
 
-		res.setRotatingCenter(6, 1, Cube::rctCenter);
+		res.setRotatingCenter(0, 0, Cube::rctCenter);
 		return res;
 	}
 
 	Shape ShapeGenerator::createJBlock(const sf::Color& gen)
 	{
 		Shape res;
-		res.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 2, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 3, Cube::mtPlaying, gen));
-		res.addCube(Cube(5, 3, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(1, 1, Cube::mtPlaying, gen));
 
-		res.setRotatingCenter(6, 2, Cube::rctCenter);
+		res.setRotatingCenter(0, 0, Cube::rctCenter);
 		return res;
 	}
 
 	Shape ShapeGenerator::createLBlock(const sf::Color& gen)
 	{
 		Shape res;
-		res.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(5, 2, Cube::mtPlaying, gen));
-		res.addCube(Cube(5, 3, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 3, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, 1, Cube::mtPlaying, gen));
 
-		res.setRotatingCenter(5, 2, Cube::rctCenter);
+		res.setRotatingCenter(0, 0, Cube::rctCenter);
 		return res;
 	}
 
 	Shape ShapeGenerator::createIBlock(const sf::Color& gen)
 	{
 		Shape res;
-		res.addCube(Cube(4, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(7, 1, Cube::mtPlaying, gen));
+		res.addCube(Cube(-2, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
 
-		res.setRotatingCenter(6, 1, Cube::rctCorner);
+		res.setRotatingCenter(0, 0, Cube::rctCorner);
 		return res;
 	}
 
 	Shape ShapeGenerator::createZBlock(const sf::Color& gen)
 	{
 		Shape res;
-		res.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 2, Cube::mtPlaying, gen));
-		res.addCube(Cube(7, 2, Cube::mtPlaying, gen));
+		res.addCube(Cube(-2, -1, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, -1, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 
-		res.setRotatingCenter(7, 2, Cube::rctCorner);
+		res.setRotatingCenter(0, 0, Cube::rctCorner);
 		return res;
 	}
 
 	Shape ShapeGenerator::createSBlock(const sf::Color& gen)
 	{
 		Shape res;
-		res.addCube(Cube(5, 2, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 2, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(7, 1, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, -1, Cube::mtPlaying, gen));
+		res.addCube(Cube(1, -1, Cube::mtPlaying, gen));
 
-		res.setRotatingCenter(6, 2, Cube::rctCorner);
+		res.setRotatingCenter(0, 0, Cube::rctCorner);
 		return res;
 	}
 
 	Shape ShapeGenerator::createOBlock(const sf::Color& gen)
 	{
 		Shape res;
-		res.addCube(Cube(5, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 1, Cube::mtPlaying, gen));
-		res.addCube(Cube(5, 2, Cube::mtPlaying, gen));
-		res.addCube(Cube(6, 2, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, -1, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, -1, Cube::mtPlaying, gen));
+		res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
+		res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 
-		res.setRotatingCenter(6, 2, Cube::rctCorner);
+		res.setRotatingCenter(0, 0, Cube::rctCorner);
 		return res;
 	}
 

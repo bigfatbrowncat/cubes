@@ -125,7 +125,7 @@ namespace sfmlcubes
 
 		int Shape::getTop()
 		{
-			int top = (*getCubes().begin()).x;
+			int top = (*getCubes().begin()).y;
 			for (list<Cube>::const_iterator iter = getCubes().begin();
 				 iter != getCubes().end();
 				 iter ++)
@@ -137,7 +137,7 @@ namespace sfmlcubes
 
 		int Shape::getBottom()
 		{
-			int bottom = (*getCubes().begin()).x;
+			int bottom = (*getCubes().begin()).y;
 			for (list<Cube>::const_iterator iter = getCubes().begin();
 				 iter != getCubes().end();
 				 iter ++)
