@@ -35,7 +35,7 @@ namespace sfmlcubes
 			static int PLAYING_CUBE_INDEX;
 			static int WALL_CUBE_INDEX;
 		public:
-			static sf::Shader cubeShader;
+			static sf::Shader* cubeShader;
 
 		public:
 			// Fields
@@ -46,6 +46,7 @@ namespace sfmlcubes
 		public:
 			// Static functions
 			static void initialize();
+			static void finalize();
 
 		public:
 			// Functions

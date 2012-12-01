@@ -18,7 +18,7 @@ void main(void)
    
    float shade = dot(vLight1, vNormal);
    
-   float gloss = 1 + glossyA * exp(-(lighting - 1) * (lighting - 1) / glossyD / glossyD);
+   float gloss = 1.0 + glossyA * exp(-(lighting - 1.0) * (lighting - 1.0) / glossyD / glossyD);
    
    //lighting = 0.5 + round(lighting * 2) / 3;
    //lighting = 0.7 + 0.3 * lighting;

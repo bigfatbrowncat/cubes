@@ -10,8 +10,8 @@ using namespace std;
 namespace sfmlcubes
 {
 	// Global application-level singletones
-	static sf::RenderWindow mainWindow;
-	static sf::Font mainFont;
+	static sf::RenderWindow* mainWindow;
+	static sf::Font* mainFont;
 	static sf::Clock clock;
 
 	static sf::Text pauseText;
@@ -41,92 +41,98 @@ namespace sfmlcubes
 			vm = sf::VideoMode(width, height, 32);
 		}
 
-		mainWindow.create(vm, title, stl
+		mainWindow->create(vm, title, stl
 						  /*| sf::Style::Resize*/,
 						  sf::ContextSettings(24, 8, antialias, 3, 2));		// Creating OpenGL 3.2 context
 
-		mainWindow.setFramerateLimit(60);
+		mainWindow->setFramerateLimit(60);
 	}
 
 	void initMainFont(const string& fontFileName = "res/fonts/arian_amu/arnamu.ttf")
 	{
-		mainFont.loadFromFile(fontFileName);
+		mainFont = new sf::Font();
+		mainFont->loadFromFile(fontFileName);
+	}
+
+	void freeMainFont()
+	{
+		delete mainFont;
 	}
 
 	void updateText()
 	{
-		float k = (float)mainWindow.getSize().y / 480;
+		float k = (float)mainWindow->getSize().y / 480;
 
 		pauseText.setString("Pause");
 		pauseText.setCharacterSize(30 * k);
-		pauseText.setFont(mainFont);
-		pauseText.setPosition(1.0 * mainWindow.getSize().x / 2 - pauseText.getGlobalBounds().width / 2,
-				                 4.0 * mainWindow.getSize().y / 9 - pauseText.getGlobalBounds().height / 2);
+		pauseText.setFont(*mainFont);
+		pauseText.setPosition(1.0 * mainWindow->getSize().x / 2 - pauseText.getGlobalBounds().width / 2,
+				                 4.0 * mainWindow->getSize().y / 9 - pauseText.getGlobalBounds().height / 2);
 
 		gameOverText.setString("Game Over");
 		gameOverText.setCharacterSize(30 * k);
-		gameOverText.setFont(mainFont);
-		gameOverText.setPosition(1.0 * mainWindow.getSize().x / 2 - gameOverText.getGlobalBounds().width / 2,
-				                 4.0 * mainWindow.getSize().y / 9 - gameOverText.getGlobalBounds().height / 2);
+		gameOverText.setFont(*mainFont);
+		gameOverText.setPosition(1.0 * mainWindow->getSize().x / 2 - gameOverText.getGlobalBounds().width / 2,
+				                 4.0 * mainWindow->getSize().y / 9 - gameOverText.getGlobalBounds().height / 2);
 
 		linesFiredText.setString("Lines fired");
 		linesFiredText.setCharacterSize(17 * k);
-		linesFiredText.setFont(mainFont);
-		linesFiredText.setPosition(23.0 * mainWindow.getSize().x / 28 - linesFiredText.getGlobalBounds().width / 2,
-				                   1.0 * mainWindow.getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
+		linesFiredText.setFont(*mainFont);
+		linesFiredText.setPosition(23.0 * mainWindow->getSize().x / 28 - linesFiredText.getGlobalBounds().width / 2,
+				                   1.0 * mainWindow->getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
 
 		stringstream ss;
 		ss << board.getLinesFired();
 		linesFiredValueText.setString(ss.str());
 		linesFiredValueText.setColor(sf::Color(192, 128, 128));
 		linesFiredValueText.setCharacterSize(30 * k);
-		linesFiredValueText.setFont(mainFont);
-		linesFiredValueText.setPosition(24.0 * mainWindow.getSize().x / 28 - linesFiredValueText.getGlobalBounds().width / 2,
-				                   1.0 * mainWindow.getSize().y / 8 + linesFiredText.getGlobalBounds().height + 2.0 * k);
+		linesFiredValueText.setFont(*mainFont);
+		linesFiredValueText.setPosition(24.0 * mainWindow->getSize().x / 28 - linesFiredValueText.getGlobalBounds().width / 2,
+				                   1.0 * mainWindow->getSize().y / 8 + linesFiredText.getGlobalBounds().height + 2.0 * k);
 
 		nextShapeText.setString("Next shape");
 		nextShapeText.setCharacterSize(17 * k);
-		nextShapeText.setFont(mainFont);
-		nextShapeText.setPosition(23.0 * mainWindow.getSize().x / 28 - nextShapeText.getGlobalBounds().width / 2,
-				                   3.0 * mainWindow.getSize().y / 8 - nextShapeText.getGlobalBounds().height / 2);
+		nextShapeText.setFont(*mainFont);
+		nextShapeText.setPosition(23.0 * mainWindow->getSize().x / 28 - nextShapeText.getGlobalBounds().width / 2,
+				                   3.0 * mainWindow->getSize().y / 8 - nextShapeText.getGlobalBounds().height / 2);
 	}
 
 	void drawText()
 	{
-		mainWindow.pushGLStates();
+		mainWindow->pushGLStates();
 		updateText();
-		mainWindow.draw(linesFiredText, sf::RenderStates::Default);
-		mainWindow.draw(linesFiredValueText, sf::RenderStates::Default);
-		mainWindow.draw(nextShapeText, sf::RenderStates::Default);
+		mainWindow->draw(linesFiredText, sf::RenderStates::Default);
+		mainWindow->draw(linesFiredValueText, sf::RenderStates::Default);
+		mainWindow->draw(nextShapeText, sf::RenderStates::Default);
 		if (board.getState() == cmsGameOver)
 		{
-			sfmlcubes::mainWindow.setTitle("Cubes (Game Over)");
-			mainWindow.draw(gameOverText, sf::RenderStates::Default);
+			sfmlcubes::mainWindow->setTitle("Cubes (Game Over)");
+			mainWindow->draw(gameOverText, sf::RenderStates::Default);
 		}
 		else if (board.isPaused())
 		{
-			sfmlcubes::mainWindow.setTitle("Cubes (Paused)");
-			mainWindow.draw(pauseText, sf::RenderStates::Default);
+			sfmlcubes::mainWindow->setTitle("Cubes (Paused)");
+			mainWindow->draw(pauseText, sf::RenderStates::Default);
 		}
 		else
 		{
-			sfmlcubes::mainWindow.setTitle("Cubes");
+			sfmlcubes::mainWindow->setTitle("Cubes");
 		}
 
-		mainWindow.popGLStates();
+		mainWindow->popGLStates();
 	}
 
 	void setPerspective()
 	{
 	    glMatrixMode(GL_PROJECTION);
 	    glLoadIdentity();
-	    gluPerspective(100.f, (float)mainWindow.getSize().x / mainWindow.getSize().y, 1.f, 1000.f);
+	    gluPerspective(100.f, (float)mainWindow->getSize().x / mainWindow->getSize().y, 1.f, 1000.f);
 	}
 
 	void setView()
 	{
-		sf::View view(sf::FloatRect(0, 0, mainWindow.getSize().x, mainWindow.getSize().y));
-		mainWindow.setView(view);
+		sf::View view(sf::FloatRect(0, 0, mainWindow->getSize().x, mainWindow->getSize().y));
+		mainWindow->setView(view);
 	}
 
 	void prepareScene()
@@ -148,7 +154,7 @@ namespace sfmlcubes
 
 	void drawBoard()
 	{
-		float k = (float)mainWindow.getSize().y / 480;
+		float k = (float)mainWindow->getSize().y / 480;
 
 		glPushMatrix();
 		{
@@ -188,8 +194,8 @@ namespace sfmlcubes
 			float delta_y =   +
 			                 nextShapeText.getGlobalBounds().height - k * cubeSize * (dealingShape.getTop() - 0.5);*/
 
-	    	glViewport(23.0 * mainWindow.getSize().x / 28 - nextShapeText.getGlobalBounds().width / 4,
-	    	           3.0 * mainWindow.getSize().y / 8 + nextShapeText.getGlobalBounds().height - 2 * k,
+	    	glViewport(23.0 * mainWindow->getSize().x / 28 - nextShapeText.getGlobalBounds().width / 4,
+	    	           3.0 * mainWindow->getSize().y / 8 + nextShapeText.getGlobalBounds().height - 2 * k,
 	    	           nextShapeText.getGlobalBounds().width,
 	    	           nextShapeText.getGlobalBounds().width);
 
@@ -213,9 +219,9 @@ namespace sfmlcubes
 
 	void drawScene(const sf::RenderTarget& win)
 	{
-		mainWindow.setActive(true);
+		mainWindow->setActive(true);
 
-        glViewport(0, 0, mainWindow.getSize().x, mainWindow.getSize().y);
+        glViewport(0, 0, mainWindow->getSize().x, mainWindow->getSize().y);
 
 	    // Clear color and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -238,7 +244,7 @@ namespace sfmlcubes
     	switch (key.code)
     	{
     	case sf::Keyboard::Escape:
-    		mainWindow.close();
+    		mainWindow->close();
     		break;
     	case sf::Keyboard::Right:
     		if (!rightKeyPressed)
@@ -320,12 +326,12 @@ namespace sfmlcubes
 	{
         // Process events
         sf::Event Event;
-        while (mainWindow.pollEvent(Event))
+        while (mainWindow->pollEvent(Event))
         {
         	switch (Event.type)
         	{
         	case sf::Event::Closed:
-        		mainWindow.close();
+        		mainWindow->close();
         		break;
 
         	case sf::Event::KeyPressed:
@@ -347,9 +353,9 @@ namespace sfmlcubes
 
 	void draw()
 	{
-		drawScene(mainWindow);
+		drawScene(*mainWindow);
 		drawText();
-		mainWindow.display();
+		mainWindow->display();
 	}
 
 	void updateStatesAndTiming()
@@ -364,7 +370,7 @@ namespace sfmlcubes
 
 	void run()
 	{
-	    while (mainWindow.isOpen())
+	    while (mainWindow->isOpen())
 	    {
 	    	updateStatesAndTiming();
 	    	handleEvents();
@@ -379,6 +385,7 @@ int main()
 {
 	try
 	{
+		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
 		sfmlcubes::initMainWindow("Cubes", 800, 600);
 		sfmlcubes::movingcubes::Cube::initialize();
@@ -388,6 +395,9 @@ int main()
 //		sfmlcubes::board.createNewBlock();
 
 		sfmlcubes::run();
+		sfmlcubes::movingcubes::Cube::finalize();
+		sfmlcubes::freeMainFont();
+		delete sfmlcubes::mainWindow;
 	}
 	catch (int ex)
 	{

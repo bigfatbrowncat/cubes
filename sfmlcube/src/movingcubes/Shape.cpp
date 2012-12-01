@@ -5,7 +5,7 @@
  *      Author: imizus
  */
 
-#include <GL/gl.h>
+#include <SFML/OpenGL.hpp>
 
 #include "Shape.h"
 
@@ -53,8 +53,8 @@ namespace sfmlcubes
 					}
 
 					sf::Color ambient = ambientStatic * ambientDynamic;
-					Cube::cubeShader.setParameter("ambient", (float)ambient.r / 255, (float)ambient.g / 255, (float)ambient.b / 255, (float)ambient.a / 255);
-					Cube::cubeShader.setParameter("transparency", transparency);
+					Cube::cubeShader->setParameter("ambient", (float)ambient.r / 255, (float)ambient.g / 255, (float)ambient.b / 255, (float)ambient.a / 255);
+					Cube::cubeShader->setParameter("transparency", transparency);
 					(*citer).glDraw();
 				}
 				glPopMatrix();

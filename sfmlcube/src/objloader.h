@@ -1,7 +1,6 @@
 #include <SFML/System/Vector3.hpp>
 
-#include <GL/gl.h>
-#include <GL/glu.h>
+#include <SFML/OpenGL.hpp>
 #include <cstdlib>
 #include <vector>
 #include <string>

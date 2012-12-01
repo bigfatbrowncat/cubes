@@ -5,7 +5,7 @@
  *      Author: imizus
  */
 
-#include <GL/gl.h>
+#include <SFML/OpenGL.hpp>
 
 #include "../sfmlcubes.h"
 #include "../Logger.h"
@@ -19,22 +19,29 @@ namespace sfmlcubes
 		int Cube::PLAYING_CUBE_INDEX = -1;
 		int Cube::WALL_CUBE_INDEX = -1;
 
-		sf::Shader Cube::cubeShader;
+		sf::Shader* Cube::cubeShader;
 
 		// Cube functions
 
 		void Cube::initialize()
 		{
+
 			// Loading the cube model
 			PLAYING_CUBE_INDEX = objLoader.load("res/cube.obj", "res");
 			WALL_CUBE_INDEX = objLoader.load("res/brick-wall.obj", "res");
 
+			cubeShader = new sf::Shader();
 			// Loading the cube shader
-			if (!cubeShader.loadFromFile("res/cube.vert", "res/cube.frag"))
+			if (!cubeShader->loadFromFile("res/cube.vert", "res/cube.frag"))
 			{
 				Logger::DEFAULT.logWarning("Can't load the cube shader. Sorry...");
 			}
 
+		}
+
+		void Cube::finalize()
+		{
+			delete cubeShader;
 		}
 
 		Cube::Cube(int x, int y, Cube::ModelType modelType, sf::Color color):
@@ -70,10 +77,10 @@ namespace sfmlcubes
 			{
 				// Drawing the cube
 
-				cubeShader.setParameter("diffuse", (float)color.r / 255, (float)color.g / 255, (float)color.b / 255, (float)color.a / 255);
-				cubeShader.setParameter("texture", sf::Shader::CurrentTexture);
-				cubeShader.setParameter("light0", 200, 300, 200, 1);
-				cubeShader.bind();
+				cubeShader->setParameter("diffuse", (float)color.r / 255, (float)color.g / 255, (float)color.b / 255, (float)color.a / 255);
+				cubeShader->setParameter("texture", sf::Shader::CurrentTexture);
+				cubeShader->setParameter("light0", 200, 300, 200, 1);
+				cubeShader->bind();
 
 				glRotatef(90, 1.f, 0.f, 0.f);								// Rotating the cube face to viewer
 
