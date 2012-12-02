@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleGetInfoString</key>
+	<string>A beautiful Tetris-like game</string>
+	<key>CFBundleExecutable</key>
+	<string>sfmlcube</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.bigfatbrowncat.cubes</string>
+	<key>CFBundleName</key>
+	<string>Cubes</string>
+	<key>CFBundleIconFile</key>
+	<string>Cubes.icns</string>
+	<key>CFBundleShortVersionString</key>
+	<string>0.0.6</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>10.5</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<key>CFBundleSignature</key>
+	<string>cubz</string>
+</dict>
+</plist>
