@@ -3,6 +3,8 @@
 #include <unistd.h>
 
 #include "CubesMechanic.h"
+#include "Logger.h"
+#include "resourcelocator.h"
 #include "sfmlcubes.h"
 
 using namespace std;
@@ -48,10 +50,11 @@ namespace sfmlcubes
 		mainWindow->setFramerateLimit(60);
 	}
 
-	void initMainFont(const string& fontFileName = "res/fonts/arian_amu/arnamu.ttf")
+	void initMainFont(const string& fontPath = "res/fonts/arian_amu", const string& fontFileName = "arnamu.ttf")
 	{
+		string s(locateResource(fontPath.c_str(), fontFileName.c_str()));
 		mainFont = new sf::Font();
-		mainFont->loadFromFile(fontFileName);
+		mainFont->loadFromFile(s);
 	}
 
 	void freeMainFont()
@@ -385,6 +388,8 @@ int main()
 {
 	try
 	{
+		if (!initializeBundle()) throw 1520;
+
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
 		sfmlcubes::initMainWindow("Cubes", 800, 600);
@@ -398,10 +403,14 @@ int main()
 		sfmlcubes::movingcubes::Cube::finalize();
 		sfmlcubes::freeMainFont();
 		delete sfmlcubes::mainWindow;
+
+		finalizeBundle();
 	}
 	catch (int ex)
 	{
-		printf("Caught an error: %d", ex);
+		stringstream ss;
+		ss << "Caught an error: " << ex << "\n";
+		sfmlcubes::Logger::DEFAULT.logError(ss.str());
 	}
 
 	return EXIT_SUCCESS;

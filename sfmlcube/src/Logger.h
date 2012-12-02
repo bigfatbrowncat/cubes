@@ -14,19 +14,44 @@ using namespace std;
 
 namespace sfmlcubes
 {
+	class ConsoleLogger;
+	class FileLogger;
+
 	class Logger
 	{
-		Logger();
 	public:
-		void logError(const string& message) const;
-		void logWarning(const string& message) const;
-		void logInfo(const string& message) const;
+		virtual void logError(const string& message) const = 0;
+		virtual void logWarning(const string& message) const = 0;
+		virtual void logInfo(const string& message) const = 0;
+		virtual ~Logger() {}
 
-		virtual ~Logger();
-
-		static const Logger DEFAULT;
+		static const FileLogger DEFAULT;
 	};
 
+	class ConsoleLogger
+	{
+	public:
+		ConsoleLogger();
+		virtual void logError(const string& message) const;
+		virtual void logWarning(const string& message) const;
+		virtual void logInfo(const string& message) const;
+
+		virtual ~ConsoleLogger();
+
+	};
+
+	class FileLogger
+	{
+		FILE* logFile;
+	public:
+		FileLogger();
+		virtual void logError(const string& message) const;
+		virtual void logWarning(const string& message) const;
+		virtual void logInfo(const string& message) const;
+
+		virtual ~FileLogger();
+
+	};
 }
 
 #endif /* LOGGER_H_ */

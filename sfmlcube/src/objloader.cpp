@@ -1,5 +1,6 @@
 #include <SFML/Graphics/Image.hpp>
 
+#include "resourcelocator.h"
 #include "objloader.h"
 #include "string.h"
 
@@ -81,7 +82,7 @@
 		return res;
 	}
 
-int objloader::load(std::string filename, std::string texturesPath/*,std::vector<collisionplane>* collplane*/)
+int objloader::load(std::string filename)
 {
 	std::ifstream in(filename.c_str());
 	if(!in.is_open())
@@ -276,7 +277,7 @@ int objloader::load(std::string filename, std::string texturesPath/*,std::vector
 			}else if(tmp[i][0]=='m' && tmp[i][1]=='a')
 			{
 				sscanf(tmp[i].c_str(),"map_Kd %s",filename);
-				texture=loadTexture((texturesPath + "/" + filename).c_str());
+				texture=loadTexture(locateResource("res", filename));
 				ismat=true;
 			}
 		}

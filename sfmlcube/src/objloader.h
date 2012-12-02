@@ -62,7 +62,7 @@ class objloader{
 public:
 	objloader();
 	~objloader();
-	int load(std::string, std::string texturesPath);
+	int load(std::string);
 	void draw(int listIndex);
 
 };
