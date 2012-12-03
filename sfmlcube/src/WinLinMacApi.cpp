@@ -1,8 +1,8 @@
-#ifdef __APPLE__
+// Global includes/methods
 
-#include </usr/include/sys/syslimits.h>
 #include <sstream>
 #include <string>
+
 #include "Logger.h"
 #include "WinLinMacApi.h"
 
@@ -19,6 +19,14 @@ string simpleLocateResource(const string& path, const string& filename)
 
 	return ss.str();
 }
+
+
+#ifdef __APPLE__
+// MacOS X includes/methods
+
+#include </usr/include/sys/syslimits.h>
+
+#include <CoreFoundation/CFBundle.h>
 
 string WinLinMacApi::locateResource(const string& path, const string& filename)
 {
@@ -76,6 +84,7 @@ string WinLinMacApi::locateResource(const string& path, const string& filename)
 }
 
 #else
+// Win32 includes/methods
 
 string WinLinMacApi::locateResource(const string& path, const string& filename)
 {

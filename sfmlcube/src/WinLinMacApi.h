@@ -7,8 +7,6 @@
 
 #include <string>
 
-#include <CoreFoundation/CFBundle.h>
-
 using namespace std;
 
 #ifndef RESOURCELOCATOR_H_
