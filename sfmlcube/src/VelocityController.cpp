@@ -21,19 +21,19 @@ namespace sfmlcubes
 	float VelocityController::HORIZONTAL_MOVING_LONGITUDE_START = 0.09;
 
 	// And these are the limits for "infinity" speed.
-	float VelocityController::ROTATION_LONGITUDE_LIMIT = 3.5;
+	float VelocityController::ROTATION_LONGITUDE_LIMIT = 4.2;
 	float VelocityController::FALLING_DOWN_LONGITUDE_LIMIT = 0.95;
 	float VelocityController::FALLING_DOWN_FAST_LONGITUDE_LIMIT = 0.3;
-	float VelocityController::HORIZONTAL_MOVING_LONGITUDE_LIMIT = 1.5;
+	float VelocityController::HORIZONTAL_MOVING_LONGITUDE_LIMIT = 1.7;
 
 	// This is the falling speed. It changes linearly
 	float VelocityController::FALLING_PERIOD = 1.0;
 
 	// And these are velocity scales
 	float VelocityController::VELOCITY_MULTIPLICATOR_BY_STEP = 1.005;		// For linear velocities
-	float VelocityController::EXPONENT_ARGUMENT_BY_STEP = 0.0008;			// For exponential velocities
+	float VelocityController::EXPONENT_ARGUMENT_BY_STEP = 0.0003;			// For exponential velocities
 
-	VelocityController::VelocityController() : step(0)
+	VelocityController::VelocityController() : step(200)
 	{
 
 	}
