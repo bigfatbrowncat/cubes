@@ -147,11 +147,11 @@ namespace sfmlcubes
 		speedValueText->setColor(sf::Color(192, 192, 128));
 		speedValueText->setCharacterSize(30 * k);
 		speedValueText->setFont(*counterFont);
-		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 12 * k,
+		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 14 * k,
 		                            5.5 * mainWindow->getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
 
 		percentText->setPosition(panelRight - percentText->getGlobalBounds().width,
-		                         5.5 * mainWindow->getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height + k);
+		                         5.5 * mainWindow->getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height + 1 * k);
 
 		// Lines indicator
 
@@ -167,7 +167,7 @@ namespace sfmlcubes
 		linesFiredValueText->setColor(sf::Color(192, 128, 128));
 		linesFiredValueText->setCharacterSize(30 * k);
 		linesFiredValueText->setFont(*counterFont);
-		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 12 * k,
+		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 14 * k,
 		                                 4.0 * mainWindow->getSize().y / 8 + 13.0 * k);
 
 		// Next shape
