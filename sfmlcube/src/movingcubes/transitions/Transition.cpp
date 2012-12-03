@@ -39,7 +39,7 @@ namespace sfmlcubes
 
 			float Transition::getProcessedPhase() const
 			{
-				float slope = 1.2;
+				float slope = 0.6;
 
 				switch (function)
 				{
