@@ -13,7 +13,10 @@ namespace sfmlcubes
 {
 	// Global application-level singletones
 	static sf::RenderWindow* mainWindow;
-	static sf::Font* mainFont;
+
+	static sf::Font* textFont;
+	static sf::Font* counterFont;
+
 	static sf::Clock clock;
 
 	static sf::Text* pauseText;
@@ -22,8 +25,10 @@ namespace sfmlcubes
 	static sf::Text* linesFiredText;
 	static sf::Text* linesFiredValueText;
 
-	static sf::Text* velocityMultipliedText;
-	static sf::Text* velocityMultipliedValueText;
+	static sf::Text* speedText;
+	static sf::Text* speedValueText;
+
+	static sf::Text* percentText;
 
 	static sf::Text* nextShapeText;
 
@@ -55,16 +60,21 @@ namespace sfmlcubes
 		mainWindow->setFramerateLimit(60);
 	}
 
-	void initMainFont(const string& fontPath = "res/fonts/arian_amu", const string& fontFileName = "arnamu.ttf")
+	void initFonts()
 	{
-		string s(api->locateResource(fontPath, fontFileName));
-		mainFont = new sf::Font();
-		mainFont->loadFromFile(s);
+		string textFontName(api->locateResource("res/fonts", "PTS55F.ttf"));
+		textFont = new sf::Font();
+		textFont->loadFromFile(textFontName);
+
+		string counterFontName(api->locateResource("res/fonts", "PTM55FT.ttf"));
+		counterFont = new sf::Font();
+		counterFont->loadFromFile(counterFontName);
 	}
 
-	void freeMainFont()
+	void freeFonts()
 	{
-		delete mainFont;
+		delete textFont;
+		delete counterFont;
 	}
 
 	void initializeText()
@@ -75,8 +85,10 @@ namespace sfmlcubes
 		linesFiredText = new sf::Text();
 		linesFiredValueText = new sf::Text();
 
-		velocityMultipliedText = new sf::Text();
-		velocityMultipliedValueText = new sf::Text();
+		speedText = new sf::Text();
+		speedValueText = new sf::Text();
+
+		percentText = new sf::Text();
 
 		nextShapeText = new sf::Text();
 	}
@@ -89,8 +101,10 @@ namespace sfmlcubes
 		delete linesFiredText;
 		delete linesFiredValueText;
 
-		delete velocityMultipliedText;
-		delete velocityMultipliedValueText;
+		delete speedText;
+		delete speedValueText;
+
+		delete percentText;
 
 		delete nextShapeText;
 	}
@@ -99,59 +113,70 @@ namespace sfmlcubes
 	{
 		float k = (float)mainWindow->getSize().y / 480;
 
+		float panelLeft = 22.0 * mainWindow->getSize().x / 28;
+		float panelRight = panelLeft + 90 * k;
+
 		pauseText->setString("Pause");
 		pauseText->setCharacterSize(30 * k);
-		pauseText->setFont(*mainFont);
+		pauseText->setFont(*textFont);
 		pauseText->setPosition(1.0 * mainWindow->getSize().x / 2 - pauseText->getGlobalBounds().width / 2,
-				                 4.0 * mainWindow->getSize().y / 9 - pauseText->getGlobalBounds().height / 2);
+		                       4.0 * mainWindow->getSize().y / 9 - pauseText->getGlobalBounds().height / 2);
 
 		gameOverText->setString("Game Over");
 		gameOverText->setCharacterSize(30 * k);
-		gameOverText->setFont(*mainFont);
+		gameOverText->setFont(*textFont);
 		gameOverText->setPosition(1.0 * mainWindow->getSize().x / 2 - gameOverText->getGlobalBounds().width / 2,
-				                 4.0 * mainWindow->getSize().y / 9 - gameOverText->getGlobalBounds().height / 2);
+				                  4.0 * mainWindow->getSize().y / 9 - gameOverText->getGlobalBounds().height / 2);
 
-		// Lines fired indicator
+		// Speed indicator
 
-		linesFiredText->setString("Lines fired");
+		speedText->setString("Speed");
+		speedText->setCharacterSize(17 * k);
+		speedText->setFont(*textFont);
+		speedText->setPosition(panelLeft,
+		                       5.5 * mainWindow->getSize().y / 8 - speedText->getGlobalBounds().height / 2);
+
+		percentText->setString("x");
+		percentText->setCharacterSize(17 * k);
+		percentText->setFont(*counterFont);
+
+		stringstream ss2;
+		ss2.precision(1);
+		ss2 << fixed << board.getVelocityMultiplicator();
+		speedValueText->setString(ss2.str());
+		speedValueText->setColor(sf::Color(192, 192, 128));
+		speedValueText->setCharacterSize(30 * k);
+		speedValueText->setFont(*counterFont);
+		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 18 * k,
+		                            5.5 * mainWindow->getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
+
+		percentText->setPosition(panelRight - percentText->getGlobalBounds().width,
+		                         5.5 * mainWindow->getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height/* + speedValueText->getGlobalBounds().height*/);
+
+		// Lines indicator
+
+		linesFiredText->setString("Lines");
 		linesFiredText->setCharacterSize(17 * k);
-		linesFiredText->setFont(*mainFont);
-		linesFiredText->setPosition(22.0 * mainWindow->getSize().x / 28,
-				                   4.0 * mainWindow->getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
+		linesFiredText->setFont(*textFont);
+		linesFiredText->setPosition(panelLeft,
+		                            4.0 * mainWindow->getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
 
 		stringstream ss;
 		ss << board.getLinesFired();
 		linesFiredValueText->setString(ss.str());
 		linesFiredValueText->setColor(sf::Color(192, 128, 128));
 		linesFiredValueText->setCharacterSize(30 * k);
-		linesFiredValueText->setFont(*mainFont);
-		linesFiredValueText->setPosition(26.0 * mainWindow->getSize().x / 28 - linesFiredValueText->getGlobalBounds().width,
-				                   4.0 * mainWindow->getSize().y / 8 + 11.0 * k);
-
-		// Velocity multiplied indicator
-
-		velocityMultipliedText->setString("Velocity");
-		velocityMultipliedText->setCharacterSize(17 * k);
-		velocityMultipliedText->setFont(*mainFont);
-		velocityMultipliedText->setPosition(22.0 * mainWindow->getSize().x / 28,
-				                   5.5 * mainWindow->getSize().y / 8 - velocityMultipliedText->getGlobalBounds().height / 2);
-
-		stringstream ss2;
-		ss2 << (int)(board.getVelocityMultiplicator() * 100) << "%";
-		velocityMultipliedValueText->setString(ss2.str());
-		velocityMultipliedValueText->setColor(sf::Color(192, 192, 128));
-		velocityMultipliedValueText->setCharacterSize(30 * k);
-		velocityMultipliedValueText->setFont(*mainFont);
-		velocityMultipliedValueText->setPosition(26.0 * mainWindow->getSize().x / 28 - velocityMultipliedValueText->getGlobalBounds().width,
-				                   5.5 * mainWindow->getSize().y / 8 + 11 * k);
+		linesFiredValueText->setFont(*counterFont);
+		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 18 * k,
+		                                 4.0 * mainWindow->getSize().y / 8 + 13.0 * k);
 
 		// Next shape
 
 		nextShapeText->setString("Next shape");
 		nextShapeText->setCharacterSize(17 * k);
-		nextShapeText->setFont(*mainFont);
-		nextShapeText->setPosition(22.0 * mainWindow->getSize().x / 28,
-				                   1.0 * mainWindow->getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
+		nextShapeText->setFont(*textFont);
+		nextShapeText->setPosition(panelLeft,
+		                           1.0 * mainWindow->getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
 	}
 
 	void drawText()
@@ -162,8 +187,9 @@ namespace sfmlcubes
 		mainWindow->draw(*linesFiredText, sf::RenderStates::Default);
 		mainWindow->draw(*linesFiredValueText, sf::RenderStates::Default);
 
-		mainWindow->draw(*velocityMultipliedText, sf::RenderStates::Default);
-		mainWindow->draw(*velocityMultipliedValueText, sf::RenderStates::Default);
+		mainWindow->draw(*speedText, sf::RenderStates::Default);
+		mainWindow->draw(*speedValueText, sf::RenderStates::Default);
+		mainWindow->draw(*percentText, sf::RenderStates::Default);
 
 		mainWindow->draw(*nextShapeText, sf::RenderStates::Default);
 		if (board.getState() == cmsGameOver)
@@ -247,9 +273,9 @@ namespace sfmlcubes
 
 	    	glMatrixMode(GL_PROJECTION);
 	    	glLoadIdentity();
-	    	gluPerspective(50.f, 1, 1, 1000);
+	    	gluPerspective(35.f, 1, 1, 1000);
 
-			float cubeSize = 33;
+			float cubeSize = 40;
 /*			float delta_x =  +
 	                         nextShapeText->getGlobalBounds().width - k * cubeSize * (dealingShape.getRight() + 1);
 
@@ -257,21 +283,25 @@ namespace sfmlcubes
 			                 nextShapeText->getGlobalBounds().height - k * cubeSize * (dealingShape.getTop() - 0.5);*/
 
 	    	glViewport(23.0 * mainWindow->getSize().x / 28 - nextShapeText->getGlobalBounds().width / 4,
-	    	           5.0 * mainWindow->getSize().y / 8 + 20 * k,
-	    	           nextShapeText->getGlobalBounds().width,
-	    	           nextShapeText->getGlobalBounds().width);
+	    	           (mainWindow->getSize().y - 80 * k) - 1.0 * mainWindow->getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 10 * k,
+
+	    			//,
+	    	        //   5.0 * mainWindow->getSize().y / 8 + 20 * k,
+	    	           80 * k,
+	    	           80 * k);
 
 	    	glMatrixMode(GL_MODELVIEW);
 	    	glLoadIdentity();
-		    glTranslatef(0.f, 0.f, -200.f);	        //gluPerspective()
+		    glTranslatef(0.f, 0.f, -300.f);	        //gluPerspective()
 
 		    //gluPerspective(100.f, 1, 1.f, 1000.f);
 
 			// Translating the board center to the center of the screen
 
 			glTranslatef(cubeSize * 1.4,
-			             cubeSize * 2,
+			             cubeSize * 1.4,
 			             0.f);
+			glRotatef(30, 0.0, -1, -0.5);
 			glScalef(cubeSize, cubeSize, cubeSize);
 
 			dealingShape.glDraw(-dealingShape.getRight(), -dealingShape.getTop());
@@ -457,15 +487,15 @@ int main()
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
-		sfmlcubes::initMainWindow("Cubes", 800, 600);
+		sfmlcubes::initMainWindow("Cubes", 1024, 768);
 		sfmlcubes::movingcubes::Cube::initialize();
-		sfmlcubes::initMainFont();
+		sfmlcubes::initFonts();
 		sfmlcubes::prepareScene();
 
 		sfmlcubes::run();
 
 		sfmlcubes::movingcubes::Cube::finalize();
-		sfmlcubes::freeMainFont();
+		sfmlcubes::freeFonts();
 		delete sfmlcubes::mainWindow;
 		sfmlcubes::finalizeText();
 		delete sfmlcubes::api;
@@ -477,5 +507,6 @@ int main()
 		sfmlcubes::Logger::DEFAULT.logError(ss.str());
 	}
 
+	sfmlcubes::Logger::DEFAULT.logInfo("Logging finished");
 	return EXIT_SUCCESS;
 }
