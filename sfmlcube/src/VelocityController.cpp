@@ -64,10 +64,16 @@ namespace sfmlcubes
 		return FALLING_PERIOD / pow(VELOCITY_MULTIPLICATOR_BY_STEP, step);
 	}
 
+	float VelocityController::getVelocityMultiplicator() const
+	{
+		return pow(VELOCITY_MULTIPLICATOR_BY_STEP, step);
+	}
+
 	void VelocityController::advanceStep()
 	{
 		step++;
 	}
+
 
 	VelocityController::~VelocityController()
 	{

@@ -58,7 +58,6 @@ namespace sfmlcubes
 		CubesMechanic(int width, int height);
 		virtual ~CubesMechanic();
 
-		int getLinesFired() const { return fallenController.getLinesFired(); }
 		const ShapeDealer& getShapeDealer() const { return shapeDealer; }
 
 		int getWidth() const { return width; }
@@ -73,6 +72,9 @@ namespace sfmlcubes
 		void cleanFrees();
 
 		CubesMechanicState getState() const { return state; }
+		int getLinesFired() const { return fallenController.getLinesFired(); }
+		float getVelocityMultiplicator() const { return velocityController.getVelocityMultiplicator(); }
+
 		bool isPaused() { return paused; }
 
 		void glDraw(int dx, int dy);

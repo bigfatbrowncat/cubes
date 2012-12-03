@@ -18,9 +18,14 @@ namespace sfmlcubes
 
 	static sf::Text* pauseText;
 	static sf::Text* gameOverText;
+
 	static sf::Text* linesFiredText;
-	static sf::Text* nextShapeText;
 	static sf::Text* linesFiredValueText;
+
+	static sf::Text* velocityMultipliedText;
+	static sf::Text* velocityMultipliedValueText;
+
+	static sf::Text* nextShapeText;
 
 	static CubesMechanic board(12, 21);
 
@@ -66,18 +71,28 @@ namespace sfmlcubes
 	{
 		pauseText = new sf::Text();
 		gameOverText = new sf::Text();
+
 		linesFiredText = new sf::Text();
-		nextShapeText = new sf::Text();
 		linesFiredValueText = new sf::Text();
+
+		velocityMultipliedText = new sf::Text();
+		velocityMultipliedValueText = new sf::Text();
+
+		nextShapeText = new sf::Text();
 	}
 
 	void finalizeText()
 	{
 		delete pauseText;
 		delete gameOverText;
+
 		delete linesFiredText;
-		delete nextShapeText;
 		delete linesFiredValueText;
+
+		delete velocityMultipliedText;
+		delete velocityMultipliedValueText;
+
+		delete nextShapeText;
 	}
 
 	void updateText()
@@ -96,11 +111,13 @@ namespace sfmlcubes
 		gameOverText->setPosition(1.0 * mainWindow->getSize().x / 2 - gameOverText->getGlobalBounds().width / 2,
 				                 4.0 * mainWindow->getSize().y / 9 - gameOverText->getGlobalBounds().height / 2);
 
+		// Lines fired indicator
+
 		linesFiredText->setString("Lines fired");
 		linesFiredText->setCharacterSize(17 * k);
 		linesFiredText->setFont(*mainFont);
-		linesFiredText->setPosition(23.0 * mainWindow->getSize().x / 28 - linesFiredText->getGlobalBounds().width / 2,
-				                   1.0 * mainWindow->getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
+		linesFiredText->setPosition(22.0 * mainWindow->getSize().x / 28,
+				                   4.0 * mainWindow->getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
 
 		stringstream ss;
 		ss << board.getLinesFired();
@@ -108,22 +125,46 @@ namespace sfmlcubes
 		linesFiredValueText->setColor(sf::Color(192, 128, 128));
 		linesFiredValueText->setCharacterSize(30 * k);
 		linesFiredValueText->setFont(*mainFont);
-		linesFiredValueText->setPosition(24.0 * mainWindow->getSize().x / 28 - linesFiredValueText->getGlobalBounds().width / 2,
-				                   1.0 * mainWindow->getSize().y / 8 + linesFiredText->getGlobalBounds().height + 2.0 * k);
+		linesFiredValueText->setPosition(26.0 * mainWindow->getSize().x / 28 - linesFiredValueText->getGlobalBounds().width,
+				                   4.0 * mainWindow->getSize().y / 8 + 11.0 * k);
+
+		// Velocity multiplied indicator
+
+		velocityMultipliedText->setString("Velocity");
+		velocityMultipliedText->setCharacterSize(17 * k);
+		velocityMultipliedText->setFont(*mainFont);
+		velocityMultipliedText->setPosition(22.0 * mainWindow->getSize().x / 28,
+				                   5.5 * mainWindow->getSize().y / 8 - velocityMultipliedText->getGlobalBounds().height / 2);
+
+		stringstream ss2;
+		ss2 << (int)(board.getVelocityMultiplicator() * 100) << "%";
+		velocityMultipliedValueText->setString(ss2.str());
+		velocityMultipliedValueText->setColor(sf::Color(192, 192, 128));
+		velocityMultipliedValueText->setCharacterSize(30 * k);
+		velocityMultipliedValueText->setFont(*mainFont);
+		velocityMultipliedValueText->setPosition(26.0 * mainWindow->getSize().x / 28 - velocityMultipliedValueText->getGlobalBounds().width,
+				                   5.5 * mainWindow->getSize().y / 8 + 11 * k);
+
+		// Next shape
 
 		nextShapeText->setString("Next shape");
 		nextShapeText->setCharacterSize(17 * k);
 		nextShapeText->setFont(*mainFont);
-		nextShapeText->setPosition(23.0 * mainWindow->getSize().x / 28 - nextShapeText->getGlobalBounds().width / 2,
-				                   3.0 * mainWindow->getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
+		nextShapeText->setPosition(22.0 * mainWindow->getSize().x / 28,
+				                   1.0 * mainWindow->getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
 	}
 
 	void drawText()
 	{
 		mainWindow->pushGLStates();
 		updateText();
+
 		mainWindow->draw(*linesFiredText, sf::RenderStates::Default);
 		mainWindow->draw(*linesFiredValueText, sf::RenderStates::Default);
+
+		mainWindow->draw(*velocityMultipliedText, sf::RenderStates::Default);
+		mainWindow->draw(*velocityMultipliedValueText, sf::RenderStates::Default);
+
 		mainWindow->draw(*nextShapeText, sf::RenderStates::Default);
 		if (board.getState() == cmsGameOver)
 		{
@@ -216,7 +257,7 @@ namespace sfmlcubes
 			                 nextShapeText->getGlobalBounds().height - k * cubeSize * (dealingShape.getTop() - 0.5);*/
 
 	    	glViewport(23.0 * mainWindow->getSize().x / 28 - nextShapeText->getGlobalBounds().width / 4,
-	    	           3.0 * mainWindow->getSize().y / 8 + nextShapeText->getGlobalBounds().height - 2 * k,
+	    	           5.0 * mainWindow->getSize().y / 8 + 20 * k,
 	    	           nextShapeText->getGlobalBounds().width,
 	    	           nextShapeText->getGlobalBounds().width);
 
