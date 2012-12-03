@@ -18,14 +18,15 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	float CubesMechanic::FALLING_PERIOD = 1.0;
 
 	CubesMechanic::CubesMechanic(int width, int height):
+
 			width(width), height(height),
 			state(cmsShapeFalling),
 			wallsController(width, height),
 			fallenController(1, 1, width - 2, height - 2),
-			fallingShapeController(wallsController, fallenController),
+			velocityController(),
+			fallingShapeController(wallsController, fallenController, velocityController),
 
 			time(0),
 			momentWhenFallIssued(0),
@@ -49,7 +50,7 @@ namespace sfmlcubes
 			{
 			case cmsShapeFalling:
 
-				if (time - momentWhenFallIssued > FALLING_PERIOD)
+				if (time - momentWhenFallIssued > velocityController.getFallingPeriod())
 				{
 					fallingShapeController.fallDown();
 					momentWhenFallIssued = time;
@@ -60,21 +61,29 @@ namespace sfmlcubes
 					fallenController.mergeShape(fallingShapeController.getShape());
 					fallingShapeController.clearShape();
 					fallenController.fireFullLines();
-					state = cmsLinesFiring;
+
+					// Multiplying the velocity
+					velocityController.advanceStep();
+
+					state = cmsBetweenShapes;
 				}
 
 				break;
 
-			case cmsLinesFiring:
+			case cmsBetweenShapes:
+				// Checking if the fallen shape controller finished it's tasks
 				if (fallenController.getState() == FallenController::sPassive)
 				{
+					// Dealing the new shape
 					Shape newShape = shapeDealer.dealNext();
+					// Positioning it to the top-center of the game field
 					newShape.moveHorizontalNoTransition(6);
 					newShape.moveVerticalNoTransition(1);
 
+					// Checking for collisions
 					if (fallenController.anyCollisions(newShape))
 					{
-						// Our new shape collides with fallen ones.
+						// Our new shape collides with the fallen ones.
 						// That means the game is over
 						state = cmsGameOver;
 					}

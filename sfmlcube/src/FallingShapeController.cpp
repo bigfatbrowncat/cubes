@@ -9,15 +9,10 @@
 
 namespace sfmlcubes
 {
-	float FallingShapeController::ROTATION_LONGITUDE = 0.25;
-	float FallingShapeController::FALLING_DOWN_LONGITUDE = 0.1;
-	float FallingShapeController::FALLING_DOWN_FAST_LONGITUDE = 0.05;
-	float FallingShapeController::HORIZONTAL_MOVING_LONGITUDE = 0.08;
-
-
-	FallingShapeController::FallingShapeController(WallsController& wallsController, FallenController& fallenController) :
+	FallingShapeController::FallingShapeController(WallsController& wallsController, FallenController& fallenController, VelocityController& velocityController) :
 		wallsController(wallsController),
 		fallenController(fallenController),
+		velocityController(velocityController),
 
 		fallingKinematics(*this),
 		fallingDynamics(*this),
@@ -43,14 +38,14 @@ namespace sfmlcubes
 				{
 					if (fallingDynamics.canMoveRight())
 					{
-						fallingKinematics.moveHorizontal(1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
+						fallingKinematics.moveHorizontal(1, Transition::ppfLinear, velocityController.getHorizontalMovingLongitude());
 					}
 				}
 				else if (movingLeft)
 				{
 					if (fallingDynamics.canMoveLeft())
 					{
-						fallingKinematics.moveHorizontal(-1, Transition::ppfLinear, HORIZONTAL_MOVING_LONGITUDE);
+						fallingKinematics.moveHorizontal(-1, Transition::ppfLinear, velocityController.getHorizontalMovingLongitude());
 					}
 				}
 
@@ -61,22 +56,22 @@ namespace sfmlcubes
 				if (fallDownPending || fastFalling)
 				{
 					bool canFallDown = false;
-					if (fallDownPending)
+					if (fastFalling)
 					{
 						if (fallingDynamics.canMoveDown())
 						{
-							fallingKinematics.moveVertical(1, Transition::ppfArctangent, FALLING_DOWN_LONGITUDE);
+							fallingKinematics.moveVertical(1, Transition::ppfLinear, velocityController.getFallingDownFastLongitude());
+							canFallDown = true;
+						}
+					}
+					else if (fallDownPending)
+					{
+						if (fallingDynamics.canMoveDown())
+						{
+							fallingKinematics.moveVertical(1, Transition::ppfArctangent, velocityController.getFallingDownLongitude());
 							canFallDown = true;
 						}
 						fallDownPending = false;
-					}
-					else if (fastFalling)
-					{
-						if (fallingDynamics.canMoveDown())
-						{
-							fallingKinematics.moveVertical(1, Transition::ppfLinear, FALLING_DOWN_FAST_LONGITUDE);
-							canFallDown = true;
-						}
 					}
 					if (!canFallDown)
 					{
@@ -91,7 +86,7 @@ namespace sfmlcubes
 				{
 					if (fallingDynamics.canRotate(1))
 					{
-						fallingKinematics.rotate(1, Transition::ppfArctangent, ROTATION_LONGITUDE);
+						fallingKinematics.rotate(1, Transition::ppfArctangent, velocityController.getRotationLongitude());
 					}
 				}
 			}

@@ -35,19 +35,18 @@ namespace sfmlcubes
 	enum CubesMechanicState
 	{
 		cmsShapeFalling,
-		cmsLinesFiring,
+		cmsBetweenShapes,
 		cmsGameOver
 	};
 
 	class CubesMechanic
 	{
-		static float FALLING_PERIOD;
-
 		int width, height;
 		CubesMechanicState state;
 
 		WallsController wallsController;
 		FallenController fallenController;
+		VelocityController velocityController;
 		FallingShapeController fallingShapeController;
 		ShapeDealer shapeDealer;
 

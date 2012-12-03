@@ -14,6 +14,7 @@
 
 #include "WallsController.h"
 #include "FallenController.h"
+#include "VelocityController.h"
 
 using namespace sfmlcubes::movingcubes;
 
@@ -28,27 +29,24 @@ namespace sfmlcubes
 
 	class FallingShapeController : public ShapeContainer
 	{
-		static float ROTATION_LONGITUDE;
-		static float FALLING_DOWN_LONGITUDE;
-		static float FALLING_DOWN_FAST_LONGITUDE;
-		static float HORIZONTAL_MOVING_LONGITUDE;
-
 	private:
 		Shape falling;
 
 		WallsController& wallsController;
 		FallenController& fallenController;
+		VelocityController& velocityController;
 
 		ShapeKinematics fallingKinematics;
 		ShapeDynamics fallingDynamics;
 
 		bool fastFalling, movingRight, movingLeft, fallDownPending, rotatingCW;
 		FallingShapeControllerState state;
+
 	protected:
 		void updateObstacles();
 
 	public:
-		FallingShapeController(WallsController& wallsController, FallenController& fallenController);
+		FallingShapeController(WallsController& wallsController, FallenController& fallenController, VelocityController& velocityController);
 
 		const Shape& getShape() const { return falling; }
 		void setShape(const Shape& shape) { falling = shape; }
