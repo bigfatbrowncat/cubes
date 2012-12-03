@@ -33,7 +33,7 @@ namespace sfmlcubes
 	float VelocityController::VELOCITY_MULTIPLICATOR_BY_STEP = 1.005;		// For linear velocities
 	float VelocityController::EXPONENT_ARGUMENT_BY_STEP = 0.0003;			// For exponential velocities
 
-	VelocityController::VelocityController() : step(200)
+	VelocityController::VelocityController() : step(0)
 	{
 
 	}
