@@ -4,7 +4,7 @@
 
 #include "CubesMechanic.h"
 #include "Logger.h"
-#include "resourcelocator.h"
+#include "WinLinMacApi.h"
 #include "sfmlcubes.h"
 
 using namespace std;
@@ -16,11 +16,11 @@ namespace sfmlcubes
 	static sf::Font* mainFont;
 	static sf::Clock clock;
 
-	static sf::Text pauseText;
-	static sf::Text gameOverText;
-	static sf::Text linesFiredText;
-	static sf::Text nextShapeText;
-	static sf::Text linesFiredValueText;
+	static sf::Text* pauseText;
+	static sf::Text* gameOverText;
+	static sf::Text* linesFiredText;
+	static sf::Text* nextShapeText;
+	static sf::Text* linesFiredValueText;
 
 	static CubesMechanic board(12, 21);
 
@@ -52,7 +52,7 @@ namespace sfmlcubes
 
 	void initMainFont(const string& fontPath = "res/fonts/arian_amu", const string& fontFileName = "arnamu.ttf")
 	{
-		string s(locateResource(fontPath.c_str(), fontFileName.c_str()));
+		string s(api->locateResource(fontPath, fontFileName));
 		mainFont = new sf::Font();
 		mainFont->loadFromFile(s);
 	}
@@ -62,60 +62,78 @@ namespace sfmlcubes
 		delete mainFont;
 	}
 
+	void initializeText()
+	{
+		pauseText = new sf::Text();
+		gameOverText = new sf::Text();
+		linesFiredText = new sf::Text();
+		nextShapeText = new sf::Text();
+		linesFiredValueText = new sf::Text();
+	}
+
+	void finalizeText()
+	{
+		delete pauseText;
+		delete gameOverText;
+		delete linesFiredText;
+		delete nextShapeText;
+		delete linesFiredValueText;
+	}
+
 	void updateText()
 	{
 		float k = (float)mainWindow->getSize().y / 480;
 
-		pauseText.setString("Pause");
-		pauseText.setCharacterSize(30 * k);
-		pauseText.setFont(*mainFont);
-		pauseText.setPosition(1.0 * mainWindow->getSize().x / 2 - pauseText.getGlobalBounds().width / 2,
-				                 4.0 * mainWindow->getSize().y / 9 - pauseText.getGlobalBounds().height / 2);
+		pauseText->setString("Pause");
+		pauseText->setCharacterSize(30 * k);
+		pauseText->setFont(*mainFont);
+		pauseText->setPosition(1.0 * mainWindow->getSize().x / 2 - pauseText->getGlobalBounds().width / 2,
+				                 4.0 * mainWindow->getSize().y / 9 - pauseText->getGlobalBounds().height / 2);
 
-		gameOverText.setString("Game Over");
-		gameOverText.setCharacterSize(30 * k);
-		gameOverText.setFont(*mainFont);
-		gameOverText.setPosition(1.0 * mainWindow->getSize().x / 2 - gameOverText.getGlobalBounds().width / 2,
-				                 4.0 * mainWindow->getSize().y / 9 - gameOverText.getGlobalBounds().height / 2);
+		gameOverText->setString("Game Over");
+		gameOverText->setCharacterSize(30 * k);
+		gameOverText->setFont(*mainFont);
+		gameOverText->setPosition(1.0 * mainWindow->getSize().x / 2 - gameOverText->getGlobalBounds().width / 2,
+				                 4.0 * mainWindow->getSize().y / 9 - gameOverText->getGlobalBounds().height / 2);
 
-		linesFiredText.setString("Lines fired");
-		linesFiredText.setCharacterSize(17 * k);
-		linesFiredText.setFont(*mainFont);
-		linesFiredText.setPosition(23.0 * mainWindow->getSize().x / 28 - linesFiredText.getGlobalBounds().width / 2,
-				                   1.0 * mainWindow->getSize().y / 8 - linesFiredText.getGlobalBounds().height / 2);
+		linesFiredText->setString("Lines fired");
+		linesFiredText->setCharacterSize(17 * k);
+		linesFiredText->setFont(*mainFont);
+		linesFiredText->setPosition(23.0 * mainWindow->getSize().x / 28 - linesFiredText->getGlobalBounds().width / 2,
+				                   1.0 * mainWindow->getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
 
 		stringstream ss;
 		ss << board.getLinesFired();
-		linesFiredValueText.setString(ss.str());
-		linesFiredValueText.setColor(sf::Color(192, 128, 128));
-		linesFiredValueText.setCharacterSize(30 * k);
-		linesFiredValueText.setFont(*mainFont);
-		linesFiredValueText.setPosition(24.0 * mainWindow->getSize().x / 28 - linesFiredValueText.getGlobalBounds().width / 2,
-				                   1.0 * mainWindow->getSize().y / 8 + linesFiredText.getGlobalBounds().height + 2.0 * k);
+		linesFiredValueText->setString(ss.str());
+		linesFiredValueText->setColor(sf::Color(192, 128, 128));
+		linesFiredValueText->setCharacterSize(30 * k);
+		linesFiredValueText->setFont(*mainFont);
+		linesFiredValueText->setPosition(24.0 * mainWindow->getSize().x / 28 - linesFiredValueText->getGlobalBounds().width / 2,
+				                   1.0 * mainWindow->getSize().y / 8 + linesFiredText->getGlobalBounds().height + 2.0 * k);
 
-		nextShapeText.setString("Next shape");
-		nextShapeText.setCharacterSize(17 * k);
-		nextShapeText.setFont(*mainFont);
-		nextShapeText.setPosition(23.0 * mainWindow->getSize().x / 28 - nextShapeText.getGlobalBounds().width / 2,
-				                   3.0 * mainWindow->getSize().y / 8 - nextShapeText.getGlobalBounds().height / 2);
+		nextShapeText->setString("Next shape");
+		nextShapeText->setCharacterSize(17 * k);
+		nextShapeText->setFont(*mainFont);
+		nextShapeText->setPosition(23.0 * mainWindow->getSize().x / 28 - nextShapeText->getGlobalBounds().width / 2,
+				                   3.0 * mainWindow->getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
 	}
 
 	void drawText()
 	{
 		mainWindow->pushGLStates();
 		updateText();
-		mainWindow->draw(linesFiredText, sf::RenderStates::Default);
-		mainWindow->draw(linesFiredValueText, sf::RenderStates::Default);
-		mainWindow->draw(nextShapeText, sf::RenderStates::Default);
+		mainWindow->draw(*linesFiredText, sf::RenderStates::Default);
+		mainWindow->draw(*linesFiredValueText, sf::RenderStates::Default);
+		mainWindow->draw(*nextShapeText, sf::RenderStates::Default);
 		if (board.getState() == cmsGameOver)
 		{
 			sfmlcubes::mainWindow->setTitle("Cubes (Game Over)");
-			mainWindow->draw(gameOverText, sf::RenderStates::Default);
+			mainWindow->draw(*gameOverText, sf::RenderStates::Default);
 		}
 		else if (board.isPaused())
 		{
 			sfmlcubes::mainWindow->setTitle("Cubes (Paused)");
-			mainWindow->draw(pauseText, sf::RenderStates::Default);
+			mainWindow->draw(*pauseText, sf::RenderStates::Default);
 		}
 		else
 		{
@@ -192,15 +210,15 @@ namespace sfmlcubes
 
 			float cubeSize = 33;
 /*			float delta_x =  +
-	                         nextShapeText.getGlobalBounds().width - k * cubeSize * (dealingShape.getRight() + 1);
+	                         nextShapeText->getGlobalBounds().width - k * cubeSize * (dealingShape.getRight() + 1);
 
 			float delta_y =   +
-			                 nextShapeText.getGlobalBounds().height - k * cubeSize * (dealingShape.getTop() - 0.5);*/
+			                 nextShapeText->getGlobalBounds().height - k * cubeSize * (dealingShape.getTop() - 0.5);*/
 
-	    	glViewport(23.0 * mainWindow->getSize().x / 28 - nextShapeText.getGlobalBounds().width / 4,
-	    	           3.0 * mainWindow->getSize().y / 8 + nextShapeText.getGlobalBounds().height - 2 * k,
-	    	           nextShapeText.getGlobalBounds().width,
-	    	           nextShapeText.getGlobalBounds().width);
+	    	glViewport(23.0 * mainWindow->getSize().x / 28 - nextShapeText->getGlobalBounds().width / 4,
+	    	           3.0 * mainWindow->getSize().y / 8 + nextShapeText->getGlobalBounds().height - 2 * k,
+	    	           nextShapeText->getGlobalBounds().width,
+	    	           nextShapeText->getGlobalBounds().width);
 
 	    	glMatrixMode(GL_MODELVIEW);
 	    	glLoadIdentity();
@@ -388,7 +406,9 @@ int main()
 {
 	try
 	{
-		if (!initializeBundle()) throw 1520;
+		sfmlcubes::Logger::DEFAULT.logInfo("Logging started");
+		sfmlcubes::api = new WinLinMacApi();
+		sfmlcubes::initializeText();
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
@@ -397,14 +417,13 @@ int main()
 		sfmlcubes::initMainFont();
 		sfmlcubes::prepareScene();
 
-//		sfmlcubes::board.createNewBlock();
-
 		sfmlcubes::run();
+
 		sfmlcubes::movingcubes::Cube::finalize();
 		sfmlcubes::freeMainFont();
 		delete sfmlcubes::mainWindow;
-
-		finalizeBundle();
+		sfmlcubes::finalizeText();
+		delete sfmlcubes::api;
 	}
 	catch (int ex)
 	{

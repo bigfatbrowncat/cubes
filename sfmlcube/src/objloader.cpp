@@ -1,7 +1,8 @@
 #include <SFML/Graphics/Image.hpp>
 
-#include "resourcelocator.h"
+#include "WinLinMacApi.h"
 #include "objloader.h"
+#include "sfmlcubes.h"
 #include "string.h"
 
 	face::face(int v1, int v2, int v3, int t1, int t2, int t3, int n1, int n2, int n3, int m)
@@ -277,7 +278,7 @@ int objloader::load(std::string filename)
 			}else if(tmp[i][0]=='m' && tmp[i][1]=='a')
 			{
 				sscanf(tmp[i].c_str(),"map_Kd %s",filename);
-				texture=loadTexture(locateResource("res", filename));
+				texture=loadTexture(sfmlcubes::api->locateResource("res", filename).c_str());
 				ismat=true;
 			}
 		}

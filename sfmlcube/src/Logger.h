@@ -16,6 +16,7 @@ namespace sfmlcubes
 {
 	class ConsoleLogger;
 	class FileLogger;
+	class NullLogger;
 
 	class Logger
 	{
@@ -25,10 +26,15 @@ namespace sfmlcubes
 		virtual void logInfo(const string& message) const = 0;
 		virtual ~Logger() {}
 
+#ifdef DEBUG
 		static const FileLogger DEFAULT;
+#else
+		static const NullLogger DEFAULT;
+#endif
+
 	};
 
-	class ConsoleLogger
+	class ConsoleLogger : public Logger
 	{
 	public:
 		ConsoleLogger();
@@ -40,7 +46,7 @@ namespace sfmlcubes
 
 	};
 
-	class FileLogger
+	class FileLogger : public Logger
 	{
 		FILE* logFile;
 	public:
@@ -51,6 +57,14 @@ namespace sfmlcubes
 
 		virtual ~FileLogger();
 
+	};
+
+	class NullLogger : public Logger
+	{
+	public:
+		virtual void logError(const string& message) const {}
+		virtual void logWarning(const string& message) const {}
+		virtual void logInfo(const string& message) const {}
 	};
 }
 

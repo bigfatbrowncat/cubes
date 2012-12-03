@@ -9,7 +9,7 @@
 
 #include "../sfmlcubes.h"
 #include "../Logger.h"
-#include "../resourcelocator.h"
+#include "../WinLinMacApi.h"
 #include "Cube.h"
 
 namespace sfmlcubes
@@ -28,13 +28,16 @@ namespace sfmlcubes
 		{
 
 			// Loading the cube model
+			Logger::DEFAULT.logInfo("Loading objects");
+			string cobj = api->locateResource("res", "cube.obj");
+			Logger::DEFAULT.logInfo(cobj);
+			PLAYING_CUBE_INDEX = objLoader.load(cobj);
+			WALL_CUBE_INDEX = objLoader.load(api->locateResource("res", "brick-wall.obj"));
 
-			PLAYING_CUBE_INDEX = objLoader.load(locateResource("res", "cube.obj"));
-			WALL_CUBE_INDEX = objLoader.load(locateResource("res", "brick-wall.obj"));
-
+			Logger::DEFAULT.logInfo("Loading shader");
 			cubeShader = new sf::Shader();
 			// Loading the cube shader
-			if (!cubeShader->loadFromFile(locateResource("res", "cube.vert"), locateResource("res", "cube.frag")))
+			if (!cubeShader->loadFromFile(api->locateResource("res", "cube.vert"), api->locateResource("res", "cube.frag")))
 			{
 				Logger::DEFAULT.logWarning("Can't load the cube shader. Sorry...");
 			}
