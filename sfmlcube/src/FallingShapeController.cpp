@@ -76,6 +76,7 @@ namespace sfmlcubes
 					if (!canFallDown)
 					{
 						state = fscsLanded;
+						break;
 					}
 				}
 			}

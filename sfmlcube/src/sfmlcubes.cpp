@@ -415,6 +415,10 @@ namespace sfmlcubes
 
 	void draw()
 	{
+		if (board.isPaused())
+		{
+			usleep(1000 * 50);	// Sleep for 50 msec
+		}
 		drawScene(*mainWindow);
 		drawText();
 		mainWindow->display();
