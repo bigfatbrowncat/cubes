@@ -62,11 +62,11 @@ namespace sfmlcubes
 
 	void initFonts()
 	{
-		string textFontName(api->locateResource("res/fonts", "PTS55F.ttf"));
+		string textFontName(api->locateResource("res/fonts", "OpenSans-Regular.ttf"));
 		textFont = new sf::Font();
 		textFont->loadFromFile(textFontName);
 
-		string counterFontName(api->locateResource("res/fonts", "PTM55FT.ttf"));
+		string counterFontName(api->locateResource("res/fonts", "OpenSans-Semibold.ttf"));
 		counterFont = new sf::Font();
 		counterFont->loadFromFile(counterFontName);
 	}
@@ -138,7 +138,7 @@ namespace sfmlcubes
 
 		percentText->setString("x");
 		percentText->setCharacterSize(17 * k);
-		percentText->setFont(*counterFont);
+		percentText->setFont(*textFont);
 
 		stringstream ss2;
 		ss2.precision(1);
@@ -147,11 +147,11 @@ namespace sfmlcubes
 		speedValueText->setColor(sf::Color(192, 192, 128));
 		speedValueText->setCharacterSize(30 * k);
 		speedValueText->setFont(*counterFont);
-		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 18 * k,
+		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 12 * k,
 		                            5.5 * mainWindow->getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
 
 		percentText->setPosition(panelRight - percentText->getGlobalBounds().width,
-		                         5.5 * mainWindow->getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height/* + speedValueText->getGlobalBounds().height*/);
+		                         5.5 * mainWindow->getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height + k);
 
 		// Lines indicator
 
@@ -167,7 +167,7 @@ namespace sfmlcubes
 		linesFiredValueText->setColor(sf::Color(192, 128, 128));
 		linesFiredValueText->setCharacterSize(30 * k);
 		linesFiredValueText->setFont(*counterFont);
-		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 18 * k,
+		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 12 * k,
 		                                 4.0 * mainWindow->getSize().y / 8 + 13.0 * k);
 
 		// Next shape
@@ -487,7 +487,7 @@ int main()
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
-		sfmlcubes::initMainWindow("Cubes", 1024, 768);
+		sfmlcubes::initMainWindow("Cubes", 800, 600);
 		sfmlcubes::movingcubes::Cube::initialize();
 		sfmlcubes::initFonts();
 		sfmlcubes::prepareScene();
