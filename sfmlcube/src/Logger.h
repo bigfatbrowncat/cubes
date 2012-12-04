@@ -27,7 +27,7 @@ namespace sfmlcubes
 		virtual ~Logger() {}
 
 #ifdef DEBUG
-		static const FileLogger DEFAULT;
+		static const ConsoleLogger DEFAULT;
 #else
 		static const NullLogger DEFAULT;
 #endif

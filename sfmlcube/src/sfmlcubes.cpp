@@ -14,6 +14,18 @@ namespace sfmlcubes
 	// Global application-level singletones
 	static sf::RenderWindow* mainWindow;
 
+	static sf::RenderTexture* mainWindowTexture;
+	static sf::RenderTexture* uiTexture;
+
+	static sf::Sprite* mainWindowSprite;
+	static sf::Sprite* uiSprite;
+
+	static sf::Shader* mainWindowShader;
+	static sf::Shader* uiShader;
+
+	static sf::RenderStates* mainWindowRS;
+	static sf::RenderStates* uiRS;
+
 	static sf::Font* textFont;
 	static sf::Font* counterFont;
 
@@ -21,15 +33,11 @@ namespace sfmlcubes
 
 	static sf::Text* pauseText;
 	static sf::Text* gameOverText;
-
 	static sf::Text* linesFiredText;
 	static sf::Text* linesFiredValueText;
-
 	static sf::Text* speedText;
 	static sf::Text* speedValueText;
-
 	static sf::Text* percentText;
-
 	static sf::Text* nextShapeText;
 
 	static CubesMechanic board(12, 21);
@@ -39,7 +47,7 @@ namespace sfmlcubes
 	static bool rightKeyPressed = false, leftKeyPressed = false, downKeyPressed = false, rotateCWKeyPressed = false;
 
 	// Global application-level functions
-	void initMainWindow(const string& title = "Cubes", unsigned int width = 0, unsigned int height = 0, unsigned int antialias = 8)
+	void initMainWindow(const string& title = "Cubes", unsigned int width = 0, unsigned int height = 0, unsigned int antialias = 0)
 	{
 		int stl = sf::Style::Close;
 		sf::VideoMode vm;
@@ -60,13 +68,60 @@ namespace sfmlcubes
 		mainWindow->setFramerateLimit(60);
 	}
 
+	void initLayers()
+	{
+		// Preparing rendering textures
+		mainWindowTexture = new sf::RenderTexture();
+		mainWindowTexture->create(mainWindow->getSize().x * 2, mainWindow->getSize().y * 2, true);
+		mainWindowTexture->setSmooth(true);
+
+		uiTexture = new sf::RenderTexture();
+		uiTexture->create(mainWindow->getSize().x, mainWindow->getSize().y, true);
+
+		// Preparing rendering sprites
+		mainWindowSprite = new sf::Sprite(mainWindowTexture->getTexture());
+		mainWindowSprite->setScale(0.5, 0.5);
+
+		uiSprite = new sf::Sprite(uiTexture->getTexture());
+		uiSprite ->setScale(1, 1);
+
+		// Loading the shaders
+		mainWindowShader = new sf::Shader();
+		if (!mainWindowShader->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "trivial.frag")))
+		{
+			Logger::DEFAULT.logError("Can't load main shader.");
+		}
+		uiShader = new sf::Shader();
+		if (!uiShader->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "ui_shadows.frag")))
+		{
+			Logger::DEFAULT.logError("Can't load UI shader.");
+		}
+
+		// Preparing RenderStates obkects
+
+		mainWindowRS = new sf::RenderStates;
+		mainWindowRS->blendMode = sf::BlendAlpha;
+		mainWindowRS->shader = mainWindowShader;
+		mainWindowShader->setParameter("texture", sf::Shader::CurrentTexture);
+
+		uiRS = new sf::RenderStates;
+		uiRS->blendMode = sf::BlendAlpha;
+		uiRS->shader = uiShader;
+		uiShader->setParameter("texture", sf::Shader::CurrentTexture);
+		uiShader->setParameter("blur_radius", (float)(2.f));
+		uiShader->setParameter("shadow_pressure", (float)(1.5f));
+		uiShader->setParameter("screen_width", mainWindow->getSize().x);
+		uiShader->setParameter("screen_height", mainWindow->getSize().y);
+
+	}
+
 	void initFonts()
 	{
 		string textFontName(api->locateResource("res/fonts", "OpenSans-Regular.ttf"));
 		textFont = new sf::Font();
 		textFont->loadFromFile(textFontName);
 
-		string counterFontName(api->locateResource("res/fonts", "OpenSans-Semibold.ttf"));
+		string counterFontName(api->locateResource("res/fonts", "OpenSans-Regular.ttf"));
 		counterFont = new sf::Font();
 		counterFont->loadFromFile(counterFontName);
 	}
@@ -109,24 +164,24 @@ namespace sfmlcubes
 		delete nextShapeText;
 	}
 
-	void updateText()
+	void updateText(sf::RenderTarget& win)
 	{
-		float k = (float)mainWindow->getSize().y / 480;
+		float k = (float)win.getSize().y / 480;
 
-		float panelLeft = 22.0 * mainWindow->getSize().x / 28;
+		float panelLeft = 22.0 * win.getSize().x / 28;
 		float panelRight = panelLeft + 90 * k;
 
 		pauseText->setString("Pause");
 		pauseText->setCharacterSize(30 * k);
 		pauseText->setFont(*textFont);
-		pauseText->setPosition(1.0 * mainWindow->getSize().x / 2 - pauseText->getGlobalBounds().width / 2,
-		                       4.0 * mainWindow->getSize().y / 9 - pauseText->getGlobalBounds().height / 2);
+		pauseText->setPosition(1.0 * win.getSize().x / 2 - pauseText->getGlobalBounds().width / 2,
+		                       4.0 * win.getSize().y / 9 - pauseText->getGlobalBounds().height / 2);
 
 		gameOverText->setString("Game Over");
 		gameOverText->setCharacterSize(30 * k);
 		gameOverText->setFont(*textFont);
-		gameOverText->setPosition(1.0 * mainWindow->getSize().x / 2 - gameOverText->getGlobalBounds().width / 2,
-				                  4.0 * mainWindow->getSize().y / 9 - gameOverText->getGlobalBounds().height / 2);
+		gameOverText->setPosition(1.0 * win.getSize().x / 2 - gameOverText->getGlobalBounds().width / 2,
+				                  4.0 * win.getSize().y / 9 - gameOverText->getGlobalBounds().height / 2);
 
 		// Speed indicator
 
@@ -134,7 +189,7 @@ namespace sfmlcubes
 		speedText->setCharacterSize(17 * k);
 		speedText->setFont(*textFont);
 		speedText->setPosition(panelLeft,
-		                       5.5 * mainWindow->getSize().y / 8 - speedText->getGlobalBounds().height / 2);
+		                       5.5 * win.getSize().y / 8 - speedText->getGlobalBounds().height / 2);
 
 		percentText->setString("x");
 		percentText->setCharacterSize(17 * k);
@@ -147,11 +202,11 @@ namespace sfmlcubes
 		speedValueText->setColor(sf::Color(192, 192, 128));
 		speedValueText->setCharacterSize(30 * k);
 		speedValueText->setFont(*counterFont);
-		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 14 * k,
-		                            5.5 * mainWindow->getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
+		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 15 * k,
+		                            5.5 * win.getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
 
 		percentText->setPosition(panelRight - percentText->getGlobalBounds().width,
-		                         5.5 * mainWindow->getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height + 1 * k);
+		                         5.5 * win.getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height + 1 * k);
 
 		// Lines indicator
 
@@ -159,7 +214,7 @@ namespace sfmlcubes
 		linesFiredText->setCharacterSize(17 * k);
 		linesFiredText->setFont(*textFont);
 		linesFiredText->setPosition(panelLeft,
-		                            4.0 * mainWindow->getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
+		                            4.0 * win.getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
 
 		stringstream ss;
 		ss << board.getLinesFired();
@@ -168,7 +223,7 @@ namespace sfmlcubes
 		linesFiredValueText->setCharacterSize(30 * k);
 		linesFiredValueText->setFont(*counterFont);
 		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 14 * k,
-		                                 4.0 * mainWindow->getSize().y / 8 + 13.0 * k);
+		                                 4.0 * win.getSize().y / 8 + 13.0 * k);
 
 		// Next shape
 
@@ -176,38 +231,38 @@ namespace sfmlcubes
 		nextShapeText->setCharacterSize(17 * k);
 		nextShapeText->setFont(*textFont);
 		nextShapeText->setPosition(panelLeft,
-		                           1.0 * mainWindow->getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
+		                           1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
 	}
 
-	void drawText()
+	void drawText(sf::RenderTarget& win, sf::RenderStates rs)
 	{
-		mainWindow->pushGLStates();
-		updateText();
+		win.pushGLStates();
+		updateText(win);
 
-		mainWindow->draw(*linesFiredText, sf::RenderStates::Default);
-		mainWindow->draw(*linesFiredValueText, sf::RenderStates::Default);
+		win.draw(*linesFiredText, rs);
+		win.draw(*linesFiredValueText, rs);
 
-		mainWindow->draw(*speedText, sf::RenderStates::Default);
-		mainWindow->draw(*speedValueText, sf::RenderStates::Default);
-		mainWindow->draw(*percentText, sf::RenderStates::Default);
+		win.draw(*speedText, rs);
+		win.draw(*speedValueText, rs);
+		win.draw(*percentText, rs);
 
-		mainWindow->draw(*nextShapeText, sf::RenderStates::Default);
+		win.draw(*nextShapeText, rs);
 		if (board.getState() == cmsGameOver)
 		{
 			sfmlcubes::mainWindow->setTitle("Cubes (Game Over)");
-			mainWindow->draw(*gameOverText, sf::RenderStates::Default);
+			win.draw(*gameOverText, rs);
 		}
 		else if (board.isPaused())
 		{
 			sfmlcubes::mainWindow->setTitle("Cubes (Paused)");
-			mainWindow->draw(*pauseText, sf::RenderStates::Default);
+			win.draw(*pauseText, rs);
 		}
 		else
 		{
 			sfmlcubes::mainWindow->setTitle("Cubes");
 		}
 
-		mainWindow->popGLStates();
+		win.popGLStates();
 	}
 
 	void setPerspective()
@@ -242,92 +297,77 @@ namespace sfmlcubes
 
 	void drawBoard()
 	{
-		float k = (float)mainWindow->getSize().y / 480;
+		setPerspective();
+		glMatrixMode(GL_MODELVIEW);
+		glLoadIdentity();
+		glTranslatef(0.f, 0.f, -300.f);
 
-		glPushMatrix();
-		{
-			setPerspective();
-		    glMatrixMode(GL_MODELVIEW);
-		    glLoadIdentity();
-		    glTranslatef(0.f, 0.f, -300.f);
+		//glRotatef(0, 1.f, 0.f, 0.f);
+		//glRotatef(0, 0.f, 1.f, 0.f);
+		//glRotatef(0, 0.f, 0.f, 1.f);
 
-		    //glRotatef(0, 1.f, 0.f, 0.f);
-		    //glRotatef(0, 0.f, 1.f, 0.f);
-		    //glRotatef(0, 0.f, 0.f, 1.f);
+		// Translating the board center to the center of the screen
+		float delta_x = (board.getWidth() - 0.5) / 2;
+		float delta_y = (board.getHeight() - 0.5) / 2;
+		float cubeSize = 30;
 
-			// Translating the board center to the center of the screen
-			float delta_x = (board.getWidth() - 0.5) / 2;
-			float delta_y = (board.getHeight() - 0.5) / 2;
-			float cubeSize = 30;
+		glScalef(cubeSize, cubeSize, cubeSize);
+		glTranslatef(-delta_x, delta_y, 0.f);
 
-			glScalef(cubeSize, cubeSize, cubeSize);
-			glTranslatef(-delta_x, delta_y, 0.f);
-
-			board.glDraw(0, 0);
-		}
-		glPopMatrix();
-
-	    glPushMatrix();
-		{
-	    	Shape dealingShape = board.getShapeDealer().getShape();
-
-	    	glMatrixMode(GL_PROJECTION);
-	    	glLoadIdentity();
-	    	gluPerspective(35.f, 1, 1, 1000);
-
-			float cubeSize = 40;
-/*			float delta_x =  +
-	                         nextShapeText->getGlobalBounds().width - k * cubeSize * (dealingShape.getRight() + 1);
-
-			float delta_y =   +
-			                 nextShapeText->getGlobalBounds().height - k * cubeSize * (dealingShape.getTop() - 0.5);*/
-
-	    	glViewport(23.0 * mainWindow->getSize().x / 28 - nextShapeText->getGlobalBounds().width / 4,
-	    	           (mainWindow->getSize().y - 80 * k) - 1.0 * mainWindow->getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 10 * k,
-
-	    			//,
-	    	        //   5.0 * mainWindow->getSize().y / 8 + 20 * k,
-	    	           80 * k,
-	    	           80 * k);
-
-	    	glMatrixMode(GL_MODELVIEW);
-	    	glLoadIdentity();
-		    glTranslatef(0.f, 0.f, -300.f);	        //gluPerspective()
-
-		    //gluPerspective(100.f, 1, 1.f, 1000.f);
-
-			// Translating the board center to the center of the screen
-
-			glTranslatef(cubeSize * 1.4,
-			             cubeSize * 1.4,
-			             0.f);
-			glRotatef(30, 0.0, -1, -0.5);
-			glScalef(cubeSize, cubeSize, cubeSize);
-
-			dealingShape.glDraw(-dealingShape.getRight(), -dealingShape.getTop());
-		}
-		glPopMatrix();
+		board.glDraw(0, 0);
 	}
 
-	void drawScene(const sf::RenderTarget& win)
+	void drawNextShape(sf::RenderTexture& win)
 	{
-		mainWindow->setActive(true);
+		float k = (float)win.getSize().y / 480;
 
-        glViewport(0, 0, mainWindow->getSize().x, mainWindow->getSize().y);
+    	glMatrixMode(GL_PROJECTION);
+    	Shape dealingShape = board.getShapeDealer().getShape();
+
+    	glLoadIdentity();
+    	gluPerspective(35.f, 1, 1, 1000);
+
+		float cubeSize = 40;
+
+    	glViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 4,
+    	           (win.getSize().y - 80 * k) - 1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 10 * k,
+
+    	           80 * k,
+    	           80 * k);
+
+    	glMatrixMode(GL_MODELVIEW);
+    	glLoadIdentity();
+	    glTranslatef(0.f, 0.f, -300.f);	        //gluPerspective()
+
+	    //gluPerspective(100.f, 1, 1.f, 1000.f);
+
+		// Translating the board center to the center of the screen
+
+		glTranslatef(cubeSize * 1.4,
+		             cubeSize * 1.4,
+		             0.f);
+		glRotatef(30, 0.0, -1, -0.5);
+		glScalef(cubeSize, cubeSize, cubeSize);
+
+		dealingShape.glDraw(-dealingShape.getRight(), -dealingShape.getTop());
+	}
+
+	void drawScene(sf::RenderTexture& win)
+	{
+		win.pushGLStates();
+		win.setActive(true);
+//		win.setSmooth(true);
+        glViewport(0, 0, win.getSize().x, win.getSize().y);
 
 	    // Clear color and depth buffer
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         glEnable(GL_DEPTH_TEST);
 
-        //glDisable(GL_CULL_FACE);
-        //glCullFace(GL_BACK);
-
-	    // Apply some transformations
-
-
 	    // Drawing the cube
 	    drawBoard();
+	    drawNextShape(win);
+		win.popGLStates();
 
 	}
 
@@ -449,8 +489,22 @@ namespace sfmlcubes
 		{
 			usleep(1000 * 50);	// Sleep for 50 msec
 		}
-		drawScene(*mainWindow);
-		drawText();
+
+		// Creating fullscreen texture for postprocessing
+		mainWindowTexture->clear(sf::Color(0, 0, 0, 0));
+		drawScene(*mainWindowTexture);
+		mainWindowTexture->display();
+
+		uiTexture->clear(sf::Color(0, 0, 0, 0));
+		drawText(*uiTexture, sf::RenderStates::Default);
+		uiTexture->display();
+
+		mainWindow->clear(sf::Color(64, 64, 60));
+
+		mainWindow->draw(*mainWindowSprite, *mainWindowRS);
+		mainWindow->draw(*uiSprite, *uiRS);
+		drawText(*mainWindow, sf::RenderStates::Default);
+
 		mainWindow->display();
 	}
 
@@ -488,6 +542,8 @@ int main()
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
 		sfmlcubes::initMainWindow("Cubes", 800, 600);
+		sfmlcubes::initLayers();
+
 		sfmlcubes::movingcubes::Cube::initialize();
 		sfmlcubes::initFonts();
 		sfmlcubes::prepareScene();

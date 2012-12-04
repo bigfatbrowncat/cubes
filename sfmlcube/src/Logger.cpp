@@ -14,7 +14,7 @@ using namespace std;
 namespace sfmlcubes
 {
 #ifdef DEBUG
-	const FileLogger Logger::DEFAULT;
+	const ConsoleLogger Logger::DEFAULT;
 #else
 	const NullLogger Logger::DEFAULT;
 #endif
