@@ -27,6 +27,7 @@ namespace sfmlcubes
 	static sf::RenderStates** uiRS;
 
 	static sf::Font* textFont;
+	static sf::Font* textHeavyFont;
 	static sf::Font* counterFont;
 
 	static sf::Clock clock;
@@ -35,6 +36,8 @@ namespace sfmlcubes
 	static sf::Text* gameOverText;
 	static sf::Text* linesFiredText;
 	static sf::Text* linesFiredValueText;
+	static sf::Text* scoreText;
+	static sf::Text* scoreValueText;
 	static sf::Text* speedText;
 	static sf::Text* speedValueText;
 	static sf::Text* percentText;
@@ -155,6 +158,10 @@ namespace sfmlcubes
 		textFont = new sf::Font();
 		textFont->loadFromFile(textFontName);
 
+		string textHeavyFontName(api->locateResource("res/fonts", "OpenSans-Semibold.ttf"));
+		textHeavyFont = new sf::Font();
+		textHeavyFont->loadFromFile(textHeavyFontName);
+
 		string counterFontName(api->locateResource("res/fonts", "OpenSans-Regular.ttf"));
 		counterFont = new sf::Font();
 		counterFont->loadFromFile(counterFontName);
@@ -163,6 +170,7 @@ namespace sfmlcubes
 	void freeFonts()
 	{
 		delete textFont;
+		delete textHeavyFont;
 		delete counterFont;
 	}
 
@@ -173,6 +181,9 @@ namespace sfmlcubes
 
 		linesFiredText = new sf::Text();
 		linesFiredValueText = new sf::Text();
+
+		scoreText = new sf::Text();
+		scoreValueText = new sf::Text();
 
 		speedText = new sf::Text();
 		speedValueText = new sf::Text();
@@ -189,6 +200,9 @@ namespace sfmlcubes
 
 		delete linesFiredText;
 		delete linesFiredValueText;
+
+		delete scoreText;
+		delete scoreValueText;
 
 		delete speedText;
 		delete speedValueText;
@@ -223,7 +237,7 @@ namespace sfmlcubes
 		speedText->setCharacterSize(17 * k);
 		speedText->setFont(*textFont);
 		speedText->setPosition(panelLeft,
-		                       5.5 * win.getSize().y / 8 - speedText->getGlobalBounds().height / 2);
+		                       3.8 * win.getSize().y / 8 - speedText->getGlobalBounds().height / 2);
 
 		percentText->setString("x");
 		percentText->setCharacterSize(17 * k);
@@ -237,18 +251,18 @@ namespace sfmlcubes
 		speedValueText->setCharacterSize(30 * k);
 		speedValueText->setFont(*counterFont);
 		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 15 * k,
-		                            5.5 * win.getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
+		                            3.8 * win.getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
 
 		percentText->setPosition(panelRight - percentText->getGlobalBounds().width,
-		                         5.5 * win.getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height + 1 * k);
+		                         3.8 * win.getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height + 1 * k);
 
 		// Lines indicator
 
-		linesFiredText->setString("Lines");
+		linesFiredText->setString("Lines built");
 		linesFiredText->setCharacterSize(17 * k);
 		linesFiredText->setFont(*textFont);
 		linesFiredText->setPosition(panelLeft,
-		                            4.0 * win.getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
+		                            5.1 * win.getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
 
 		stringstream ss;
 		ss << board.getLinesFired();
@@ -256,8 +270,26 @@ namespace sfmlcubes
 		linesFiredValueText->setColor(sf::Color(192, 128, 128));
 		linesFiredValueText->setCharacterSize(30 * k);
 		linesFiredValueText->setFont(*counterFont);
-		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 14 * k,
-		                                 4.0 * win.getSize().y / 8 + 13.0 * k);
+		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 7 * k,
+		                                 5.1 * win.getSize().y / 8 + 13.0 * k);
+
+		// Score indicator
+
+		scoreText->setString("Score");
+		scoreText->setCharacterSize(17 * k);
+		scoreText->setFont(*textHeavyFont);
+		scoreText->setPosition(panelLeft,
+		                            6.4 * win.getSize().y / 8 - scoreText->getGlobalBounds().height / 2);
+
+		stringstream ss3;
+		ss3 << board.getScore();
+		scoreValueText->setString(ss3.str());
+		scoreValueText->setColor(sf::Color(128, 128, 192));
+		scoreValueText->setCharacterSize(28 * k);
+		scoreValueText->setFont(*textHeavyFont);
+		scoreValueText->setPosition(panelRight - scoreValueText->getGlobalBounds().width - 7 * k,
+		                                 6.4 * win.getSize().y / 8 + 13.0 * k);
+
 
 		// Next shape
 
@@ -275,6 +307,9 @@ namespace sfmlcubes
 
 		win.draw(*linesFiredText, rs);
 		win.draw(*linesFiredValueText, rs);
+
+		win.draw(*scoreText, rs);
+		win.draw(*scoreValueText, rs);
 
 		win.draw(*speedText, rs);
 		win.draw(*speedValueText, rs);
@@ -579,7 +614,7 @@ int main()
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
-		sfmlcubes::initMainWindow("Cubes"/*, 800, 600*/);
+		sfmlcubes::initMainWindow("Cubes", 800, 600);
 		sfmlcubes::initLayers();
 
 		sfmlcubes::movingcubes::Cube::initialize();

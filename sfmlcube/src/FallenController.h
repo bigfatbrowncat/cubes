@@ -33,6 +33,7 @@ namespace sfmlcubes
 
 		int top, left, right, bottom;
 		int linesFired;
+		int linesJustFired;
 		Shape fallen;
 
 		list<Shape*> fallenNotFiredParts;
@@ -70,8 +71,11 @@ namespace sfmlcubes
 		void mergeShape(const Shape& other) { fallen += other; }
 		void fireFullLines() { collectLinesToFire(); }
 		int getLinesFired() const { return linesFired; }
+		int getLinesJustFired() const { return linesJustFired; }
 
 		State getState() const { return state; }
+		int getWidth() const { return right - left + 1; }
+		int getHeight() const { return bottom - top + 1; }
 
 		virtual ~FallenController();
 	};

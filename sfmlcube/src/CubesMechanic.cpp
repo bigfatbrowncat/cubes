@@ -22,11 +22,12 @@ namespace sfmlcubes
 	CubesMechanic::CubesMechanic(int width, int height):
 
 			width(width), height(height),
-			state(cmsShapeFalling),
+			state(cmsBetweenShapes),
 			wallsController(width, height),
 			fallenController(1, 1, width - 2, height - 2),
 			velocityController(),
 			fallingShapeController(wallsController, fallenController, velocityController),
+			scoreCounter(fallenController),
 
 			time(0),
 			momentWhenFallIssued(0),
@@ -56,6 +57,11 @@ namespace sfmlcubes
 					momentWhenFallIssued = time;
 				}
 
+				//if (fallingShapeController.getState() == fscsNew)
+				{
+
+				}
+
 				if (fallingShapeController.getState() == fscsLanded)
 				{
 					fallenController.mergeShape(fallingShapeController.getShape());
@@ -65,6 +71,7 @@ namespace sfmlcubes
 					// Multiplying the velocity
 					velocityController.advanceStep();
 
+					scoreCounter.shapeHasFallen();
 					state = cmsBetweenShapes;
 				}
 
@@ -74,6 +81,7 @@ namespace sfmlcubes
 				// Checking if the fallen shape controller finished it's tasks
 				if (fallenController.getState() == FallenController::sPassive)
 				{
+					scoreCounter.linesHasBeenFired();
 					// Dealing the new shape
 					Shape newShape = shapeDealer.dealNext();
 					// Positioning it to the top-center of the game field

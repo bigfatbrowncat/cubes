@@ -18,6 +18,7 @@
 #include "FallenController.h"
 #include "FallingShapeController.h"
 #include "ShapeDealer.h"
+#include "ScoreCounter.h"
 
 using namespace sfmlcubes::movingcubes;
 
@@ -48,7 +49,9 @@ namespace sfmlcubes
 		FallenController fallenController;
 		VelocityController velocityController;
 		FallingShapeController fallingShapeController;
+
 		ShapeDealer shapeDealer;
+		ScoreCounter scoreCounter;
 
 		double time;
 		double momentWhenFallIssued;
@@ -73,6 +76,7 @@ namespace sfmlcubes
 
 		CubesMechanicState getState() const { return state; }
 		int getLinesFired() const { return fallenController.getLinesFired(); }
+		int getScore() const { return scoreCounter.getScore(); }
 		float getVelocityMultiplicator() const { return velocityController.getVelocityMultiplicator(); }
 
 		bool isPaused() { return paused; }

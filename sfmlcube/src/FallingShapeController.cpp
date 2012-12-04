@@ -17,7 +17,7 @@ namespace sfmlcubes
 		fallingKinematics(*this),
 		fallingDynamics(*this),
 
-		state(fscsLanded)
+		state(fscsFlying)
 	{
 		fallingDynamics.addObstacle(fallenController);
 		fallingDynamics.addObstacle(wallsController);

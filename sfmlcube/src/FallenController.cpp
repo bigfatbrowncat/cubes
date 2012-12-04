@@ -74,6 +74,7 @@ namespace sfmlcubes
 
 	void FallenController::collectLinesToFire()
 	{
+		linesJustFired = 0;
 		bool lastLineWasFired = true;
 		int count = 0;
 		for (int j = bottom; j >= top; j--)
@@ -158,6 +159,7 @@ namespace sfmlcubes
 		{
 			(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
 			linesFired += (*iter).second;
+			linesJustFired += (*iter).second;
 		}
 
 		// Clearing the fallen part of the board
