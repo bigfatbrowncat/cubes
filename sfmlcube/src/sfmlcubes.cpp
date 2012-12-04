@@ -15,16 +15,16 @@ namespace sfmlcubes
 	static sf::RenderWindow* mainWindow;
 
 	static sf::RenderTexture* mainWindowTexture;
-	static sf::RenderTexture* uiTexture;
+	static sf::RenderTexture** uiTexture;
 
 	static sf::Sprite* mainWindowSprite;
-	static sf::Sprite* uiSprite;
+	static sf::Sprite** uiSprite;
 
 	static sf::Shader* mainWindowShader;
-	static sf::Shader* uiShader;
+	static sf::Shader** uiShader;
 
 	static sf::RenderStates* mainWindowRS;
-	static sf::RenderStates* uiRS;
+	static sf::RenderStates** uiRS;
 
 	static sf::Font* textFont;
 	static sf::Font* counterFont;
@@ -70,20 +70,34 @@ namespace sfmlcubes
 
 	void initLayers()
 	{
+		float k = (float)mainWindow->getSize().y / 480;
+
 		// Preparing rendering textures
 		mainWindowTexture = new sf::RenderTexture();
 		mainWindowTexture->create(mainWindow->getSize().x * 2, mainWindow->getSize().y * 2, true);
 		mainWindowTexture->setSmooth(true);
 
-		uiTexture = new sf::RenderTexture();
-		uiTexture->create(mainWindow->getSize().x, mainWindow->getSize().y, true);
+		uiTexture = new sf::RenderTexture*[2];
+		uiTexture[0] = new sf::RenderTexture;
+		uiTexture[0]->create(mainWindow->getSize().x, mainWindow->getSize().y, true);
+		uiTexture[1] = new sf::RenderTexture;
+		uiTexture[1]->create(mainWindow->getSize().x, mainWindow->getSize().y, true);
 
 		// Preparing rendering sprites
 		mainWindowSprite = new sf::Sprite(mainWindowTexture->getTexture());
 		mainWindowSprite->setScale(0.5, 0.5);
 
-		uiSprite = new sf::Sprite(uiTexture->getTexture());
-		uiSprite ->setScale(1, 1);
+		uiSprite = new sf::Sprite*[2];
+		uiSprite[0] = new sf::Sprite(uiTexture[0]->getTexture());
+		uiSprite[1] = new sf::Sprite(uiTexture[1]->getTexture());
+
+		// Creating the render states
+
+		uiRS = new sf::RenderStates*[2];
+		uiRS[0] = new sf::RenderStates;
+		uiRS[0]->blendMode = sf::BlendAlpha;
+		uiRS[1] = new sf::RenderStates;
+		uiRS[1]->blendMode = sf::BlendAlpha;
 
 		// Loading the shaders
 		mainWindowShader = new sf::Shader();
@@ -91,27 +105,47 @@ namespace sfmlcubes
 		{
 			Logger::DEFAULT.logError("Can't load main shader.");
 		}
-		uiShader = new sf::Shader();
-		if (!uiShader->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "ui_shadows.frag")))
+
+		uiShader = new sf::Shader*[2];
+		uiShader[0] = new sf::Shader();
+		if (uiShader[0]->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "ui_shadows.frag")))
 		{
-			Logger::DEFAULT.logError("Can't load UI shader.");
+			uiRS[0]->shader = uiShader[0];
+			uiShader[0]->setParameter("texture", sf::Shader::CurrentTexture);
+			uiShader[0]->setParameter("blur_radius", (float)(3.f) * k);
+			uiShader[0]->setParameter("blur_vector", 1.f, 0.f);
+			uiShader[0]->setParameter("shadow_pressure", (float)(0.9f));
+			uiShader[0]->setParameter("screen_width", mainWindow->getSize().x);
+			uiShader[0]->setParameter("screen_height", mainWindow->getSize().y);
+		}
+		else
+		{
+			Logger::DEFAULT.logError("Can't load UI shadows horizontal shader.");
 		}
 
-		// Preparing RenderStates obkects
+		uiShader[1] = new sf::Shader();
+		if (uiShader[1]->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "ui_shadows.frag")))
+		{
+			uiRS[1]->shader = uiShader[1];
+			uiShader[1]->setParameter("texture", sf::Shader::CurrentTexture);
+			uiShader[1]->setParameter("blur_radius", (float)(3.f) * k);
+			uiShader[1]->setParameter("blur_vector", 0.f, 1.f);
+			uiShader[1]->setParameter("shadow_pressure", (float)(0.9f));
+			uiShader[1]->setParameter("screen_width", mainWindow->getSize().x);
+			uiShader[1]->setParameter("screen_height", mainWindow->getSize().y);
+		}
+		else
+		{
+			Logger::DEFAULT.logError("Can't load UI shadows vertical shader.");
+		}
+
+		// Preparing RenderStates objects
 
 		mainWindowRS = new sf::RenderStates;
 		mainWindowRS->blendMode = sf::BlendAlpha;
 		mainWindowRS->shader = mainWindowShader;
 		mainWindowShader->setParameter("texture", sf::Shader::CurrentTexture);
 
-		uiRS = new sf::RenderStates;
-		uiRS->blendMode = sf::BlendAlpha;
-		uiRS->shader = uiShader;
-		uiShader->setParameter("texture", sf::Shader::CurrentTexture);
-		uiShader->setParameter("blur_radius", (float)(2.f));
-		uiShader->setParameter("shadow_pressure", (float)(1.5f));
-		uiShader->setParameter("screen_width", mainWindow->getSize().x);
-		uiShader->setParameter("screen_height", mainWindow->getSize().y);
 
 	}
 
@@ -177,7 +211,7 @@ namespace sfmlcubes
 		pauseText->setPosition(1.0 * win.getSize().x / 2 - pauseText->getGlobalBounds().width / 2,
 		                       4.0 * win.getSize().y / 9 - pauseText->getGlobalBounds().height / 2);
 
-		gameOverText->setString("Game Over");
+		gameOverText->setString("Game over");
 		gameOverText->setCharacterSize(30 * k);
 		gameOverText->setFont(*textFont);
 		gameOverText->setPosition(1.0 * win.getSize().x / 2 - gameOverText->getGlobalBounds().width / 2,
@@ -329,8 +363,8 @@ namespace sfmlcubes
 
 		float cubeSize = 40;
 
-    	glViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 4,
-    	           (win.getSize().y - 80 * k) - 1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 10 * k,
+    	glViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 3,
+    	           (win.getSize().y - 80 * k) - 1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 17 * k,
 
     	           80 * k,
     	           80 * k);
@@ -495,14 +529,18 @@ namespace sfmlcubes
 		drawScene(*mainWindowTexture);
 		mainWindowTexture->display();
 
-		uiTexture->clear(sf::Color(0, 0, 0, 0));
-		drawText(*uiTexture, sf::RenderStates::Default);
-		uiTexture->display();
+		uiTexture[0]->clear(sf::Color(0, 0, 0, 0));
+		drawText(*uiTexture[0], sf::RenderStates::Default);
+		uiTexture[0]->display();
 
-		mainWindow->clear(sf::Color(64, 64, 60));
+		uiTexture[1]->clear(sf::Color(0, 0, 0, 0));
+		// Drawing the first layer to the second one
+		uiTexture[1]->draw(*(uiSprite[0]), *(uiRS[0]));
+		uiTexture[1]->display();
 
+		mainWindow->clear(sf::Color(40, 40, 32));
 		mainWindow->draw(*mainWindowSprite, *mainWindowRS);
-		mainWindow->draw(*uiSprite, *uiRS);
+		mainWindow->draw(*(uiSprite[1]), *(uiRS[1]));
 		drawText(*mainWindow, sf::RenderStates::Default);
 
 		mainWindow->display();
@@ -541,7 +579,7 @@ int main()
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
-		sfmlcubes::initMainWindow("Cubes", 800, 600);
+		sfmlcubes::initMainWindow("Cubes"/*, 800, 600*/);
 		sfmlcubes::initLayers();
 
 		sfmlcubes::movingcubes::Cube::initialize();
