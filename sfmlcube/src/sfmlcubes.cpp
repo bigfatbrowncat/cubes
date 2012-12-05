@@ -2,9 +2,12 @@
 #include <sstream>
 #include <unistd.h>
 
+#define GLEW_STATIC
+
 #include "CubesMechanic.h"
 #include "Logger.h"
 #include "WinLinMacApi.h"
+#include "ui/TextWithShadow.h"
 #include "sfmlcubes.h"
 
 using namespace std;
@@ -117,7 +120,7 @@ namespace sfmlcubes
 			uiShader[0]->setParameter("texture", sf::Shader::CurrentTexture);
 			uiShader[0]->setParameter("blur_radius", (float)(3.f) * k);
 			uiShader[0]->setParameter("blur_vector", 1.f, 0.f);
-			uiShader[0]->setParameter("shadow_pressure", (float)(0.9f));
+			uiShader[0]->setParameter("shadow_pressure", (float)(1.2f));
 			uiShader[0]->setParameter("screen_width", mainWindow->getSize().x);
 			uiShader[0]->setParameter("screen_height", mainWindow->getSize().y);
 		}
@@ -133,7 +136,7 @@ namespace sfmlcubes
 			uiShader[1]->setParameter("texture", sf::Shader::CurrentTexture);
 			uiShader[1]->setParameter("blur_radius", (float)(3.f) * k);
 			uiShader[1]->setParameter("blur_vector", 0.f, 1.f);
-			uiShader[1]->setParameter("shadow_pressure", (float)(0.9f));
+			uiShader[1]->setParameter("shadow_pressure", (float)(1.2f));
 			uiShader[1]->setParameter("screen_width", mainWindow->getSize().x);
 			uiShader[1]->setParameter("screen_height", mainWindow->getSize().y);
 		}
@@ -324,7 +327,7 @@ namespace sfmlcubes
 		else if (board.isPaused())
 		{
 			sfmlcubes::mainWindow->setTitle("Cubes (Paused)");
-			win.draw(*pauseText, rs);
+			win.draw(TextWithShadow(*pauseText), sf::RenderStates::Default);
 		}
 		else
 		{
@@ -609,14 +612,15 @@ int main()
 	try
 	{
 		sfmlcubes::Logger::DEFAULT.logInfo("Logging started");
+
 		sfmlcubes::api = new WinLinMacApi();
 		sfmlcubes::initializeText();
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
-		sfmlcubes::initMainWindow("Cubes", 800, 600);
+		sfmlcubes::initMainWindow("Cubes", 1024, 768);
 		sfmlcubes::initLayers();
-
+		sfmlcubes::TextWithShadow::initialize();
 		sfmlcubes::movingcubes::Cube::initialize();
 		sfmlcubes::initFonts();
 		sfmlcubes::prepareScene();
@@ -624,6 +628,7 @@ int main()
 		sfmlcubes::run();
 
 		sfmlcubes::movingcubes::Cube::finalize();
+		sfmlcubes::TextWithShadow::finalize();
 		sfmlcubes::freeFonts();
 		delete sfmlcubes::mainWindow;
 		sfmlcubes::finalizeText();

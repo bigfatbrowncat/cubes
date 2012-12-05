@@ -29,7 +29,7 @@ namespace sfmlcubes
 #ifdef DEBUG
 		static const ConsoleLogger DEFAULT;
 #else
-		static const NullLogger DEFAULT;
+		static const ConsoleLogger DEFAULT;
 #endif
 
 	};

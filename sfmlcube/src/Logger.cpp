@@ -16,7 +16,7 @@ namespace sfmlcubes
 #ifdef DEBUG
 	const ConsoleLogger Logger::DEFAULT;
 #else
-	const NullLogger Logger::DEFAULT;
+	const ConsoleLogger Logger::DEFAULT;
 #endif
 
 	ConsoleLogger::ConsoleLogger()
