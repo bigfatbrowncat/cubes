@@ -24,7 +24,7 @@ namespace sfmlcubes
 		sf::RenderTexture** textures;
 		sf::Sprite** sprites;
 
-		const sf::Text* text;
+		sf::Text text;
 		float shadowWidth;
 		sf::FloatRect realBounds;
 
@@ -36,7 +36,8 @@ namespace sfmlcubes
 		virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 	public:
-		TextWithShadow(const sf::Text& text);
+		TextWithShadow();
+		void setText(const sf::Text& text);
 
 		virtual ~TextWithShadow();
 	};

@@ -59,7 +59,7 @@ namespace sfmlcubes
 
 	void TextWithShadow::updateRealBounds()
 	{
-		realBounds = text->getGlobalBounds();
+		realBounds = text.getGlobalBounds();
 		realBounds.left -= shadowWidth;
 		realBounds.top -= shadowWidth;
 		realBounds.width += 2 * shadowWidth;
@@ -106,17 +106,23 @@ namespace sfmlcubes
 		delete [] sprites; sprites = NULL;
 	}
 
-	TextWithShadow::TextWithShadow(const Text& text) :
+	TextWithShadow::TextWithShadow() :
 			shadowWidth(5)
 	{
-		this->text = &text;
 		initTexturesAndSprites();
 	}
 
+	void TextWithShadow::setText(const Text& text)
+	{
+		this->text = text;
+		updateTexturesAndSprites();
+	}
+
+
 	void TextWithShadow::draw(RenderTarget& target, RenderStates states) const
 	{
-		Text t(*text);
-		t.setPosition(shadowWidth, -text->getGlobalBounds().height / 2 + shadowWidth);
+		Text t(text);
+		t.setPosition(shadowWidth, -text.getGlobalBounds().height / 2 + shadowWidth);
 		RenderStates rs[2];
 
 		shadowShaders[0]->setParameter("blur_radius", (float)shadowWidth);
@@ -136,10 +142,10 @@ namespace sfmlcubes
 		textures[0]->draw(t, rs[0]);
 		textures[0]->display();
 
-		sprites[0]->setPosition(text->getPosition().x - shadowWidth,
-		                        text->getPosition().y - shadowWidth + text->getGlobalBounds().height / 2);
+		sprites[0]->setPosition(text.getPosition().x - shadowWidth,
+		                        text.getPosition().y - shadowWidth + text.getGlobalBounds().height / 2);
 		target.draw(*(sprites[0]), rs[1]);
-		target.draw(*text, states);
+		target.draw(text, states);
 	}
 
 

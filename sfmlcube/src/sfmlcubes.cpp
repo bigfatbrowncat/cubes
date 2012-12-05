@@ -18,16 +18,9 @@ namespace sfmlcubes
 	static sf::RenderWindow* mainWindow;
 
 	static sf::RenderTexture* mainWindowTexture;
-	static sf::RenderTexture** uiTexture;
-
 	static sf::Sprite* mainWindowSprite;
-	static sf::Sprite** uiSprite;
-
 	static sf::Shader* mainWindowShader;
-	static sf::Shader** uiShader;
-
 	static sf::RenderStates* mainWindowRS;
-	static sf::RenderStates** uiRS;
 
 	static sf::Font* textFont;
 	static sf::Font* textHeavyFont;
@@ -45,6 +38,17 @@ namespace sfmlcubes
 	static sf::Text* speedValueText;
 	static sf::Text* percentText;
 	static sf::Text* nextShapeText;
+
+	static TextWithShadow* pauseTextWithShadow;
+	static TextWithShadow* gameOverTextWithShadow;
+	static TextWithShadow* linesFiredTextWithShadow;
+	static TextWithShadow* linesFiredValueTextWithShadow;
+	static TextWithShadow* scoreTextWithShadow;
+	static TextWithShadow* scoreValueTextWithShadow;
+	static TextWithShadow* speedTextWithShadow;
+	static TextWithShadow* speedValueTextWithShadow;
+	static TextWithShadow* percentTextWithShadow;
+	static TextWithShadow* nextShapeTextWithShadow;
 
 	static CubesMechanic board(12, 21);
 
@@ -83,27 +87,11 @@ namespace sfmlcubes
 		mainWindowTexture->create(mainWindow->getSize().x * 2, mainWindow->getSize().y * 2, true);
 		mainWindowTexture->setSmooth(true);
 
-		uiTexture = new sf::RenderTexture*[2];
-		uiTexture[0] = new sf::RenderTexture;
-		uiTexture[0]->create(mainWindow->getSize().x, mainWindow->getSize().y, true);
-		uiTexture[1] = new sf::RenderTexture;
-		uiTexture[1]->create(mainWindow->getSize().x, mainWindow->getSize().y, true);
-
 		// Preparing rendering sprites
 		mainWindowSprite = new sf::Sprite(mainWindowTexture->getTexture());
 		mainWindowSprite->setScale(0.5, 0.5);
 
-		uiSprite = new sf::Sprite*[2];
-		uiSprite[0] = new sf::Sprite(uiTexture[0]->getTexture());
-		uiSprite[1] = new sf::Sprite(uiTexture[1]->getTexture());
-
 		// Creating the render states
-
-		uiRS = new sf::RenderStates*[2];
-		uiRS[0] = new sf::RenderStates;
-		uiRS[0]->blendMode = sf::BlendAlpha;
-		uiRS[1] = new sf::RenderStates;
-		uiRS[1]->blendMode = sf::BlendAlpha;
 
 		// Loading the shaders
 		mainWindowShader = new sf::Shader();
@@ -112,46 +100,12 @@ namespace sfmlcubes
 			Logger::DEFAULT.logError("Can't load main shader.");
 		}
 
-		uiShader = new sf::Shader*[2];
-		uiShader[0] = new sf::Shader();
-		if (uiShader[0]->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "ui_shadows.frag")))
-		{
-			uiRS[0]->shader = uiShader[0];
-			uiShader[0]->setParameter("texture", sf::Shader::CurrentTexture);
-			uiShader[0]->setParameter("blur_radius", (float)(3.f) * k);
-			uiShader[0]->setParameter("blur_vector", 1.f, 0.f);
-			uiShader[0]->setParameter("shadow_pressure", (float)(1.2f));
-			uiShader[0]->setParameter("screen_width", mainWindow->getSize().x);
-			uiShader[0]->setParameter("screen_height", mainWindow->getSize().y);
-		}
-		else
-		{
-			Logger::DEFAULT.logError("Can't load UI shadows horizontal shader.");
-		}
-
-		uiShader[1] = new sf::Shader();
-		if (uiShader[1]->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "ui_shadows.frag")))
-		{
-			uiRS[1]->shader = uiShader[1];
-			uiShader[1]->setParameter("texture", sf::Shader::CurrentTexture);
-			uiShader[1]->setParameter("blur_radius", (float)(3.f) * k);
-			uiShader[1]->setParameter("blur_vector", 0.f, 1.f);
-			uiShader[1]->setParameter("shadow_pressure", (float)(1.2f));
-			uiShader[1]->setParameter("screen_width", mainWindow->getSize().x);
-			uiShader[1]->setParameter("screen_height", mainWindow->getSize().y);
-		}
-		else
-		{
-			Logger::DEFAULT.logError("Can't load UI shadows vertical shader.");
-		}
-
 		// Preparing RenderStates objects
 
 		mainWindowRS = new sf::RenderStates;
 		mainWindowRS->blendMode = sf::BlendAlpha;
 		mainWindowRS->shader = mainWindowShader;
 		mainWindowShader->setParameter("texture", sf::Shader::CurrentTexture);
-
 
 	}
 
@@ -177,45 +131,7 @@ namespace sfmlcubes
 		delete counterFont;
 	}
 
-	void initializeText()
-	{
-		pauseText = new sf::Text();
-		gameOverText = new sf::Text();
-
-		linesFiredText = new sf::Text();
-		linesFiredValueText = new sf::Text();
-
-		scoreText = new sf::Text();
-		scoreValueText = new sf::Text();
-
-		speedText = new sf::Text();
-		speedValueText = new sf::Text();
-
-		percentText = new sf::Text();
-
-		nextShapeText = new sf::Text();
-	}
-
-	void finalizeText()
-	{
-		delete pauseText;
-		delete gameOverText;
-
-		delete linesFiredText;
-		delete linesFiredValueText;
-
-		delete scoreText;
-		delete scoreValueText;
-
-		delete speedText;
-		delete speedValueText;
-
-		delete percentText;
-
-		delete nextShapeText;
-	}
-
-	void updateText(sf::RenderTarget& win)
+	void updateStaticText(sf::RenderTarget& win)
 	{
 		float k = (float)win.getSize().y / 480;
 
@@ -246,15 +162,6 @@ namespace sfmlcubes
 		percentText->setCharacterSize(17 * k);
 		percentText->setFont(*textFont);
 
-		stringstream ss2;
-		ss2.precision(1);
-		ss2 << fixed << board.getVelocityMultiplicator();
-		speedValueText->setString(ss2.str());
-		speedValueText->setColor(sf::Color(192, 192, 128));
-		speedValueText->setCharacterSize(30 * k);
-		speedValueText->setFont(*counterFont);
-		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 15 * k,
-		                            3.8 * win.getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
 
 		percentText->setPosition(panelRight - percentText->getGlobalBounds().width,
 		                         3.8 * win.getSize().y / 8 + 30 * k - percentText->getGlobalBounds().height + 1 * k);
@@ -267,6 +174,100 @@ namespace sfmlcubes
 		linesFiredText->setPosition(panelLeft,
 		                            5.1 * win.getSize().y / 8 - linesFiredText->getGlobalBounds().height / 2);
 
+		// Score indicator
+
+		scoreText->setString("Score");
+		scoreText->setCharacterSize(17 * k);
+		scoreText->setFont(*textHeavyFont);
+		scoreText->setPosition(panelLeft,
+		                            6.4 * win.getSize().y / 8 - scoreText->getGlobalBounds().height / 2);
+
+
+		// Next shape
+
+		nextShapeText->setString("Next shape");
+		nextShapeText->setCharacterSize(17 * k);
+		nextShapeText->setFont(*textFont);
+		nextShapeText->setPosition(panelLeft,
+		                           1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
+
+		pauseTextWithShadow->setText(*pauseText);
+		gameOverTextWithShadow->setText(*gameOverText);
+		linesFiredTextWithShadow->setText(*linesFiredText);
+		scoreTextWithShadow->setText(*scoreText);
+		speedTextWithShadow->setText(*speedText);
+		percentTextWithShadow->setText(*percentText);
+		nextShapeTextWithShadow->setText(*nextShapeText);
+	}
+
+	void initializeText()
+	{
+		pauseText = new sf::Text();
+		gameOverText = new sf::Text();
+		linesFiredText = new sf::Text();
+		linesFiredValueText = new sf::Text();
+		scoreText = new sf::Text();
+		scoreValueText = new sf::Text();
+		speedText = new sf::Text();
+		speedValueText = new sf::Text();
+		percentText = new sf::Text();
+		nextShapeText = new sf::Text();
+
+		pauseTextWithShadow = new TextWithShadow();
+		gameOverTextWithShadow = new TextWithShadow();
+		linesFiredTextWithShadow = new TextWithShadow();
+		linesFiredValueTextWithShadow = new TextWithShadow();
+		scoreTextWithShadow = new TextWithShadow();
+		scoreValueTextWithShadow = new TextWithShadow();
+		speedTextWithShadow = new TextWithShadow();
+		speedValueTextWithShadow = new TextWithShadow();
+		percentTextWithShadow = new TextWithShadow();
+		nextShapeTextWithShadow = new TextWithShadow();
+
+	}
+
+	void finalizeText()
+	{
+		delete pauseTextWithShadow;
+		delete gameOverTextWithShadow;
+		delete linesFiredTextWithShadow;
+		delete linesFiredValueTextWithShadow;
+		delete scoreTextWithShadow;
+		delete scoreValueTextWithShadow;
+		delete speedTextWithShadow;
+		delete speedValueTextWithShadow;
+		delete percentTextWithShadow;
+		delete nextShapeTextWithShadow;
+
+		delete pauseText;
+		delete gameOverText;
+		delete linesFiredText;
+		delete linesFiredValueText;
+		delete scoreText;
+		delete scoreValueText;
+		delete speedText;
+		delete speedValueText;
+		delete percentText;
+		delete nextShapeText;
+	}
+
+	void updateDynamicText(sf::RenderTarget& win)
+	{
+		float k = (float)win.getSize().y / 480;
+
+		float panelLeft = 22.0 * win.getSize().x / 28;
+		float panelRight = panelLeft + 90 * k;
+
+		stringstream ss2;
+		ss2.precision(1);
+		ss2 << fixed << board.getVelocityMultiplicator();
+		speedValueText->setString(ss2.str());
+		speedValueText->setColor(sf::Color(192, 192, 128));
+		speedValueText->setCharacterSize(30 * k);
+		speedValueText->setFont(*counterFont);
+		speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 15 * k,
+		                            3.8 * win.getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
+
 		stringstream ss;
 		ss << board.getLinesFired();
 		linesFiredValueText->setString(ss.str());
@@ -275,14 +276,6 @@ namespace sfmlcubes
 		linesFiredValueText->setFont(*counterFont);
 		linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 7 * k,
 		                                 5.1 * win.getSize().y / 8 + 13.0 * k);
-
-		// Score indicator
-
-		scoreText->setString("Score");
-		scoreText->setCharacterSize(17 * k);
-		scoreText->setFont(*textHeavyFont);
-		scoreText->setPosition(panelLeft,
-		                            6.4 * win.getSize().y / 8 - scoreText->getGlobalBounds().height / 2);
 
 		stringstream ss3;
 		ss3 << board.getScore();
@@ -293,41 +286,36 @@ namespace sfmlcubes
 		scoreValueText->setPosition(panelRight - scoreValueText->getGlobalBounds().width - 7 * k,
 		                                 6.4 * win.getSize().y / 8 + 13.0 * k);
 
-
-		// Next shape
-
-		nextShapeText->setString("Next shape");
-		nextShapeText->setCharacterSize(17 * k);
-		nextShapeText->setFont(*textFont);
-		nextShapeText->setPosition(panelLeft,
-		                           1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
+		linesFiredValueTextWithShadow->setText(*linesFiredValueText);
+		scoreValueTextWithShadow->setText(*scoreValueText);
+		speedValueTextWithShadow->setText(*speedValueText);
 	}
 
 	void drawText(sf::RenderTarget& win, sf::RenderStates rs)
 	{
 		win.pushGLStates();
-		updateText(win);
+		updateDynamicText(win);
 
-		win.draw(*linesFiredText, rs);
-		win.draw(*linesFiredValueText, rs);
+		win.draw(*linesFiredTextWithShadow, rs);
+		win.draw(*linesFiredValueTextWithShadow, rs);
 
-		win.draw(*scoreText, rs);
-		win.draw(*scoreValueText, rs);
+		win.draw(*scoreTextWithShadow, rs);
+		win.draw(*scoreValueTextWithShadow, rs);
 
-		win.draw(*speedText, rs);
-		win.draw(*speedValueText, rs);
-		win.draw(*percentText, rs);
+		win.draw(*speedTextWithShadow, rs);
+		win.draw(*speedValueTextWithShadow, rs);
+		win.draw(*percentTextWithShadow, rs);
 
-		win.draw(*nextShapeText, rs);
+		win.draw(*nextShapeTextWithShadow, rs);
 		if (board.getState() == cmsGameOver)
 		{
 			sfmlcubes::mainWindow->setTitle("Cubes (Game Over)");
-			win.draw(*gameOverText, rs);
+			win.draw(*gameOverTextWithShadow, rs);
 		}
 		else if (board.isPaused())
 		{
 			sfmlcubes::mainWindow->setTitle("Cubes (Paused)");
-			win.draw(TextWithShadow(*pauseText), sf::RenderStates::Default);
+			win.draw(*pauseTextWithShadow, sf::RenderStates::Default);
 		}
 		else
 		{
@@ -567,18 +555,8 @@ namespace sfmlcubes
 		drawScene(*mainWindowTexture);
 		mainWindowTexture->display();
 
-		uiTexture[0]->clear(sf::Color(0, 0, 0, 0));
-		drawText(*uiTexture[0], sf::RenderStates::Default);
-		uiTexture[0]->display();
-
-		uiTexture[1]->clear(sf::Color(0, 0, 0, 0));
-		// Drawing the first layer to the second one
-		uiTexture[1]->draw(*(uiSprite[0]), *(uiRS[0]));
-		uiTexture[1]->display();
-
-		mainWindow->clear(sf::Color(40, 40, 32));
+		mainWindow->clear(sf::Color(128, 128, 128));
 		mainWindow->draw(*mainWindowSprite, *mainWindowRS);
-		mainWindow->draw(*(uiSprite[1]), *(uiRS[1]));
 		drawText(*mainWindow, sf::RenderStates::Default);
 
 		mainWindow->display();
@@ -618,12 +596,13 @@ int main()
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
-		sfmlcubes::initMainWindow("Cubes", 1024, 768);
+		sfmlcubes::initMainWindow("Cubes", 640, 480);
 		sfmlcubes::initLayers();
 		sfmlcubes::TextWithShadow::initialize();
 		sfmlcubes::movingcubes::Cube::initialize();
 		sfmlcubes::initFonts();
 		sfmlcubes::prepareScene();
+		sfmlcubes::updateStaticText(*sfmlcubes::mainWindow);
 
 		sfmlcubes::run();
 
