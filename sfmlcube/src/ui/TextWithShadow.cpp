@@ -88,7 +88,7 @@ namespace sfmlcubes
 
 	void TextWithShadow::updateTexturesAndSprites()
 	{
-		if (textures != NULL || sprites != NULL)
+		if (textures == NULL || sprites == NULL)
 		{
 			freeTexturesAndSprites();
 		}
@@ -115,7 +115,13 @@ namespace sfmlcubes
 	void TextWithShadow::setText(const Text& text)
 	{
 		this->text = text;
-		updateTexturesAndSprites();
+
+		if (text.getGlobalBounds().width + 2 * shadowWidth > realBounds.width ||
+		    text.getGlobalBounds().height + 2 * shadowWidth > realBounds.height)
+		{
+			updateTexturesAndSprites();
+		}
+
 	}
 
 
@@ -139,12 +145,18 @@ namespace sfmlcubes
 
 		textures[0]->clear(sf::Color(0, 0, 0, 0));
 		// Drawing the first layer to the second one
-		textures[0]->draw(t, rs[0]);
+		textures[0]->draw(t, RenderStates::Default);
 		textures[0]->display();
 
-		sprites[0]->setPosition(text.getPosition().x - shadowWidth,
+		textures[1]->clear(sf::Color(0, 0, 0, 0));
+		// Drawing the first layer to the second one
+		textures[1]->draw(*(sprites[0]), rs[0]);
+		textures[1]->display();
+
+
+		sprites[1]->setPosition(text.getPosition().x - shadowWidth,
 		                        text.getPosition().y - shadowWidth + text.getGlobalBounds().height / 2);
-		target.draw(*(sprites[0]), rs[1]);
+		target.draw(*(sprites[1]), rs[1]);
 		target.draw(text, states);
 	}
 

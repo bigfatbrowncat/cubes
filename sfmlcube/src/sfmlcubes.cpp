@@ -192,12 +192,19 @@ namespace sfmlcubes
 		                           1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
 
 		pauseTextWithShadow->setText(*pauseText);
+		pauseTextWithShadow->setShadowWidth(3 * k);
 		gameOverTextWithShadow->setText(*gameOverText);
+		gameOverTextWithShadow->setShadowWidth(3 * k);
 		linesFiredTextWithShadow->setText(*linesFiredText);
+		linesFiredTextWithShadow->setShadowWidth(3 * k);
 		scoreTextWithShadow->setText(*scoreText);
+		scoreTextWithShadow->setShadowWidth(3 * k);
 		speedTextWithShadow->setText(*speedText);
+		speedTextWithShadow->setShadowWidth(3 * k);
 		percentTextWithShadow->setText(*percentText);
+		percentTextWithShadow->setShadowWidth(3 * k);
 		nextShapeTextWithShadow->setText(*nextShapeText);
+		nextShapeTextWithShadow->setShadowWidth(3 * k);
 	}
 
 	void initializeText()
@@ -287,8 +294,11 @@ namespace sfmlcubes
 		                                 6.4 * win.getSize().y / 8 + 13.0 * k);
 
 		linesFiredValueTextWithShadow->setText(*linesFiredValueText);
+		linesFiredValueTextWithShadow->setShadowWidth(3 * k);
 		scoreValueTextWithShadow->setText(*scoreValueText);
+		scoreValueTextWithShadow->setShadowWidth(3 * k);
 		speedValueTextWithShadow->setText(*speedValueText);
+		speedValueTextWithShadow->setShadowWidth(3 * k);
 	}
 
 	void drawText(sf::RenderTarget& win, sf::RenderStates rs)
@@ -596,7 +606,7 @@ int main()
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
-		sfmlcubes::initMainWindow("Cubes", 640, 480);
+		sfmlcubes::initMainWindow("Cubes", 800, 600);
 		sfmlcubes::initLayers();
 		sfmlcubes::TextWithShadow::initialize();
 		sfmlcubes::movingcubes::Cube::initialize();

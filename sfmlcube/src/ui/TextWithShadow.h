@@ -38,6 +38,7 @@ namespace sfmlcubes
 	public:
 		TextWithShadow();
 		void setText(const sf::Text& text);
+		void setShadowWidth(float value) { shadowWidth = value; }
 
 		virtual ~TextWithShadow();
 	};
