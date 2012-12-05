@@ -77,7 +77,11 @@ namespace sfmlcubes
 		CubesMechanicState getState() const { return state; }
 		int getLinesFired() const { return fallenController.getLinesFired(); }
 		int getScore() const { return scoreCounter.getScore(); }
-		float getVelocityMultiplicator() const { return velocityController.getVelocityMultiplicator(); }
+		int getVelocityIndex() const
+		{
+			// Every 20% of velocity is a new level
+			return (int)((velocityController.getVelocityMultiplicator() - 1) * 5 + 1);
+		}
 
 		bool isPaused() { return paused; }
 

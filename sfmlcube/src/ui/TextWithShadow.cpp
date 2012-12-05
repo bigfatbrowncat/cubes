@@ -60,10 +60,9 @@ namespace sfmlcubes
 	void TextWithShadow::updateRealBounds()
 	{
 		realBounds = text.getGlobalBounds();
-		realBounds.left -= shadowWidth;
-		realBounds.top -= shadowWidth;
-		realBounds.width += 2 * shadowWidth;
-		realBounds.height += 2 * shadowWidth;
+		// This is experimental. I don't know why adding 2*margin is not enough
+		realBounds.width *= 2;
+		realBounds.height *= 2;
 	}
 
 	void TextWithShadow::initTexturesAndSprites()
@@ -76,23 +75,25 @@ namespace sfmlcubes
 
 		updateRealBounds();
 
-		textures[0] = new RenderTexture;
-		textures[0]->create(realBounds.width, realBounds.height, true);
-		textures[1] = new RenderTexture;
-		textures[1]->create(realBounds.width, realBounds.height, true);
-		sprites[0] = new Sprite;
-		sprites[0]->setTexture(textures[0]->getTexture());
-		sprites[1] = new Sprite;
-		sprites[1]->setTexture(textures[1]->getTexture());
+		if (realBounds.width > 0 && realBounds.height > 0)
+		{
+			textures[0] = new RenderTexture;
+			textures[0]->create(realBounds.width, realBounds.height, true);
+			textures[1] = new RenderTexture;
+			textures[1]->create(realBounds.width, realBounds.height, true);
+			sprites[0] = new Sprite;
+			sprites[0]->setTexture(textures[0]->getTexture(), true);
+			sprites[1] = new Sprite;
+			sprites[1]->setTexture(textures[1]->getTexture(), true);
+		}
 	}
 
 	void TextWithShadow::updateTexturesAndSprites()
 	{
-		if (textures == NULL || sprites == NULL)
+		if (textures != NULL || sprites != NULL)
 		{
 			freeTexturesAndSprites();
 		}
-
 		initTexturesAndSprites();
 	}
 
@@ -116,8 +117,8 @@ namespace sfmlcubes
 	{
 		this->text = text;
 
-		if (text.getGlobalBounds().width + 2 * shadowWidth > realBounds.width ||
-		    text.getGlobalBounds().height + 2 * shadowWidth > realBounds.height)
+		if (text.getGlobalBounds().width + 2 * margin > realBounds.width ||
+		    text.getGlobalBounds().height + 2 * margin > realBounds.height)
 		{
 			updateTexturesAndSprites();
 		}
@@ -127,37 +128,40 @@ namespace sfmlcubes
 
 	void TextWithShadow::draw(RenderTarget& target, RenderStates states) const
 	{
-		Text t(text);
-		t.setPosition(shadowWidth, -text.getGlobalBounds().height / 2 + shadowWidth);
-		RenderStates rs[2];
+		if (realBounds.width > 0 && realBounds.height > 0)
+		{
+			Text t(text);
+			t.setPosition(margin, -text.getGlobalBounds().height / 2 + margin);
+			RenderStates rs[2];
 
-		shadowShaders[0]->setParameter("blur_radius", (float)shadowWidth);
-		shadowShaders[0]->setParameter("shadow_pressure", (float)(1.2f));
-		shadowShaders[0]->setParameter("screen_width", realBounds.width);
-		shadowShaders[0]->setParameter("screen_height", realBounds.height);
-		rs[0].shader = shadowShaders[0];
+			shadowShaders[0]->setParameter("blur_radius", (float)shadowWidth);
+			shadowShaders[0]->setParameter("shadow_pressure", (float)(1.2f));
+			shadowShaders[0]->setParameter("screen_width", realBounds.width);
+			shadowShaders[0]->setParameter("screen_height", realBounds.height);
+			rs[0].shader = shadowShaders[0];
 
-		shadowShaders[1]->setParameter("blur_radius", (float)shadowWidth);
-		shadowShaders[1]->setParameter("shadow_pressure", (float)(1.2f));
-		shadowShaders[1]->setParameter("screen_width", realBounds.width);
-		shadowShaders[1]->setParameter("screen_height", realBounds.height);
-		rs[1].shader = shadowShaders[1];
+			shadowShaders[1]->setParameter("blur_radius", (float)shadowWidth);
+			shadowShaders[1]->setParameter("shadow_pressure", (float)(1.2f));
+			shadowShaders[1]->setParameter("screen_width", realBounds.width);
+			shadowShaders[1]->setParameter("screen_height", realBounds.height);
+			rs[1].shader = shadowShaders[1];
 
-		textures[0]->clear(sf::Color(0, 0, 0, 0));
-		// Drawing the first layer to the second one
-		textures[0]->draw(t, RenderStates::Default);
-		textures[0]->display();
+			// Drawing the first layer to the second one
+			textures[0]->clear(sf::Color(0, 0, 0, 0));
+			textures[0]->draw(t, RenderStates::Default);
+			textures[0]->display();
 
-		textures[1]->clear(sf::Color(0, 0, 0, 0));
-		// Drawing the first layer to the second one
-		textures[1]->draw(*(sprites[0]), rs[0]);
-		textures[1]->display();
+			textures[1]->clear(sf::Color(0, 0, 0, 0));
+			// Drawing the first layer to the second one
+			textures[1]->draw(*(sprites[0]), rs[0]);
+			textures[1]->display();
 
 
-		sprites[1]->setPosition(text.getPosition().x - shadowWidth,
-		                        text.getPosition().y - shadowWidth + text.getGlobalBounds().height / 2);
-		target.draw(*(sprites[1]), rs[1]);
-		target.draw(text, states);
+			sprites[1]->setPosition(text.getPosition().x - margin,
+									text.getPosition().y - margin + text.getGlobalBounds().height / 2);
+			target.draw(*(sprites[1]), rs[1]);
+			target.draw(text, states);
+		}
 	}
 
 

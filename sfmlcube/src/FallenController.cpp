@@ -198,6 +198,40 @@ namespace sfmlcubes
 		}
 	}
 
+	int FallenController::countHoles() const
+	{
+		int holes = 0;
+		for (int i = left; i <= right; i++)
+		{
+			bool shapeTopFound = false;
+			bool previousWasHole = false;
+			for (int j = top; j <= bottom; j++)
+			{
+				if (!fallen.cubeAt(i, j).empty())
+				{
+					if (!shapeTopFound)
+					{
+						shapeTopFound = true;
+					}
+					else
+					{
+						previousWasHole = false;
+					}
+				}
+				else if (shapeTopFound)
+				{
+					if (!previousWasHole)
+					{
+						holes ++;
+						previousWasHole = true;
+					}
+				}
+
+			}
+		}
+		return holes;
+	}
+
 	FallenController::~FallenController()
 	{
 	}

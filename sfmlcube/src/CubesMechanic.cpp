@@ -64,14 +64,15 @@ namespace sfmlcubes
 
 				if (fallingShapeController.getState() == fscsLanded)
 				{
+					scoreCounter.beforeShapeFallen();
 					fallenController.mergeShape(fallingShapeController.getShape());
 					fallingShapeController.clearShape();
+					scoreCounter.afterShapeFallen();
 					fallenController.fireFullLines();
 
 					// Multiplying the velocity
 					velocityController.advanceStep();
 
-					scoreCounter.shapeHasFallen();
 					state = cmsBetweenShapes;
 				}
 

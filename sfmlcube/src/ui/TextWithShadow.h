@@ -26,6 +26,7 @@ namespace sfmlcubes
 
 		sf::Text text;
 		float shadowWidth;
+		float margin;
 		sf::FloatRect realBounds;
 
 		void initTexturesAndSprites();
@@ -38,7 +39,7 @@ namespace sfmlcubes
 	public:
 		TextWithShadow();
 		void setText(const sf::Text& text);
-		void setShadowWidth(float value) { shadowWidth = value; }
+		void setShadowWidth(float value) { shadowWidth = value; margin = 2 * shadowWidth; }
 
 		virtual ~TextWithShadow();
 	};

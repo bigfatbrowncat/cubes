@@ -76,6 +76,7 @@ namespace sfmlcubes
 		State getState() const { return state; }
 		int getWidth() const { return right - left + 1; }
 		int getHeight() const { return bottom - top + 1; }
+		int countHoles() const;
 
 		virtual ~FallenController();
 	};

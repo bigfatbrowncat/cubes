@@ -17,11 +17,14 @@ namespace sfmlcubes
 	{
 	private:
 		int score;
+		int holesBeforeFallen;
+		int holesAfterFallen;
 		const FallenController& fallenController;
 	public:
 		ScoreCounter(const FallenController& fallenController);
 
-		void shapeHasFallen();
+		void beforeShapeFallen();
+		void afterShapeFallen();
 		void linesHasBeenFired();
 
 		int getScore() const { return score; }
