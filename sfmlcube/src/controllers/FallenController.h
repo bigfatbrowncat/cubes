@@ -33,7 +33,7 @@ namespace sfmlcubes
 		private:
 			State state;
 
-			int top, left, right, bottom;
+			int left, top, right, bottom;
 			int linesFired;
 			int linesJustFired;
 			Shape fallen;

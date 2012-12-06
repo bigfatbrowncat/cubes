@@ -19,10 +19,11 @@ namespace sfmlcubes
 		float FallenController::FALLING_DOWN_FIRED_LONGITUDE = 0.3;
 		float FallenController::BLINKING_LONGITUDE = 0.6;
 
-		FallenController::FallenController(int top, int left, int right, int bottom) :
+		FallenController::FallenController(int left, int top, int right, int bottom) :
 				state(sPassive),
-				top(top), left(left), right(right), bottom(bottom),
+				left(left), top(top), right(right), bottom(bottom),
 				linesFired(0),
+				linesJustFired(0),
 				fallenKinematics(*this)
 		{
 		}

@@ -22,6 +22,7 @@ namespace sfmlcubes
 	static sf::Font* textFont;
 	static sf::Font* textHeavyFont;
 	static sf::Font* counterFont;
+	static sf::Font* counterHeavyFont;
 
 	static sf::Clock clock;
 
@@ -63,9 +64,13 @@ namespace sfmlcubes
 		textHeavyFont = new sf::Font();
 		textHeavyFont->loadFromFile(textHeavyFontName);
 
-		string counterFontName(api->locateResource("res/fonts", "OpenSans-Regular.ttf"));
+		string counterFontName(api->locateResource("res/fonts", "YanoneKaffeesatz-Regular.ttf"));
 		counterFont = new sf::Font();
 		counterFont->loadFromFile(counterFontName);
+
+		string counterHeavyFontName(api->locateResource("res/fonts", "YanoneKaffeesatz-Bold.ttf"));
+		counterHeavyFont = new sf::Font();
+		counterHeavyFont->loadFromFile(counterHeavyFontName);
 	}
 
 	void freeFonts()
@@ -73,6 +78,7 @@ namespace sfmlcubes
 		delete textFont;
 		delete textHeavyFont;
 		delete counterFont;
+		delete counterHeavyFont;
 	}
 
 
@@ -143,7 +149,7 @@ int main()
 
 		sfmlcubes::mainWindow = new sf::RenderWindow();
 		// Create the main window
-		sfmlcubes::initMainWindow("Cubes", 640, 480);
+		sfmlcubes::initMainWindow("Cubes", 800, 600);
 
 		sfmlcubes::widgets::TextWithShadow::initialize();
 		sfmlcubes::movingcubes::Cube::initialize();
@@ -156,7 +162,8 @@ int main()
 		                                                        *sfmlcubes::classicGameController,
 		                                                        *sfmlcubes::textFont,
 		                                                        *sfmlcubes::textHeavyFont,
-		                                                        *sfmlcubes::counterFont);
+		                                                        *sfmlcubes::counterFont,
+		                                                        *sfmlcubes::counterHeavyFont);
 
 		sfmlcubes::run();
 

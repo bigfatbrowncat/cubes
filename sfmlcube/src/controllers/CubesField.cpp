@@ -27,7 +27,7 @@ namespace sfmlcubes
 				width(width), height(height),
 				state(cmsBetweenShapes),
 				wallsController(width, height),
-				fallenController(1, 1, width - 2, height - 2),
+				fallenController(1, 0, width - 2, height - 2),
 				velocityController(),
 				fallingShapeController(wallsController, fallenController, velocityController),
 				scoreCounter(fallenController),

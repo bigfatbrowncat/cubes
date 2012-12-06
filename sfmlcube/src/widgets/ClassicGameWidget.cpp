@@ -6,6 +6,7 @@
  */
 
 #include <sstream>
+#include <iomanip>
 #include "../sfmlcubes.h"
 #include "../Logger.h"
 #include <SFML/Graphics.hpp>
@@ -122,13 +123,13 @@ namespace sfmlcubes
 
 			stringstream ss2;
 			ss2.precision(1);
-			ss2 << fixed << gameController.getCubesField().getVelocityIndex();
+			ss2 << gameController.getCubesField().getVelocityIndex();
 			speedValueText->setString(ss2.str());
 			speedValueText->setColor(sf::Color(192, 192, 128));
 			speedValueText->setCharacterSize(30 * k);
 			speedValueText->setFont(counterFont);
-			speedValueText->setPosition(panelRight - speedValueText->getGlobalBounds().width - 7 * k,
-										3.8 * win.getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
+			speedValueText->setPosition(panelRight - speedValueText->findCharacterPos(-1).x + speedValueText->findCharacterPos(0).x,
+										3.8 * win.getSize().y / 8 + 13 * k);
 
 			stringstream ss;
 			ss << gameController.getCubesField().getLinesFired();
@@ -136,17 +137,17 @@ namespace sfmlcubes
 			linesFiredValueText->setColor(sf::Color(192, 128, 128));
 			linesFiredValueText->setCharacterSize(30 * k);
 			linesFiredValueText->setFont(counterFont);
-			linesFiredValueText->setPosition(panelRight - linesFiredValueText->getGlobalBounds().width - 7 * k,
+			linesFiredValueText->setPosition(panelRight - linesFiredValueText->findCharacterPos(-1).x + linesFiredValueText->findCharacterPos(0).x,
 											 5.1 * win.getSize().y / 8 + 13.0 * k);
 
 			stringstream ss3;
 			ss3 << gameController.getCubesField().getScore();
 			scoreValueText->setString(ss3.str());
 			scoreValueText->setColor(sf::Color(128, 128, 192));
-			scoreValueText->setCharacterSize(28 * k);
-			scoreValueText->setFont(textHeavyFont);
-			scoreValueText->setPosition(panelRight - scoreValueText->getGlobalBounds().width - 7 * k,
-											 6.4 * win.getSize().y / 8 + 13.0 * k);
+			scoreValueText->setCharacterSize(30 * k);
+			scoreValueText->setFont(counterHeavyFont);
+			scoreValueText->setPosition(panelRight - scoreValueText->findCharacterPos(-1).x + scoreValueText->findCharacterPos(0).x,
+			                            6.4 * win.getSize().y / 8 + 13.0 * k);
 
 			linesFiredValueTextWithShadow->setText(*linesFiredValueText);
 			linesFiredValueTextWithShadow->setShadowWidth(3 * k);
@@ -253,12 +254,14 @@ namespace sfmlcubes
 		                                 const ClassicGameController& gameController,
 		                                 const sf::Font& textFont,
 		                                 const sf::Font& textHeavyFont,
-		                                 const sf::Font& counterFont) :
+		                                 const sf::Font& counterFont,
+		                                 const sf::Font& counterHeavyFont) :
 		        mainWindow(mainWindow),
 		        gameController(gameController),
 				textFont(textFont),
 				textHeavyFont(textHeavyFont),
 				counterFont(counterFont),
+				counterHeavyFont(counterHeavyFont),
 				cubesFieldWidget(gameController.getCubesField()),
 				shapeDealerWidget(gameController.getCubesField().getShapeDealer())
 

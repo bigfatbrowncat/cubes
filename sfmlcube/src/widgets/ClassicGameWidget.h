@@ -28,6 +28,7 @@ namespace sfmlcubes
 			const sf::Font& textFont;
 			const sf::Font& textHeavyFont;
 			const sf::Font& counterFont;
+			const sf::Font& counterHeavyFont;
 
 			CubesFieldWidget cubesFieldWidget;
 			ShapeDealerWidget shapeDealerWidget;
@@ -71,7 +72,8 @@ namespace sfmlcubes
 			                const ClassicGameController& gameController,
 			                const sf::Font& textFont,
 			                const sf::Font& textHeavyFont,
-			                const sf::Font& counterFont);
+			                const sf::Font& counterFont,
+			                const sf::Font& counterHeavyFont);
 			void draw();
 			virtual ~ClassicGameWidget();
 		};
