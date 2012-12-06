@@ -90,11 +90,15 @@ namespace sfmlcubes
 
 	void TextWithShadow::updateTexturesAndSprites()
 	{
-		if (textures != NULL || sprites != NULL)
+		if (text.getGlobalBounds().width > realBounds.width ||
+		    text.getGlobalBounds().height > realBounds.height)
 		{
-			freeTexturesAndSprites();
+			if (textures != NULL || sprites != NULL)
+			{
+				freeTexturesAndSprites();
+			}
+			initTexturesAndSprites();
 		}
-		initTexturesAndSprites();
 	}
 
 	void TextWithShadow::freeTexturesAndSprites()
@@ -117,11 +121,7 @@ namespace sfmlcubes
 	{
 		this->text = text;
 
-		if (text.getGlobalBounds().width + 2 * margin > realBounds.width ||
-		    text.getGlobalBounds().height + 2 * margin > realBounds.height)
-		{
-			updateTexturesAndSprites();
-		}
+		updateTexturesAndSprites();
 
 	}
 

@@ -106,6 +106,8 @@ namespace sfmlcubes
 			bool operator != (const Shape& other);
 
 			Shape& operator += (const Shape& other);
+
+			virtual ~Shape() {}
 		};
 	}
 }
