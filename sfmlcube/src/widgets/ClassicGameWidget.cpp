@@ -9,16 +9,16 @@
 #include "../sfmlcubes.h"
 #include "../Logger.h"
 #include <SFML/Graphics.hpp>
-#include "ClassicGame.h"
+#include "ClassicGameWidget.h"
 
 using namespace std;
 
 namespace sfmlcubes
 {
-	namespace ui
+	namespace widgets
 	{
 
-		void ClassicGame::initLayers()
+		void ClassicGameWidget::initLayers()
 		{
 			// Preparing rendering textures
 			mainWindowTexture = new sf::RenderTexture();
@@ -47,7 +47,7 @@ namespace sfmlcubes
 
 		}
 
-		void ClassicGame::updateStaticText(sf::RenderTarget& win)
+		void ClassicGameWidget::updateStaticText(sf::RenderTarget& win)
 		{
 			float k = (float)win.getSize().y / 480;
 
@@ -113,7 +113,7 @@ namespace sfmlcubes
 			nextShapeTextWithShadow->setShadowWidth(3 * k);
 		}
 
-		void ClassicGame::updateDynamicText(sf::RenderTarget& win)
+		void ClassicGameWidget::updateDynamicText(sf::RenderTarget& win)
 		{
 			float k = (float)win.getSize().y / 480;
 
@@ -122,7 +122,7 @@ namespace sfmlcubes
 
 			stringstream ss2;
 			ss2.precision(1);
-			ss2 << fixed << board.getVelocityIndex();
+			ss2 << fixed << gameController.getCubesField().getVelocityIndex();
 			speedValueText->setString(ss2.str());
 			speedValueText->setColor(sf::Color(192, 192, 128));
 			speedValueText->setCharacterSize(30 * k);
@@ -131,7 +131,7 @@ namespace sfmlcubes
 										3.8 * win.getSize().y / 8 + 30 * k - speedValueText->getGlobalBounds().height);
 
 			stringstream ss;
-			ss << board.getLinesFired();
+			ss << gameController.getCubesField().getLinesFired();
 			linesFiredValueText->setString(ss.str());
 			linesFiredValueText->setColor(sf::Color(192, 128, 128));
 			linesFiredValueText->setCharacterSize(30 * k);
@@ -140,7 +140,7 @@ namespace sfmlcubes
 											 5.1 * win.getSize().y / 8 + 13.0 * k);
 
 			stringstream ss3;
-			ss3 << board.getScore();
+			ss3 << gameController.getCubesField().getScore();
 			scoreValueText->setString(ss3.str());
 			scoreValueText->setColor(sf::Color(128, 128, 192));
 			scoreValueText->setCharacterSize(28 * k);
@@ -156,7 +156,7 @@ namespace sfmlcubes
 			speedValueTextWithShadow->setShadowWidth(3 * k);
 		}
 
-		void ClassicGame::drawText(sf::RenderTarget& win, sf::RenderStates rs)
+		void ClassicGameWidget::drawText(sf::RenderTarget& win, sf::RenderStates rs)
 		{
 			win.pushGLStates();
 			updateDynamicText(win);
@@ -171,12 +171,12 @@ namespace sfmlcubes
 			win.draw(*speedValueTextWithShadow, rs);
 
 			win.draw(*nextShapeTextWithShadow, rs);
-			if (board.getState() == cmsGameOver)
+			if (gameController.getCubesField().getState() == cmsGameOver)
 			{
 				mainWindow.setTitle("Cubes (Game Over)");
 				win.draw(*gameOverTextWithShadow, rs);
 			}
-			else if (board.isPaused())
+			else if (gameController.getCubesField().isPaused())
 			{
 				mainWindow.setTitle("Cubes (Paused)");
 				win.draw(*pauseTextWithShadow, sf::RenderStates::Default);
@@ -189,20 +189,22 @@ namespace sfmlcubes
 			win.popGLStates();
 		}
 
-		void ClassicGame::setPerspective()
+
+		void ClassicGameWidget::setView()
+		{
+			sf::View view(sf::FloatRect(0, 0, mainWindow.getSize().x, mainWindow.getSize().y));
+			mainWindow.setView(view);
+		}
+
+		void ClassicGameWidget::setPerspective()
 		{
 		    glMatrixMode(GL_PROJECTION);
 		    glLoadIdentity();
 		    gluPerspective(100.f, (float)mainWindow.getSize().x / mainWindow.getSize().y, 1.f, 1000.f);
 		}
 
-		void ClassicGame::setView()
-		{
-			sf::View view(sf::FloatRect(0, 0, mainWindow.getSize().x, mainWindow.getSize().y));
-			mainWindow.setView(view);
-		}
 
-		void ClassicGame::prepareScene()
+		void ClassicGameWidget::prepareScene()
 		{
 		    // Set the color and depth clear values
 		    glClearDepth(1.f);
@@ -219,63 +221,12 @@ namespace sfmlcubes
 		    setView();
 		}
 
-		void ClassicGame::drawBoard()
-		{
-			setPerspective();
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			glTranslatef(0.f, 0.f, -300.f);
 
-			//glRotatef(0, 1.f, 0.f, 0.f);
-			//glRotatef(0, 0.f, 1.f, 0.f);
-			//glRotatef(0, 0.f, 0.f, 1.f);
 
-			// Translating the board center to the center of the screen
-			float delta_x = (board.getWidth() - 0.5) / 2;
-			float delta_y = (board.getHeight() - 0.5) / 2;
-			float cubeSize = 30;
-
-			glScalef(cubeSize, cubeSize, cubeSize);
-			glTranslatef(-delta_x, delta_y, 0.f);
-
-			board.glDraw(0, 0);
-		}
-
-		void ClassicGame::drawNextShape(sf::RenderTexture& win)
+		void ClassicGameWidget::drawScene(sf::RenderTexture& win)
 		{
 			float k = (float)win.getSize().y / 480;
 
-	    	glMatrixMode(GL_PROJECTION);
-	    	Shape dealingShape = board.getShapeDealer().getShape();
-
-	    	glLoadIdentity();
-	    	gluPerspective(35.f, 1, 1, 1000);
-
-			float cubeSize = 40;
-
-	    	glViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 3,
-	    	           (win.getSize().y - 80 * k) - 1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 17 * k,
-
-	    	           80 * k,
-	    	           80 * k);
-
-	    	glMatrixMode(GL_MODELVIEW);
-	    	glLoadIdentity();
-		    glTranslatef(0.f, 0.f, -300.f);
-
-			// Translating the board center to the center of the screen
-
-			glTranslatef(cubeSize * 1.4,
-			             cubeSize * 1.4,
-			             0.f);
-			glRotatef(30, 0.0, -1, -0.5);
-			glScalef(cubeSize, cubeSize, cubeSize);
-
-			dealingShape.glDraw(-dealingShape.getRight(), -dealingShape.getTop());
-		}
-
-		void ClassicGame::drawScene(sf::RenderTexture& win)
-		{
 			win.pushGLStates();
 			win.setActive(true);
 	//		win.setSmooth(true);
@@ -287,21 +238,29 @@ namespace sfmlcubes
 	        glEnable(GL_DEPTH_TEST);
 
 		    // Drawing the cube
-		    drawBoard();
-		    drawNextShape(win);
+	        setPerspective();
+	        cubesFieldWidget.drawBoard();
+	        shapeDealerWidget.setViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 3,
+	    	                              (win.getSize().y - 80 * k) - 1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 17 * k,
+	    	                              80 * k,
+	    	                              80 * k);
+		    shapeDealerWidget.drawNextShape(win);
 			win.popGLStates();
 
 		}
 
-		ClassicGame::ClassicGame(sf::RenderWindow& mainWindow,
-		                         const sf::Font& textFont,
-		                         const sf::Font& textHeavyFont,
-		                         const sf::Font& counterFont) :
+		ClassicGameWidget::ClassicGameWidget(sf::RenderWindow& mainWindow,
+		                                 const ClassicGameController& gameController,
+		                                 const sf::Font& textFont,
+		                                 const sf::Font& textHeavyFont,
+		                                 const sf::Font& counterFont) :
 		        mainWindow(mainWindow),
+		        gameController(gameController),
 				textFont(textFont),
 				textHeavyFont(textHeavyFont),
 				counterFont(counterFont),
-				board(12, 21)
+				cubesFieldWidget(gameController.getCubesField()),
+				shapeDealerWidget(gameController.getCubesField().getShapeDealer())
 
 		{
 			pauseText = new sf::Text();
@@ -329,95 +288,7 @@ namespace sfmlcubes
 			prepareScene();
 		}
 
-		void ClassicGame::processTimeStep(float dt)
-		{
-			board.processTimeStep(dt);
-		}
-
-		void ClassicGame::handleKeyPressed(sf::Event::KeyEvent key)
-		{
-	    	switch (key.code)
-	    	{
-	    	case sf::Keyboard::Escape:
-	    		mainWindow.close();
-	    		break;
-	    	case sf::Keyboard::Right:
-	    		if (!rightKeyPressed)
-	    		{
-	    			rightKeyPressed = true;
-	    			board.turnOn(cmcMoveRight);
-	    		}
-	    		break;
-	    	case sf::Keyboard::Left:
-	    		if (!leftKeyPressed)
-	    		{
-	    			leftKeyPressed = true;
-	        		board.turnOn(cmcMoveLeft);
-	    		}
-	    		break;
-	    	case sf::Keyboard::Down:
-	    		if (!downKeyPressed)
-	    		{
-	    			downKeyPressed = true;
-	        		board.turnOn(cmcMoveDownFast);
-	    		}
-	    		break;
-	    	case sf::Keyboard::Up:
-	    		if (!rotateCWKeyPressed)
-	    		{
-	    			rotateCWKeyPressed = true;
-	        		board.turnOn(cmcRotateCW);
-	    		}
-	    		break;
-	    	case sf::Keyboard::Space:
-	    		if (!board.isPaused())
-	    		{
-	    			board.turnOn(cmcPause);
-	    		}
-	    		else
-	    		{
-	    			board.turnOff(cmcPause);
-	    		}
-	    		break;
-	    	default:
-	    		break;
-	    	}
-		}
-
-		void ClassicGame::handleKeyReleased(sf::Event::KeyEvent key)
-		{
-	    	switch (key.code)
-	    	{
-	    	case sf::Keyboard::Right:
-	    		rightKeyPressed = false;
-	    		board.turnOff(cmcMoveRight);
-	    		if (leftKeyPressed)
-	    		{
-	    			board.turnOn(cmcMoveLeft);
-	    		}
-	    		break;
-	    	case sf::Keyboard::Left:
-	    		leftKeyPressed = false;
-	    		board.turnOff(cmcMoveLeft);
-	    		if (rightKeyPressed)
-	    		{
-	    			board.turnOn(cmcMoveRight);
-	    		}
-	    		break;
-	    	case sf::Keyboard::Down:
-	    		downKeyPressed = false;
-	    		board.turnOff(cmcMoveDownFast);
-	    		break;
-	    	case sf::Keyboard::Up:
-	    		rotateCWKeyPressed = false;
-	    		board.turnOff(cmcRotateCW);
-	    		break;
-	    	default:
-	    		break;
-	    	}
-		}
-
-		void ClassicGame::draw()
+		void ClassicGameWidget::draw()
 		{
 			// Creating fullscreen texture for postprocessing
 			mainWindowTexture->clear(sf::Color(0, 0, 0, 0));
@@ -431,7 +302,7 @@ namespace sfmlcubes
 			mainWindow.display();
 		}
 
-		ClassicGame::~ClassicGame()
+		ClassicGameWidget::~ClassicGameWidget()
 		{
 			delete pauseTextWithShadow;
 			delete gameOverTextWithShadow;

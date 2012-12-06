@@ -14,7 +14,7 @@ using namespace sf;
 
 namespace sfmlcubes
 {
-	namespace ui
+	namespace widgets
 	{
 		sf::Shader** TextWithShadow::shadowShaders;
 		sf::RenderStates** TextWithShadow::shadowRenderStates;

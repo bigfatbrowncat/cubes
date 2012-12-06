@@ -12,7 +12,7 @@
 
 namespace sfmlcubes
 {
-	namespace ui
+	namespace widgets
 	{
 		class TextWithShadow : public sf::Drawable
 		{

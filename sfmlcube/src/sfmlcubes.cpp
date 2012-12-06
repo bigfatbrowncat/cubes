@@ -2,19 +2,20 @@
 #include <sstream>
 #include <unistd.h>
 
-#define GLEW_STATIC
-
-#include "CubesMechanic.h"
+#include "controllers/CubesField.h"
 #include "Logger.h"
 #include "WinLinMacApi.h"
-#include "ui/TextWithShadow.h"
-#include "ui/ClassicGame.h"
+#include "widgets/ClassicGameWidget.h"
 #include "sfmlcubes.h"
 
 using namespace std;
 
+
 namespace sfmlcubes
 {
+	using namespace widgets;
+	using namespace controllers;
+
 	// Global application-level singletones
 	static sf::RenderWindow* mainWindow;
 
@@ -26,7 +27,8 @@ namespace sfmlcubes
 
 	static float recentMoment = 0;
 
-	static ui::ClassicGame* classicGame;
+	static widgets::ClassicGameWidget* classicGameView;
+	static ClassicGameController* classicGameController;
 
 	// Global application-level functions
 	void initMainWindow(const string& title = "Cubes", unsigned int width = 0, unsigned int height = 0, unsigned int antialias = 0)
@@ -91,11 +93,11 @@ namespace sfmlcubes
         		break;
 
         	case sf::Event::KeyPressed:
-        		classicGame->handleKeyPressed(Event.key);
+        		classicGameController->handleKeyPressed(Event.key);
             	break;
 
         	case sf::Event::KeyReleased:
-        		classicGame->handleKeyReleased(Event.key);
+        		classicGameController->handleKeyReleased(Event.key);
         		break;
 
            	case sf::Event::Resized:
@@ -114,7 +116,7 @@ namespace sfmlcubes
 		float dt = curTime - recentMoment;
 		recentMoment = curTime;
 
-		classicGame->processTimeStep(dt);
+		classicGameController->processTimeStep(dt);
 	}
 
 	void run()
@@ -123,7 +125,8 @@ namespace sfmlcubes
 	    {
 	    	updateStatesAndTiming();
 	    	handleEvents();
-	    	classicGame->draw();
+
+	    	classicGameView->draw();
 	    }
 	}
 
@@ -142,12 +145,15 @@ int main()
 		// Create the main window
 		sfmlcubes::initMainWindow("Cubes", 640, 480);
 
-		sfmlcubes::ui::TextWithShadow::initialize();
+		sfmlcubes::widgets::TextWithShadow::initialize();
 		sfmlcubes::movingcubes::Cube::initialize();
 		sfmlcubes::initFonts();
 		//sfmlcubes::prepareScene();
 
-		sfmlcubes::classicGame = new sfmlcubes::ui::ClassicGame(*sfmlcubes::mainWindow,
+		sfmlcubes::classicGameController = new sfmlcubes::controllers::ClassicGameController();
+
+		sfmlcubes::classicGameView = new sfmlcubes::widgets::ClassicGameWidget(*sfmlcubes::mainWindow,
+		                                                        *sfmlcubes::classicGameController,
 		                                                        *sfmlcubes::textFont,
 		                                                        *sfmlcubes::textHeavyFont,
 		                                                        *sfmlcubes::counterFont);
@@ -155,7 +161,7 @@ int main()
 		sfmlcubes::run();
 
 		sfmlcubes::movingcubes::Cube::finalize();
-		sfmlcubes::ui::TextWithShadow::finalize();
+		sfmlcubes::widgets::TextWithShadow::finalize();
 		sfmlcubes::freeFonts();
 		delete sfmlcubes::mainWindow;
 		delete sfmlcubes::api;

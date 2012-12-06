@@ -9,21 +9,28 @@
 #define CLASSICGAME_H_
 
 #include <SFML/Graphics.hpp>
+#include "../controllers/ClassicGameController.h"
+#include "CubesFieldWidget.h"
+#include "ShapeDealerWidget.h"
 
-#include "../CubesMechanic.h"
 #include "TextWithShadow.h"
 
 namespace sfmlcubes
 {
-	namespace ui
+	using namespace controllers;
+	namespace widgets
 	{
-		class ClassicGame
+		class ClassicGameWidget
 		{
 		private:
 			sf::RenderWindow& mainWindow;
+			const ClassicGameController& gameController;
 			const sf::Font& textFont;
 			const sf::Font& textHeavyFont;
 			const sf::Font& counterFont;
+
+			CubesFieldWidget cubesFieldWidget;
+			ShapeDealerWidget shapeDealerWidget;
 
 			sf::RenderTexture* mainWindowTexture;
 			sf::Sprite* mainWindowSprite;
@@ -50,13 +57,6 @@ namespace sfmlcubes
 			TextWithShadow* speedValueTextWithShadow;
 			TextWithShadow* nextShapeTextWithShadow;
 
-			CubesMechanic board;//(12, 21);
-
-			bool rightKeyPressed = false,
-			     leftKeyPressed = false,
-			     downKeyPressed = false,
-			     rotateCWKeyPressed = false;
-
 			void initLayers();
 			void updateStaticText(sf::RenderTarget& win);
 			void updateDynamicText(sf::RenderTarget& win);
@@ -64,20 +64,16 @@ namespace sfmlcubes
 			void setPerspective();
 			void setView();
 			void prepareScene();
-			void drawBoard();
-			void drawNextShape(sf::RenderTexture& win);
 			void drawScene(sf::RenderTexture& win);
 
 		public:
-			ClassicGame(sf::RenderWindow& mainWindow,
-					    const sf::Font& textFont,
-					    const sf::Font& textHeavyFont,
-					    const sf::Font& counterFont);
-			void processTimeStep(float dt);
-			void handleKeyPressed(sf::Event::KeyEvent key);
-			void handleKeyReleased(sf::Event::KeyEvent key);
+			ClassicGameWidget(sf::RenderWindow& mainWindow,
+			                const ClassicGameController& gameController,
+			                const sf::Font& textFont,
+			                const sf::Font& textHeavyFont,
+			                const sf::Font& counterFont);
 			void draw();
-			virtual ~ClassicGame();
+			virtual ~ClassicGameWidget();
 		};
 
 	}
