@@ -17,6 +17,7 @@ namespace sfmlcubes
 				score(0),
 				holesBeforeFallen(0),
 				holesAfterFallen(0),
+				linesComboCollector(0),
 				fallenController(fallenController)
 		{
 		}
@@ -49,9 +50,13 @@ namespace sfmlcubes
 			int count = fallenController.getLinesJustFired();
 			if (count > 0)
 			{
-				// 4. Giving 10 (width) points for a line, 20 for two, 40 for three and 80 for four
-				int addScore = pow(2.0, count - 1) * fallenController.getWidth();
-				score += addScore;
+				linesComboCollector ++;
+				// 4. Giving 10 (width) points for a line, 40 for two, 90 for three and 160 for four
+				int addScore = count * count * fallenController.getWidth();
+
+				// 6. [Combo] If you cleared some lines during the consequent falling shapes, you
+				// have a bonus, proportional to the square of number of the moves
+				score += addScore * linesComboCollector * linesComboCollector;
 
 				int newHoles = fallenController.countHoles();
 				if (holesAfterFallen > newHoles && holesBeforeFallen == newHoles)
@@ -60,6 +65,10 @@ namespace sfmlcubes
 					// when the lines has been cleared, give a double bonus to the points for lines clearing
 					score += addScore;
 				}
+			}
+			else
+			{
+				linesComboCollector = 0;
 			}
 
 		}

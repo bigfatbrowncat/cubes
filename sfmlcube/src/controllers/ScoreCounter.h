@@ -20,6 +20,7 @@ namespace sfmlcubes
 			int score;
 			int holesBeforeFallen;
 			int holesAfterFallen;
+			int linesComboCollector;
 			const FallenController& fallenController;
 		public:
 			ScoreCounter(const FallenController& fallenController);
