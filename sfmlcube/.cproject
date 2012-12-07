@@ -158,7 +158,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Debug for Win32" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236" name="MinGW-Debug" parent="cdt.managedbuild.config.gnu.mingw.exe.debug">
+				<configuration artifactExtension="" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Debug for Win32" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236" name="MinGW-Debug" parent="cdt.managedbuild.config.gnu.mingw.exe.debug" postbuildStep="" prebuildStep="windres ../res-src/Cubes.rc -O coff -o Cubes.res">
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base.753359491" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="cdt.managedbuild.target.gnu.platform.mingw.base.1164927903" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.mingw.base"/>
@@ -192,7 +192,7 @@
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.406645728" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.1574716715" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base"/>
-							<tool command="g++" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.1659222150" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base">
+							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.1659222150" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base">
 								<option id="gnu.cpp.link.option.libs.1747651539" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="sfml-graphics-s-d"/>
 									<listOptionValue builtIn="false" value="glew"/>
@@ -236,7 +236,7 @@
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
-				<configuration artifactExtension="" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Release for Win32" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236.151579418" name="MinGW-Release" parent="cdt.managedbuild.config.gnu.mingw.exe.debug">
+				<configuration artifactExtension="" artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="Release for Win32" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236.151579418" name="MinGW-Release" parent="cdt.managedbuild.config.gnu.mingw.exe.debug" postbuildStep="" prebuildStep="windres ../res-src/Cubes.rc -O coff -o Cubes.res">
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236.151579418." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.base.1268668008" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.PE" id="cdt.managedbuild.target.gnu.platform.mingw.base.1672062987" name="Debug Platform" osList="win32" superClass="cdt.managedbuild.target.gnu.platform.mingw.base"/>
@@ -286,7 +286,7 @@
 									<listOptionValue builtIn="false" value="/usr/X11R6/lib"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/extlibs/libs-mingw}&quot;"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.510720554" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -static-libstdc++ -mwindows" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.510720554" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -static-libstdc++ -mwindows Cubes.res" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1777608558" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -305,8 +305,19 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="glutcube.cdt.managedbuild.target.gnu.mingw.exe.1528465304" name="Executable" projectType="cdt.managedbuild.target.gnu.mingw.exe"/>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/sfmlcube"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="OSX-Debug">
+			<resource resourceType="PROJECT" workspacePath="/sfmlcube"/>
+		</configuration>
+		<configuration configurationName="MinGW-Release">
+			<resource resourceType="PROJECT" workspacePath="/sfmlcube"/>
+		</configuration>
+		<configuration configurationName="MinGW-Debug">
+			<resource resourceType="PROJECT" workspacePath="/sfmlcube"/>
+		</configuration>
+		<configuration configurationName="OSX-Release">
+			<resource resourceType="PROJECT" workspacePath="/sfmlcube"/>
+		</configuration>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
@@ -328,6 +339,9 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236;cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236.;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.38140877;cdt.managedbuild.tool.gnu.c.compiler.input.406645728">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042;cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.;cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1998067810;cdt.managedbuild.tool.gnu.c.compiler.input.1580283798">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236.151579418;cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.2032810236.151579418.;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.377922263;cdt.managedbuild.tool.gnu.c.compiler.input.730857151">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
@@ -335,9 +349,6 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042;cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1508687229;cdt.managedbuild.tool.gnu.c.compiler.input.1749497436">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042;cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.;cdt.managedbuild.tool.gnu.c.compiler.macosx.base.1998067810;cdt.managedbuild.tool.gnu.c.compiler.input.1580283798">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.1997306268;cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.1997306268.;cdt.managedbuild.tool.gnu.cpp.compiler.macosx.base.1593618001;cdt.managedbuild.tool.gnu.cpp.compiler.input.931018760">

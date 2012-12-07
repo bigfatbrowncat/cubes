@@ -49,8 +49,9 @@ namespace sfmlcubes
 		mainWindow->create(vm, title, stl
 						  /*| sf::Style::Resize*/,
 						  sf::ContextSettings(24, 8, antialias, 1, 6));		// Creating OpenGL 3.2 context
+		sfmlcubes::api->setMainWindowIcon(*sfmlcubes::mainWindow);
 
-		mainWindow->setFramerateLimit(60);
+		//mainWindow->setFramerateLimit(40);
 	}
 
 
@@ -103,6 +104,10 @@ namespace sfmlcubes
 
            	case sf::Event::Resized:
             	break;
+
+           	case sf::Event::LostFocus:
+           		classicGameController->handleFocusLost();
+           		break;
 
            	default:
            		break;

@@ -107,6 +107,21 @@ namespace sfmlcubes
 	    	}
 		}
 
+		void ClassicGameController::handleFocusLost()
+		{
+			rightKeyPressed = false;
+			leftKeyPressed = false;
+			downKeyPressed = false;
+			rotateCWKeyPressed = false;
+
+			board.turnOff(cmcMoveRight);
+			board.turnOff(cmcMoveLeft);
+			board.turnOff(cmcMoveDownFast);
+			board.turnOff(cmcRotateCW);
+
+			board.turnOn(cmcPause);
+		}
+
 
 		ClassicGameController::~ClassicGameController()
 		{

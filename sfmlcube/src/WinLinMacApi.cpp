@@ -83,13 +83,35 @@ string WinLinMacApi::locateResource(const string& path, const string& filename)
 	return res;
 }
 
+void WinLinMacApi::setMainWindowIcon(const sf::Window& win)
+{
+}
+
 #else
 // Win32 includes/methods
+#include <windows.h>
 
 string WinLinMacApi::locateResource(const string& path, const string& filename)
 {
 	return simpleLocateResource(path, filename);
 }
 
+void WinLinMacApi::setMainWindowIcon(const sf::Window& win)
+{
+    // Loading our icon from the resource
+	HINSTANCE handle = ::GetModuleHandle(NULL);
+	HICON icon = ::LoadIcon(handle, "MainIcon");
+
+	// Here we are assuming that we're in Windows, so sf::WindowHandle is HWND
+	HWND hwnd = win.getSystemHandle();
+
+	stringstream ss;
+	ss << "module: " <<handle << ", icon: " << icon << ", hwnd: " << hwnd;
+	sfmlcubes::Logger::DEFAULT.logInfo(ss.str());
+
+
+	// Setting the icon for the window
+	::SetClassLong(hwnd, GCL_HICON, (LONG) icon);
+}
 
 #endif

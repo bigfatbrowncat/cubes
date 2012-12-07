@@ -28,6 +28,7 @@ namespace sfmlcubes
 			void processTimeStep(float dt);
 			void handleKeyPressed(sf::Event::KeyEvent key);
 			void handleKeyReleased(sf::Event::KeyEvent key);
+			void handleFocusLost();
 
 			const CubesField& getCubesField() const { return board; }
 
