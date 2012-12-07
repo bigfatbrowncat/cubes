@@ -32,6 +32,9 @@ namespace sfmlcubes
 				fallingShapeController(wallsController, fallenController, velocityController),
 				scoreCounter(fallenController),
 
+				cubePainter(CubePainter::uField),
+				shapePainter(cubePainter),
+
 				time(0),
 				momentWhenFallIssued(0),
 				paused(false)
@@ -60,11 +63,6 @@ namespace sfmlcubes
 						momentWhenFallIssued = time;
 					}
 
-					//if (fallingShapeController.getState() == fscsNew)
-					{
-
-					}
-
 					if (fallingShapeController.getState() == fscsLanded)
 					{
 						scoreCounter.beforeShapeFallen();
@@ -90,7 +88,7 @@ namespace sfmlcubes
 						Shape newShape = shapeDealer.dealNext();
 						// Positioning it to the top-center of the game field
 						newShape.moveHorizontalNoTransition(6);
-						newShape.moveVerticalNoTransition(1);
+						//newShape.moveVerticalNoTransition(0);
 
 						// Checking for collisions
 						if (fallenController.anyCollisions(newShape))
@@ -103,6 +101,10 @@ namespace sfmlcubes
 						{
 							// Launching the new shape as a falling one
 							fallingShapeController.launchNewShape(newShape);
+							// Moving the new shape down for the first time
+							fallingShapeController.fallDown();
+							momentWhenFallIssued = time;
+
 							state = cmsShapeFalling;
 						}
 
@@ -160,10 +162,10 @@ namespace sfmlcubes
 			}
 		}
 
-		void CubesField::glDraw(int dx, int dy) const
+		void CubesField::glDraw() const
 		{
-			wallsController.getShape().glDraw(dx, dy);
-			fallingShapeController.getShape().glDraw(dx, dy);
+			shapePainter.paint(wallsController.getShape());
+			shapePainter.paint(fallingShapeController.getShape());
 
 			list<Shape> shps = fallenController.getShapes();
 
@@ -171,7 +173,7 @@ namespace sfmlcubes
 				 iter != shps.end();
 				 iter++)
 			{
-				(*iter).glDraw(dx, dy);
+				shapePainter.paint(*iter);
 			}
 
 		}

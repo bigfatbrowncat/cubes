@@ -81,11 +81,6 @@ namespace sfmlcubes
 		delete counterHeavyFont;
 	}
 
-
-
-
-
-
 	void handleEvents()
 	{
         // Process events
@@ -152,7 +147,7 @@ int main()
 		sfmlcubes::initMainWindow("Cubes", 800, 600);
 
 		sfmlcubes::widgets::TextWithShadow::initialize();
-		sfmlcubes::movingcubes::Cube::initialize();
+		//sfmlcubes::movingcubes::Cube::initialize();
 		sfmlcubes::initFonts();
 		//sfmlcubes::prepareScene();
 
@@ -167,7 +162,7 @@ int main()
 
 		sfmlcubes::run();
 
-		sfmlcubes::movingcubes::Cube::finalize();
+		//sfmlcubes::movingcubes::Cube::finalize();
 		sfmlcubes::widgets::TextWithShadow::finalize();
 		sfmlcubes::freeFonts();
 		delete sfmlcubes::mainWindow;

@@ -26,10 +26,10 @@ namespace sfmlcubes
 				walls.addCube(Cube(i, height - 1, Cube::mtWall, wallColor));
 			}
 
-			walls.addCube(Cube(0, 0, Cube::mtVoid, wallColor));
-			walls.addCube(Cube(width - 1, 0, Cube::mtVoid, wallColor));
+			walls.addCube(Cube(0, -1, Cube::mtVoid, wallColor));
+			walls.addCube(Cube(width - 1, -1, Cube::mtVoid, wallColor));
 
-			for (int j = 1; j < height; j++)
+			for (int j = 0; j < height; j++)
 			{
 				walls.addCube(Cube(0, j, Cube::mtWall, wallColor));
 				walls.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));

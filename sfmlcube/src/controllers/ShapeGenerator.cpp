@@ -36,7 +36,7 @@ namespace sfmlcubes
 			res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, 1, Cube::mtPlaying, gen));
 
-			res.setRotatingCenter(0, 0, Cube::rctCenter);
+			res.setRotatingCenter(0, 0, rctCenter);
 			return res;
 		}
 
@@ -48,7 +48,7 @@ namespace sfmlcubes
 			res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(1, 1, Cube::mtPlaying, gen));
 
-			res.setRotatingCenter(0, 0, Cube::rctCenter);
+			res.setRotatingCenter(0, 0, rctCenter);
 			return res;
 		}
 
@@ -60,7 +60,7 @@ namespace sfmlcubes
 			res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(-1, 1, Cube::mtPlaying, gen));
 
-			res.setRotatingCenter(0, 0, Cube::rctCenter);
+			res.setRotatingCenter(0, 0, rctCenter);
 			return res;
 		}
 
@@ -72,7 +72,7 @@ namespace sfmlcubes
 			res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
 
-			res.setRotatingCenter(0, 0, Cube::rctCorner);
+			res.setRotatingCenter(0, 0, rctCorner);
 			return res;
 		}
 
@@ -84,7 +84,7 @@ namespace sfmlcubes
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 
-			res.setRotatingCenter(0, 0, Cube::rctCorner);
+			res.setRotatingCenter(0, 0, rctCorner);
 			return res;
 		}
 
@@ -96,7 +96,7 @@ namespace sfmlcubes
 			res.addCube(Cube(0, -1, Cube::mtPlaying, gen));
 			res.addCube(Cube(1, -1, Cube::mtPlaying, gen));
 
-			res.setRotatingCenter(0, 0, Cube::rctCorner);
+			res.setRotatingCenter(0, 0, rctCorner);
 			return res;
 		}
 
@@ -108,7 +108,7 @@ namespace sfmlcubes
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 
-			res.setRotatingCenter(0, 0, Cube::rctCorner);
+			res.setRotatingCenter(0, 0, rctCorner);
 			return res;
 		}
 

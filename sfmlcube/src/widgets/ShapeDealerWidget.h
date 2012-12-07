@@ -10,6 +10,9 @@
 
 #include "../controllers/ShapeDealer.h"
 
+#include "CubePainter.h"
+#include "ShapePainter.h"
+
 namespace sfmlcubes
 {
 	using namespace controllers;
@@ -20,6 +23,8 @@ namespace sfmlcubes
 		private:
 			const ShapeDealer& shapeDealer;
 			int x, y, width, height;
+			CubePainter cubePainter;
+			ShapePainter shapePainter;
 		public:
 			ShapeDealerWidget(const ShapeDealer& shapeDealer);
 			void setViewport(int x, int y, int width, int height)

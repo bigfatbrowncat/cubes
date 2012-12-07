@@ -1,9 +1,14 @@
 #include <SFML/Graphics/Image.hpp>
 
+#include <sstream>
+
 #include "WinLinMacApi.h"
 #include "objloader.h"
 #include "sfmlcubes.h"
 #include "string.h"
+#include "Logger.h"
+
+using namespace std;
 
 	face::face(int v1, int v2, int v3, int t1, int t2, int t3, int n1, int n2, int n3, int m)
 	{
@@ -88,7 +93,8 @@ int objloader::load(std::string filename)
 	std::ifstream in(filename.c_str());
 	if(!in.is_open())
 	{
-		std::cout << "Nor oepened" << std::endl;
+		stringstream ss; ss << "Model couldn't be loaded from file " << filename;
+		sfmlcubes::Logger::DEFAULT.logError(ss.str());
 		return -1;
 	}
 	std::string path=filename.substr(0,(filename.find_last_of('/')!=std::string::npos ? filename.find_last_of('/')+1 : 0));
@@ -209,7 +215,9 @@ int objloader::load(std::string filename)
 		std::ifstream mtlin(filen2.c_str());
 		if(!mtlin.is_open())
 		{
-			std::cout << "connot open the material file" << std::endl;
+			stringstream ss; ss << "Material couldn't be loaded from file " << filename;
+
+			sfmlcubes::Logger::DEFAULT.logError(ss.str());
 			clean();
 			return -1;
 		}

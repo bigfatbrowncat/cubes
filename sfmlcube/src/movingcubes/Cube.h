@@ -25,15 +25,6 @@ namespace sfmlcubes
 				mtWall
 			};
 
-			enum RotatingCenterType
-			{
-				rctCenter, rctCorner
-			};
-
-		private:
-			// Static fields
-			static int PLAYING_CUBE_INDEX;
-			static int WALL_CUBE_INDEX;
 		public:
 			static sf::Shader* cubeShader;
 
@@ -44,16 +35,9 @@ namespace sfmlcubes
 			int x, y;
 
 		public:
-			// Static functions
-			static void initialize();
-			static void finalize();
-
-		public:
 			// Functions
 			Cube(int x, int y, ModelType modelType, sf::Color color);
 			Cube();
-
-			void glDraw() const;
 
 			bool operator == (const Cube& other);
 			bool operator != (const Cube& other);

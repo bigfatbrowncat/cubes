@@ -8,6 +8,8 @@
 #ifndef CLASSICGAMECONTROLLER_H_
 #define CLASSICGAMECONTROLLER_H_
 
+#include <SFML/Window.hpp>
+
 #include "CubesField.h"
 
 namespace sfmlcubes

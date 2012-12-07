@@ -37,7 +37,7 @@ namespace sfmlcubes
 			glScalef(cubeSize, cubeSize, cubeSize);
 			glTranslatef(-delta_x, delta_y, 0.f);
 
-			cubesField.glDraw(0, 0);
+			cubesField.glDraw();
 		}
 
 		CubesFieldWidget::~CubesFieldWidget()

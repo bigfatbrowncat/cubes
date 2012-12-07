@@ -13,55 +13,6 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		void Shape::glDraw(int dx, int dy) const
-		{
-			for (list<Cube>::const_iterator citer = getCubes().begin();
-				 citer != getCubes().end();
-				 citer ++)
-			{
-				glPushMatrix();
-				{
-					int xx = (*citer).x + dx;
-					int yy = (*citer).y + dy;
-
-					glTranslatef(xx, -yy, 0.f);			// Translating the cube
-
-					// ** Sliding **
-
-					double hdistance = slidingX;
-					double vdistance = slidingY;
-					glTranslatef(hdistance, -vdistance, 0.f);
-
-					// ** Rotating **
-
-					// Moving it back from rotating center
-					if (rotatingCenterType == Cube::rctCorner)
-					{
-						glTranslatef(-1.0 / 2, 1.0 / 2, 0.f);
-					}
-					glTranslatef(rotatingCenterX - xx, -(rotatingCenterY - yy), 0.f);
-
-					// Applying rotation
-					double angle = 90 * rotatingAngle;
-					glRotatef(angle, 0.f, 0.f, -1.f);
-
-					// Moving the cube to it's rotating center
-					glTranslatef(-(rotatingCenterX - xx), rotatingCenterY - yy, 0.f);
-					if (rotatingCenterType == Cube::rctCorner)
-					{
-						glTranslatef(1.0 / 2, -1.0 / 2, 0.f);
-					}
-
-					sf::Color ambient = ambientStatic * ambientDynamic;
-					Cube::cubeShader->setParameter("ambient", (float)ambient.r / 255, (float)ambient.g / 255, (float)ambient.b / 255, (float)ambient.a / 255);
-					Cube::cubeShader->setParameter("transparency", transparency);
-					(*citer).glDraw();
-				}
-				glPopMatrix();
-			}
-
-		}
-
 		bool Shape::operator == (const Shape& other)
 		{
 			if (cubes.size() != other.getCubes().size())
@@ -183,7 +134,7 @@ namespace sfmlcubes
 				ik[0] = (*iter).x;
 				jk[0] = (*iter).y;
 
-				if (rotatingCenterType == Cube::rctCenter)
+				if (rotatingCenterType == rctCenter)
 				{
 					// Making the 90 degrees rotating group
 					for (int k = 1; k < 4; k++)
@@ -192,7 +143,7 @@ namespace sfmlcubes
 						jk[k] = j0 + ik[k - 1] - i0;
 					}
 				}
-				else if (rotatingCenterType == Cube::rctCorner)
+				else if (rotatingCenterType == rctCorner)
 				{
 					// Making the 90 degrees rotating group
 					for (int k = 1; k < 4; k++)

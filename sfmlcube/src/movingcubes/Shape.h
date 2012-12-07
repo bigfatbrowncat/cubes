@@ -23,6 +23,11 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
+		enum RotatingCenterType
+		{
+			rctCenter, rctCorner
+		};
+
 		class Shape : public ShapeContainer
 		{
 		private:
@@ -31,7 +36,7 @@ namespace sfmlcubes
 			// Sliding
 			float slidingX, slidingY;
 			// Rotating animation
-			Cube::RotatingCenterType rotatingCenterType;
+			RotatingCenterType rotatingCenterType;
 			int rotatingCenterX, rotatingCenterY;
 			float rotatingAngle;	// 1 = 90 degrees
 
@@ -44,7 +49,7 @@ namespace sfmlcubes
 				slidingX(0),
 				slidingY(0),
 
-				rotatingCenterType(Cube::rctCenter),
+				rotatingCenterType(rctCenter),
 				rotatingCenterX(0),
 				rotatingCenterY(0),
 				rotatingAngle(0),
@@ -89,7 +94,7 @@ namespace sfmlcubes
 
 			list<Cube> cubeAt(int i, int j) const;
 
-			void setRotatingCenter(int centerX, int centerY, Cube::RotatingCenterType value)
+			void setRotatingCenter(int centerX, int centerY, RotatingCenterType value)
 			{
 				rotatingCenterX = centerX;
 				rotatingCenterY = centerY;
@@ -98,9 +103,7 @@ namespace sfmlcubes
 
 			int getRotatingCenterX() const { return rotatingCenterX; }
 			int getRotatingCenterY() const { return rotatingCenterY; }
-			Cube::RotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
-
-			void glDraw(int dx, int dy) const;
+			RotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
 
 			bool operator == (const Shape& other);
 			bool operator != (const Shape& other);

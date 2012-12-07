@@ -15,9 +15,10 @@ namespace sfmlcubes
 	{
 
 		ShapeDealerWidget::ShapeDealerWidget(const ShapeDealer& shapeDealer) :
-				shapeDealer(shapeDealer)
+				shapeDealer(shapeDealer),
+				cubePainter(CubePainter::uPrediction),
+				shapePainter(cubePainter)
 		{
-
 		}
 
 		void ShapeDealerWidget::drawNextShape(sf::RenderTexture& win)
@@ -46,7 +47,9 @@ namespace sfmlcubes
 			glRotatef(30, 0.0, -1, -0.5);
 			glScalef(cubeSize, cubeSize, cubeSize);
 
-			dealingShape.glDraw(-dealingShape.getRight(), -dealingShape.getTop());
+			dealingShape.moveHorizontalNoTransition(-dealingShape.getRight());
+			dealingShape.moveVerticalNoTransition(-dealingShape.getTop());
+			shapePainter.paint(dealingShape);
 		}
 
 		ShapeDealerWidget::~ShapeDealerWidget()

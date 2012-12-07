@@ -20,9 +20,13 @@
 #include "ShapeDealer.h"
 #include "ScoreCounter.h"
 
+#include "../widgets/CubePainter.h"
+#include "../widgets/ShapePainter.h"
+
 namespace sfmlcubes
 {
 	using namespace movingcubes;
+	using namespace widgets;
 
 	namespace controllers
 	{
@@ -55,6 +59,9 @@ namespace sfmlcubes
 			ShapeDealer shapeDealer;
 			ScoreCounter scoreCounter;
 
+			CubePainter cubePainter;
+			ShapePainter shapePainter;
+
 			double time;
 			double momentWhenFallIssued;
 			bool paused;
@@ -71,23 +78,20 @@ namespace sfmlcubes
 			void turnOn(CubesMechanicCommand command);
 			void turnOff(CubesMechanicCommand command);
 
-			void issueHighPriorityOrder(CubesMechanicCommand order);
-
 			void processTimeStep(float dt);
-			void cleanFrees();
 
 			CubesMechanicState getState() const { return state; }
 			int getLinesFired() const { return fallenController.getLinesFired(); }
 			int getScore() const { return scoreCounter.getScore(); }
 			int getVelocityIndex() const
 			{
-				// Every 20% of velocity is a new level
+				// Every 20% of velocity is a new level ( 120% -> 2, 140% -> 3 ... )
 				return (int)((velocityController.getVelocityMultiplicator() - 1) * 5 + 1);
 			}
 
 			bool isPaused() const { return paused; }
 
-			void glDraw(int dx, int dy) const;
+			void glDraw() const;
 		};
 	}
 }
