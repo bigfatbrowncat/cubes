@@ -16,7 +16,7 @@ void main(void)
    
    gl_FragColor = 1.5 * ((ambient + shade) * diffuse) * texture2D(texture, textureCoords);
    
-   float visibility = clamp(-((position.y - 260) / 50), 0, 1);
+   float visibility = clamp(-((position.y - 260.0) / 50.0), 0.0, 1.0);
    
    gl_FragColor = visibility * gl_FragColor;
    gl_FragColor.a = transparency * visibility; 
