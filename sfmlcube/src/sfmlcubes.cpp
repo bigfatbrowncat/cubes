@@ -151,7 +151,7 @@ int main()
 		// Create the main window
 		sfmlcubes::initMainWindow("Cubes", 800, 600);
 
-		sfmlcubes::widgets::TextWithShadow::initialize();
+		sfmlcubes::widgets::TextWithShadowPainter::initialize();
 		//sfmlcubes::movingcubes::Cube::initialize();
 		sfmlcubes::initFonts();
 		//sfmlcubes::prepareScene();
@@ -168,7 +168,7 @@ int main()
 		sfmlcubes::run();
 
 		//sfmlcubes::movingcubes::Cube::finalize();
-		sfmlcubes::widgets::TextWithShadow::finalize();
+		sfmlcubes::widgets::TextWithShadowPainter::finalize();
 		sfmlcubes::freeFonts();
 		delete sfmlcubes::mainWindow;
 		delete sfmlcubes::api;
