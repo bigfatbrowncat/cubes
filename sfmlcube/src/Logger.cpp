@@ -31,20 +31,23 @@ namespace sfmlcubes
 
 	void ConsoleLogger::logError(const string& message) const
 	{
-		printf("[LOG] Error: %s\n", message.c_str());
+		fprintf(stderr, "[LOG] Error: %s\n", message.c_str());
 		fflush(stdout);
+		fflush(stderr);
 	}
 
 	void ConsoleLogger::logWarning(const string& message) const
 	{
 		printf("[LOG] Warning: %s\n", message.c_str());
 		fflush(stdout);
+		fflush(stderr);
 	}
 
 	void ConsoleLogger::logInfo(const string& message) const
 	{
 		printf("[LOG] Info: %s\n", message.c_str());
 		fflush(stdout);
+		fflush(stderr);
 	}
 
 

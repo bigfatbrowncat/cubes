@@ -1,5 +1,5 @@
 uniform sampler2D texture;
-varying vec2 textureCoords;
+varying vec4 textureCoords;
 
 uniform float blur_radius;
 uniform vec2 blur_vector;
@@ -12,9 +12,9 @@ void main()
 {
 	vec2 delta = vec2(blur_vector.x / screen_width, blur_vector.y / screen_height);
 	
-	vec4 pixel = 0;
-	float d = 0;
-	float ddmin = 1.0 / (-(abs(blur_radius + 1) + 1) / blur_radius * 2.0);
+	vec4 pixel = vec4(0.0, 0.0, 0.0, 0.0);
+	float d = 0.0;
+	float ddmin = 1.0 / (-(abs(blur_radius + 1.0) + 1.0) / blur_radius * 2.0);
 	for (float j = -blur_radius; j <= blur_radius; j++)
 	{
 		float dd = 1.0 / (-(abs(j) + 1) / blur_radius * 2.0) - ddmin;

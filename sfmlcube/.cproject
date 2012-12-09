@@ -210,7 +210,7 @@
 									<listOptionValue builtIn="false" value="/usr/X11R6/lib"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/extlibs/libs-mingw}&quot;"/>
 								</option>
-								<option id="gnu.cpp.link.option.flags.112413252" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -static-libstdc++" valueType="string"/>
+								<option id="gnu.cpp.link.option.flags.112413252" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -static-libstdc++  Cubes.res" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1957577842" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>

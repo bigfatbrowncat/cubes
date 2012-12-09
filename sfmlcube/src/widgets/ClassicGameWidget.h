@@ -13,7 +13,7 @@
 #include "CubesFieldWidget.h"
 #include "ShapeDealerWidget.h"
 
-#include "TextWithShadow.h"
+#include "TextWithShadowPainter.h"
 
 namespace sfmlcubes
 {
@@ -48,15 +48,7 @@ namespace sfmlcubes
 			sf::Text* speedValueText;
 			sf::Text* nextShapeText;
 
-			TextWithShadow* pauseTextWithShadow;
-			TextWithShadow* gameOverTextWithShadow;
-			TextWithShadow* linesFiredTextWithShadow;
-			TextWithShadow* linesFiredValueTextWithShadow;
-			TextWithShadow* scoreTextWithShadow;
-			TextWithShadow* scoreValueTextWithShadow;
-			TextWithShadow* speedTextWithShadow;
-			TextWithShadow* speedValueTextWithShadow;
-			TextWithShadow* nextShapeTextWithShadow;
+			TextWithShadowPainter* textWithShadowPainter;
 
 			void initLayers();
 			void updateStaticText(sf::RenderTarget& win);

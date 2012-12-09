@@ -100,18 +100,7 @@ namespace sfmlcubes
 			nextShapeText->setPosition(panelLeft,
 									   1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
 
-			pauseTextWithShadow->setText(*pauseText);
-			pauseTextWithShadow->setShadowWidth(3 * k);
-			gameOverTextWithShadow->setText(*gameOverText);
-			gameOverTextWithShadow->setShadowWidth(3 * k);
-			linesFiredTextWithShadow->setText(*linesFiredText);
-			linesFiredTextWithShadow->setShadowWidth(3 * k);
-			scoreTextWithShadow->setText(*scoreText);
-			scoreTextWithShadow->setShadowWidth(3 * k);
-			speedTextWithShadow->setText(*speedText);
-			speedTextWithShadow->setShadowWidth(3 * k);
-			nextShapeTextWithShadow->setText(*nextShapeText);
-			nextShapeTextWithShadow->setShadowWidth(3 * k);
+			textWithShadowPainter->setShadowWidth(3 * k);
 		}
 
 		void ClassicGameWidget::updateDynamicText(sf::RenderTarget& win)
@@ -149,12 +138,6 @@ namespace sfmlcubes
 			scoreValueText->setPosition(panelRight - scoreValueText->findCharacterPos(-1).x + scoreValueText->findCharacterPos(0).x,
 			                            6.4 * win.getSize().y / 8 + 13.0 * k);
 
-			linesFiredValueTextWithShadow->setText(*linesFiredValueText);
-			linesFiredValueTextWithShadow->setShadowWidth(3 * k);
-			scoreValueTextWithShadow->setText(*scoreValueText);
-			scoreValueTextWithShadow->setShadowWidth(3 * k);
-			speedValueTextWithShadow->setText(*speedValueText);
-			speedValueTextWithShadow->setShadowWidth(3 * k);
 		}
 
 		void ClassicGameWidget::drawText(sf::RenderTarget& win, sf::RenderStates rs)
@@ -162,25 +145,25 @@ namespace sfmlcubes
 			win.pushGLStates();
 			updateDynamicText(win);
 
-			win.draw(*linesFiredTextWithShadow, rs);
-			win.draw(*linesFiredValueTextWithShadow, rs);
+			textWithShadowPainter->drawText(*linesFiredText, win, rs);
+			textWithShadowPainter->drawText(*linesFiredValueText, win, rs);
 
-			win.draw(*scoreTextWithShadow, rs);
-			win.draw(*scoreValueTextWithShadow, rs);
+			textWithShadowPainter->drawText(*scoreText, win, rs);
+			textWithShadowPainter->drawText(*scoreValueText, win, rs);
 
-			win.draw(*speedTextWithShadow, rs);
-			win.draw(*speedValueTextWithShadow, rs);
+			textWithShadowPainter->drawText(*speedText, win, rs);
+			textWithShadowPainter->drawText(*speedValueText, win, rs);
 
-			win.draw(*nextShapeTextWithShadow, rs);
+			textWithShadowPainter->drawText(*nextShapeText, win, rs);
 			if (gameController.getCubesField().getState() == cmsGameOver)
 			{
 				mainWindow.setTitle("Cubes (Game Over)");
-				win.draw(*gameOverTextWithShadow, rs);
+				textWithShadowPainter->drawText(*gameOverText, win, rs);
 			}
 			else if (gameController.getCubesField().isPaused())
 			{
 				mainWindow.setTitle("Cubes (Paused)");
-				win.draw(*pauseTextWithShadow, sf::RenderStates::Default);
+				textWithShadowPainter->drawText(*pauseText, win, rs);
 			}
 			else
 			{
@@ -276,15 +259,7 @@ namespace sfmlcubes
 			speedValueText = new sf::Text();
 			nextShapeText = new sf::Text();
 
-			pauseTextWithShadow = new TextWithShadow();
-			gameOverTextWithShadow = new TextWithShadow();
-			linesFiredTextWithShadow = new TextWithShadow();
-			linesFiredValueTextWithShadow = new TextWithShadow();
-			scoreTextWithShadow = new TextWithShadow();
-			scoreValueTextWithShadow = new TextWithShadow();
-			speedTextWithShadow = new TextWithShadow();
-			speedValueTextWithShadow = new TextWithShadow();
-			nextShapeTextWithShadow = new TextWithShadow();
+			textWithShadowPainter = new TextWithShadowPainter();
 
 			initLayers();
 			updateStaticText(mainWindow);
@@ -307,15 +282,7 @@ namespace sfmlcubes
 
 		ClassicGameWidget::~ClassicGameWidget()
 		{
-			delete pauseTextWithShadow;
-			delete gameOverTextWithShadow;
-			delete linesFiredTextWithShadow;
-			delete linesFiredValueTextWithShadow;
-			delete scoreTextWithShadow;
-			delete scoreValueTextWithShadow;
-			delete speedTextWithShadow;
-			delete speedValueTextWithShadow;
-			delete nextShapeTextWithShadow;
+			delete textWithShadowPainter;
 
 			delete pauseText;
 			delete gameOverText;

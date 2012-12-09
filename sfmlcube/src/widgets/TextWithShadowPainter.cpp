@@ -1,5 +1,5 @@
 /*
- * TextWithShadow.cpp
+ * TextWithShadowPainter.cpp
  *
  *  Created on: Dec 5, 2012
  *      Author: imizus
@@ -8,7 +8,7 @@
 #include "../sfmlcubes.h"
 #include "../Logger.h"
 
-#include "TextWithShadow.h"
+#include "TextWithShadowPainter.h"
 
 using namespace sf;
 
@@ -16,10 +16,10 @@ namespace sfmlcubes
 {
 	namespace widgets
 	{
-		sf::Shader** TextWithShadow::shadowShaders;
-		sf::RenderStates** TextWithShadow::shadowRenderStates;
+		sf::Shader** TextWithShadowPainter::shadowShaders;
+		sf::RenderStates** TextWithShadowPainter::shadowRenderStates;
 
-		void TextWithShadow::initialize()
+		void TextWithShadowPainter::initialize()
 		{
 			shadowRenderStates = new sf::RenderStates*[2];
 			shadowShaders = new sf::Shader*[2];
@@ -52,14 +52,14 @@ namespace sfmlcubes
 
 		}
 
-		void TextWithShadow::finalize()
+		void TextWithShadowPainter::finalize()
 		{
 			delete shadowShaders[0];
 			delete shadowShaders[1];
 			delete [] shadowShaders;
 		}
 
-		void TextWithShadow::updateRealBounds()
+		void TextWithShadowPainter::updateRealBounds(const Text& text)
 		{
 			realBounds = text.getGlobalBounds();
 			// This is experimental. I don't know why adding 2*margin is not enough
@@ -67,7 +67,7 @@ namespace sfmlcubes
 			realBounds.height *= 2;
 		}
 
-		void TextWithShadow::initTexturesAndSprites()
+		void TextWithShadowPainter::initTexturesAndSprites(const Text& text)
 		{
 			textures = new RenderTexture*[2];
 			sprites = new Sprite*[2];
@@ -75,7 +75,7 @@ namespace sfmlcubes
 			textures[0] = textures[1] = 0;
 			sprites[0] = sprites[1] = 0;
 
-			updateRealBounds();
+			updateRealBounds(text);
 
 			if (realBounds.width > 0 && realBounds.height > 0)
 			{
@@ -90,7 +90,7 @@ namespace sfmlcubes
 			}
 		}
 
-		void TextWithShadow::updateTexturesAndSprites()
+		void TextWithShadowPainter::updateTexturesAndSprites(const Text& text)
 		{
 			if (text.getGlobalBounds().width > realBounds.width ||
 				text.getGlobalBounds().height > realBounds.height)
@@ -99,11 +99,11 @@ namespace sfmlcubes
 				{
 					freeTexturesAndSprites();
 				}
-				initTexturesAndSprites();
+				initTexturesAndSprites(text);
 			}
 		}
 
-		void TextWithShadow::freeTexturesAndSprites()
+		void TextWithShadowPainter::freeTexturesAndSprites()
 		{
 			delete textures[0];
 			delete textures[1];
@@ -113,23 +113,18 @@ namespace sfmlcubes
 			delete [] sprites; sprites = NULL;
 		}
 
-		TextWithShadow::TextWithShadow() :
-				shadowWidth(5)
+		TextWithShadowPainter::TextWithShadowPainter() :
+				textures(NULL), sprites(NULL),
+				shadowWidth(5),
+				margin(0),
+				realBounds(0, 0, 0, 0)
 		{
-			initTexturesAndSprites();
-		}
-
-		void TextWithShadow::setText(const Text& text)
-		{
-			this->text = text;
-
-			updateTexturesAndSprites();
 
 		}
 
-
-		void TextWithShadow::draw(RenderTarget& target, RenderStates states) const
+		void TextWithShadowPainter::drawText(const Text& text, RenderTarget& target, RenderStates states)
 		{
+			updateTexturesAndSprites(text);
 			if (realBounds.width > 0 && realBounds.height > 0)
 			{
 				Text t(text);
@@ -167,7 +162,7 @@ namespace sfmlcubes
 		}
 
 
-		TextWithShadow::~TextWithShadow()
+		TextWithShadowPainter::~TextWithShadowPainter()
 		{
 			freeTexturesAndSprites();
 		}

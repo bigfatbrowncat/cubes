@@ -1,5 +1,5 @@
 uniform sampler2D texture;
-varying vec2 textureCoords;
+varying vec4 textureCoords;
 
 void main()
 {

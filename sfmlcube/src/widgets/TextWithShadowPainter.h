@@ -14,7 +14,7 @@ namespace sfmlcubes
 {
 	namespace widgets
 	{
-		class TextWithShadow : public sf::Drawable
+		class TextWithShadowPainter
 		{
 		private:
 			static sf::Shader** shadowShaders;
@@ -26,24 +26,23 @@ namespace sfmlcubes
 			sf::RenderTexture** textures;
 			sf::Sprite** sprites;
 
-			sf::Text text;
 			float shadowWidth;
 			float margin;
 			sf::FloatRect realBounds;
 
-			void initTexturesAndSprites();
-			void updateTexturesAndSprites();
+			void initTexturesAndSprites(const sf::Text& text);
+			void updateTexturesAndSprites(const sf::Text& text);
 			void freeTexturesAndSprites();
-			void updateRealBounds();
-
-			virtual void draw(sf::RenderTarget& target, sf::RenderStates states) const;
+			void updateRealBounds(const sf::Text& text);
 
 		public:
-			TextWithShadow();
-			void setText(const sf::Text& text);
+			TextWithShadowPainter();
+
+			virtual void drawText(const sf::Text& text, sf::RenderTarget& target, sf::RenderStates states);
+
 			void setShadowWidth(float value) { shadowWidth = value; margin = 2 * shadowWidth; }
 
-			virtual ~TextWithShadow();
+			virtual ~TextWithShadowPainter();
 		};
 	}
 }
