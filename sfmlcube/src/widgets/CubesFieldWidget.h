@@ -19,6 +19,7 @@ namespace sfmlcubes
 		{
 		private:
 			const CubesField& cubesField;
+
 			void setPerspective();
 		public:
 			CubesFieldWidget(const CubesField& cubesField);

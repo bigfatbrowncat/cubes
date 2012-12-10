@@ -8,6 +8,8 @@
 #ifndef SCORECOUNTER_H_
 #define SCORECOUNTER_H_
 
+#include "AnimatedPopupsManager.h"
+
 #include "FallenController.h"
 
 namespace sfmlcubes
@@ -22,14 +24,17 @@ namespace sfmlcubes
 			int holesAfterFallen;
 			int linesComboCollector;
 			const FallenController& fallenController;
+			AnimatedPopupsManager animatedPopupsManager;
 		public:
 			ScoreCounter(const FallenController& fallenController);
 
 			void beforeShapeFallen();
 			void afterShapeFallen();
 			void linesHasBeenFired();
+			void processTimeStep(float dt) {  animatedPopupsManager.processTimeStep(dt); }
 
 			int getScore() const { return score; }
+			const AnimatedPopupsManager& getAnimatedPopupsManager() const { return animatedPopupsManager; }
 
 			virtual ~ScoreCounter();
 		};

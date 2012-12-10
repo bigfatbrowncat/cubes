@@ -18,19 +18,22 @@ using namespace std;
 
 namespace sfmlcubes
 {
-	namespace widgets
+	namespace controllers
 	{
 
-		class AnimtedPopupsManager : public sf::Drawable
+		class AnimatedPopupsManager
 		{
 		private:
+			float maxAge;
 			list<AnimatedPopupText> popups;
-			void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		public:
-
-			AnimtedPopupsManager();
+			AnimatedPopupsManager(float maxAge);
+			void popup(string text);
+			void free(const AnimatedPopupText& popup);
 			void processTimeStep(float dt);
-			virtual ~AnimtedPopupsManager();
+			const list<AnimatedPopupText>& getPopups() const { return popups; }
+
+			virtual ~AnimatedPopupsManager();
 		};
 
 	}

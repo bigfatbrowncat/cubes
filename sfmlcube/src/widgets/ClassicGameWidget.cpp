@@ -130,14 +130,13 @@ namespace sfmlcubes
 											 5.1 * win.getSize().y / 8 + 13.0 * k);
 
 			stringstream ss3;
-			ss3 << gameController.getCubesField().getScore();
+			ss3 << gameController.getCubesField().getScoreCounter().getScore();
 			scoreValueText->setString(ss3.str());
 			scoreValueText->setColor(sf::Color(128, 128, 192));
 			scoreValueText->setCharacterSize(30 * k);
 			scoreValueText->setFont(counterHeavyFont);
 			scoreValueText->setPosition(panelRight - scoreValueText->findCharacterPos(-1).x + scoreValueText->findCharacterPos(0).x,
 			                            6.4 * win.getSize().y / 8 + 13.0 * k);
-
 		}
 
 		void ClassicGameWidget::drawText(sf::RenderTarget& win, sf::RenderStates rs)
@@ -169,6 +168,9 @@ namespace sfmlcubes
 			{
 				mainWindow.setTitle("Cubes");
 			}
+
+			win.draw(animatedPopupsPainter, rs);
+			//animatedPopupsPainter.paint(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), win, rs);
 
 			win.popGLStates();
 		}
@@ -246,7 +248,8 @@ namespace sfmlcubes
 				counterFont(counterFont),
 				counterHeavyFont(counterHeavyFont),
 				cubesFieldWidget(gameController.getCubesField()),
-				shapeDealerWidget(gameController.getCubesField().getShapeDealer())
+				shapeDealerWidget(gameController.getCubesField().getShapeDealer()),
+				animatedPopupsPainter(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), textFont)
 
 		{
 			pauseText = new sf::Text();
@@ -264,6 +267,11 @@ namespace sfmlcubes
 			initLayers();
 			updateStaticText(mainWindow);
 			prepareScene();
+		}
+
+		void ClassicGameWidget::processTimeStep(float dt)
+		{
+			animatedPopupsPainter.processTimeStep(dt);
 		}
 
 		void ClassicGameWidget::draw()

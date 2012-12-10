@@ -123,6 +123,7 @@ namespace sfmlcubes
 		recentMoment = curTime;
 
 		classicGameController->processTimeStep(dt);
+		classicGameView->processTimeStep(dt);
 	}
 
 	void run()

@@ -6,6 +6,7 @@
  */
 
 #include <math.h>
+#include <sstream>
 
 #include "ScoreCounter.h"
 
@@ -18,7 +19,8 @@ namespace sfmlcubes
 				holesBeforeFallen(0),
 				holesAfterFallen(0),
 				linesComboCollector(0),
-				fallenController(fallenController)
+				fallenController(fallenController),
+				animatedPopupsManager(10)
 		{
 		}
 
@@ -32,16 +34,23 @@ namespace sfmlcubes
 		void ScoreCounter::afterShapeFallen()
 		{
 			int newHoles = fallenController.countHoles();
+			int bonus = 0;
 			if (newHoles == holesBeforeFallen)
 			{
 				// 2. If the shape hasn't make a new hole, giving another point
-				score += 1;
+				bonus += 1;
 			}
 			else if (newHoles < holesBeforeFallen)
 			{
 				// 3. If the shape closed the hole, give another 3 points
-				score += 3;
+				bonus += 3;
 			}
+			score += bonus;
+
+			// Showing the bonus popup
+			stringstream ss; ss << "+ " << bonus;
+			animatedPopupsManager.popup(ss.str());
+
 			holesAfterFallen = newHoles;
 		}
 

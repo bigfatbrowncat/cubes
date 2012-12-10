@@ -50,6 +50,7 @@ namespace sfmlcubes
 			{
 				fallingShapeController.processTimeStep(dt);
 				fallenController.processTimeStep(dt);
+				scoreCounter.processTimeStep(dt);
 
 				time += dt;
 

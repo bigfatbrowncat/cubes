@@ -14,6 +14,8 @@
 #include "ShapeDealerWidget.h"
 
 #include "TextWithShadowPainter.h"
+#include "AnimatedPopupTextWidget.h"
+#include "AnimatedPopupsWidget.h"
 
 namespace sfmlcubes
 {
@@ -49,6 +51,7 @@ namespace sfmlcubes
 			sf::Text* nextShapeText;
 
 			TextWithShadowPainter* textWithShadowPainter;
+			AnimatedPopupsWidget animatedPopupsPainter;
 
 			void initLayers();
 			void updateStaticText(sf::RenderTarget& win);
@@ -58,7 +61,6 @@ namespace sfmlcubes
 			void setView();
 			void prepareScene();
 			void drawScene(sf::RenderTexture& win);
-
 		public:
 			ClassicGameWidget(sf::RenderWindow& mainWindow,
 			                const ClassicGameController& gameController,
@@ -66,6 +68,7 @@ namespace sfmlcubes
 			                const sf::Font& textHeavyFont,
 			                const sf::Font& counterFont,
 			                const sf::Font& counterHeavyFont);
+			void processTimeStep(float dt);
 			void draw();
 			virtual ~ClassicGameWidget();
 		};

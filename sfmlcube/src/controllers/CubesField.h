@@ -82,7 +82,7 @@ namespace sfmlcubes
 
 			CubesMechanicState getState() const { return state; }
 			int getLinesFired() const { return fallenController.getLinesFired(); }
-			int getScore() const { return scoreCounter.getScore(); }
+			const ScoreCounter& getScoreCounter() const { return scoreCounter; }
 			int getVelocityIndex() const
 			{
 				// Every 20% of velocity is a new level ( 120% -> 2, 140% -> 3 ... )
