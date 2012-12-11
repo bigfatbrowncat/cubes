@@ -31,7 +31,6 @@ namespace sfmlcubes
 			void beforeShapeFallen();
 			void afterShapeFallen();
 			void linesHasBeenFired();
-			void processTimeStep(float dt) {  animatedPopupsManager.processTimeStep(dt); }
 
 			int getScore() const { return score; }
 			const AnimatedPopupsManager& getAnimatedPopupsManager() const { return animatedPopupsManager; }

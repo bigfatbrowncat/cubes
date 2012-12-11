@@ -25,7 +25,8 @@ namespace sfmlcubes
 		{
 		private:
 			const AnimatedPopupsManager& animatedPopupsManager;
-			map<AnimatedPopupText, AnimatedPopupTextWidget> popupWidgets;
+			const AnimatedPopupChainLink* currentPopup;
+			map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> popupWidgets;
 			const sf::Font& font;
 
 			void draw(sf::RenderTarget& target, sf::RenderStates states) const;

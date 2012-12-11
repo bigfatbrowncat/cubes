@@ -6,6 +6,7 @@
  */
 
 #include <SFML/OpenGL.hpp>
+#include <SFML/Graphics.hpp>
 
 #include "CubesFieldWidget.h"
 
@@ -13,13 +14,14 @@ namespace sfmlcubes
 {
 	namespace widgets
 	{
-		CubesFieldWidget::CubesFieldWidget(const CubesField& cubesField) :
-				cubesField(cubesField)
+		CubesFieldWidget::CubesFieldWidget(const CubesField& cubesField, const sf::Font& font) :
+				cubesField(cubesField),
+				animatedPopupsPainter(cubesField.getScoreCounter().getAnimatedPopupsManager(), font)
 		{
 
 		}
 
-		void CubesFieldWidget::drawBoard()
+		void CubesFieldWidget::drawBoard(sf::RenderTarget& target)
 		{
 			glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
@@ -38,6 +40,9 @@ namespace sfmlcubes
 			glTranslatef(-delta_x, delta_y, 0.f);
 
 			cubesField.glDraw();
+
+			target.draw(animatedPopupsPainter, sf::RenderStates::Default);
+
 		}
 
 		CubesFieldWidget::~CubesFieldWidget()

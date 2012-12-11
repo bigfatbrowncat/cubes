@@ -8,43 +8,37 @@
 #include "AnimatedPopupsManager.h"
 
 #include <SFML/Graphics.hpp>
+#include "../Logger.h"
 
 namespace sfmlcubes
 {
 	namespace controllers
 	{
-		AnimatedPopupsManager::AnimatedPopupsManager(float maxAge) :
-				maxAge(maxAge)
+		AnimatedPopupsManager::AnimatedPopupsManager()
 		{
-
+			chainHead = new AnimatedPopupChainLink(NULL, NULL);
+			chainTail = chainHead;
 		}
 
 		void AnimatedPopupsManager::popup(string text)
 		{
-			popups.push_back(AnimatedPopupText(text));
-		}
-
-		void AnimatedPopupsManager::processTimeStep(float dt)
-		{
-			for (list<AnimatedPopupText>::iterator iter = popups.begin(); iter != popups.end(); iter++)
-			{
-				(*iter).processTimeStep(dt);
-			}
-
-			list<AnimatedPopupText>::iterator iter = popups.begin();
-			while (iter != popups.end())
-			{
-				if ((*iter).getAge() > maxAge)
-				{
-					popups.erase(iter);
-				}
-				iter++;
-			}
+			Logger::DEFAULT.logInfo("popup");
+			chainTail->popupText = new AnimatedPopupText(text);
+			chainTail->next = new AnimatedPopupChainLink(NULL, NULL);
+			chainTail = chainTail->next;
 		}
 
 		AnimatedPopupsManager::~AnimatedPopupsManager()
 		{
-
+			AnimatedPopupChainLink* iter = chainHead;
+			while (iter != NULL)
+			{
+				AnimatedPopupChainLink* cur = iter;
+				iter = iter->next;
+				if (cur->popupText != NULL) delete cur->popupText;
+				delete cur;
+			}
+			delete chainTail;
 		}
 
 	}

@@ -51,7 +51,6 @@ namespace sfmlcubes
 			sf::Text* nextShapeText;
 
 			TextWithShadowPainter* textWithShadowPainter;
-			AnimatedPopupsWidget animatedPopupsPainter;
 
 			void initLayers();
 			void updateStaticText(sf::RenderTarget& win);
@@ -68,8 +67,8 @@ namespace sfmlcubes
 			                const sf::Font& textHeavyFont,
 			                const sf::Font& counterFont,
 			                const sf::Font& counterHeavyFont);
-			void processTimeStep(float dt);
 			void draw();
+			void processTimeStep(float dt) { cubesFieldWidget.processTimeStep(dt); }
 			virtual ~ClassicGameWidget();
 		};
 

@@ -20,7 +20,7 @@ namespace sfmlcubes
 				holesAfterFallen(0),
 				linesComboCollector(0),
 				fallenController(fallenController),
-				animatedPopupsManager(10)
+				animatedPopupsManager()
 		{
 		}
 
@@ -45,11 +45,14 @@ namespace sfmlcubes
 				// 3. If the shape closed the hole, give another 3 points
 				bonus += 3;
 			}
-			score += bonus;
 
 			// Showing the bonus popup
-			stringstream ss; ss << "+ " << bonus;
-			animatedPopupsManager.popup(ss.str());
+			if (bonus > 0)
+			{
+				stringstream ss; ss << "+" << bonus;
+				animatedPopupsManager.popup(ss.str());
+			}
+			score += bonus;
 
 			holesAfterFallen = newHoles;
 		}

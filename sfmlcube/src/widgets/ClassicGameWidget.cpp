@@ -169,7 +169,6 @@ namespace sfmlcubes
 				mainWindow.setTitle("Cubes");
 			}
 
-			win.draw(animatedPopupsPainter, rs);
 			//animatedPopupsPainter.paint(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), win, rs);
 
 			win.popGLStates();
@@ -225,7 +224,7 @@ namespace sfmlcubes
 
 		    // Drawing the cube
 	        setPerspective();
-	        cubesFieldWidget.drawBoard();
+	        cubesFieldWidget.drawBoard(win);
 	        shapeDealerWidget.setViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 3,
 	    	                              (win.getSize().y - 80 * k) - 1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 17 * k,
 	    	                              80 * k,
@@ -247,9 +246,8 @@ namespace sfmlcubes
 				textHeavyFont(textHeavyFont),
 				counterFont(counterFont),
 				counterHeavyFont(counterHeavyFont),
-				cubesFieldWidget(gameController.getCubesField()),
-				shapeDealerWidget(gameController.getCubesField().getShapeDealer()),
-				animatedPopupsPainter(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), textFont)
+				cubesFieldWidget(gameController.getCubesField(), textFont),
+				shapeDealerWidget(gameController.getCubesField().getShapeDealer())
 
 		{
 			pauseText = new sf::Text();
@@ -267,11 +265,6 @@ namespace sfmlcubes
 			initLayers();
 			updateStaticText(mainWindow);
 			prepareScene();
-		}
-
-		void ClassicGameWidget::processTimeStep(float dt)
-		{
-			animatedPopupsPainter.processTimeStep(dt);
 		}
 
 		void ClassicGameWidget::draw()

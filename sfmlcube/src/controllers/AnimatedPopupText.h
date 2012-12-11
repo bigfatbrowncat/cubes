@@ -25,14 +25,10 @@ namespace sfmlcubes
 		private:
 			string text;
 			int uId;
-			float age;
 		public:
 			AnimatedPopupText(string text);
 
 			string getText() const { return text; }
-			float getAge() { return age; }
-
-			void processTimeStep(float dt) { age += dt; }
 
 			bool operator == (const AnimatedPopupText& other) const
 			{

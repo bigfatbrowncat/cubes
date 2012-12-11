@@ -9,6 +9,7 @@
 #define CUBESFIELDWIDGET_H_
 
 #include "../controllers/CubesField.h"
+#include "AnimatedPopupsWidget.h"
 
 namespace sfmlcubes
 {
@@ -19,11 +20,13 @@ namespace sfmlcubes
 		{
 		private:
 			const CubesField& cubesField;
+			AnimatedPopupsWidget animatedPopupsPainter;
 
 			void setPerspective();
 		public:
-			CubesFieldWidget(const CubesField& cubesField);
-			void drawBoard();
+			CubesFieldWidget(const CubesField& cubesField, const sf::Font& font);
+			void drawBoard(sf::RenderTarget& target);
+			void processTimeStep(float dt) { animatedPopupsPainter.processTimeStep(dt); }
 			virtual ~CubesFieldWidget();
 		};
 	}

@@ -24,63 +24,50 @@ namespace sfmlcubes
 	{
 
 		AnimatedPopupsWidget::AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& font) :
-				animatedPopupsManager(animatedPopupsManager), font(font)
+				animatedPopupsManager(animatedPopupsManager),
+				currentPopup(animatedPopupsManager.getChainHead()),
+				font(font)
 		{
 
 		}
 
 		void AnimatedPopupsWidget::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		{
-			for (map<AnimatedPopupText, AnimatedPopupTextWidget>::const_iterator iter = popupWidgets.begin();
+			target.pushGLStates();
+			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget>::const_iterator iter = popupWidgets.begin();
 			     iter != popupWidgets.end();
 			     iter++)
 			{
 				target.draw((*iter).second, states);
 			}
+			target.popGLStates();
 		}
 
 		void AnimatedPopupsWidget::processTimeStep(float dt)
 		{
-			// Adding widgets for the new popups
-			for (list<AnimatedPopupText>::const_iterator iter = animatedPopupsManager.getPopups().begin();
-			     iter != animatedPopupsManager.getPopups().end(); iter++)
+			while (currentPopup->getNext() != NULL)
 			{
-				if (popupWidgets.find(*iter) == popupWidgets.end())
-				{
-					AnimatedPopupTextWidget aptw(*iter, font, 0, 0, 10, 0, 200, 100, 50, 30, 3);
-					std::pair<AnimatedPopupText, AnimatedPopupTextWidget> newPair(*iter, aptw);
-					{
-						stringstream ss;
-						ss << "before insert" << popupWidgets.size();
-						Logger::DEFAULT.logInfo(ss.str());
-					}
-					popupWidgets.insert(newPair);
-				}
+				Logger::DEFAULT.logInfo("add");
+				const AnimatedPopupText& apt = *currentPopup->getPopupText();
+				AnimatedPopupTextWidget aptw(apt, font, 0, 0, 10, 0, 200, 100, 50, 30, 3);
+				std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptw);
+				popupWidgets.insert(newPair);
+				currentPopup = currentPopup->getNext();
 			}
 
 			// Removing the old popups
-			for (map<AnimatedPopupText, AnimatedPopupTextWidget>::iterator iter = popupWidgets.begin(); iter != popupWidgets.end() && popupWidgets.size() > 0; )
+			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget>::iterator iter = popupWidgets.begin(); iter != popupWidgets.end() && popupWidgets.size() > 0; )
 			{
 				if ((*iter).second.isFadeOutComplete())
 				{
-					{
-						stringstream ss;
-						ss << "before erasing" << popupWidgets.size();
-						Logger::DEFAULT.logInfo(ss.str());
-					}
 					popupWidgets.erase(iter++);
-					{
-						stringstream ss;
-						ss << "after erasing" << popupWidgets.size();
-						Logger::DEFAULT.logInfo(ss.str());
-					}
 				}
 				else
 					iter ++;
 			}
 
 			// Processing time step with children
-			for (map<AnimatedPopupText, AnimatedPopupTextWidget>::iterator iter = popupWidgets.begin();
+			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget>::iterator iter = popupWidgets.begin();
 					iter != popupWidgets.end(); iter++)
 			{
 				(*iter).second.processTimeStep(dt);

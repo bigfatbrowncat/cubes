@@ -20,21 +20,35 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
+		class AnimatedPopupsManager;
+
+		class AnimatedPopupChainLink
+		{
+			friend class AnimatedPopupsManager;
+		private:
+			AnimatedPopupChainLink* next;
+			AnimatedPopupText* popupText;
+		public:
+			AnimatedPopupChainLink(AnimatedPopupChainLink* next, AnimatedPopupText* text) :
+				next(next), popupText(text)
+			{}
+			const AnimatedPopupChainLink* getNext() const { return next; }
+			const AnimatedPopupText* getPopupText() const { return popupText; }
+		};
 
 		class AnimatedPopupsManager
 		{
 		private:
-			float maxAge;
-			list<AnimatedPopupText> popups;
+			AnimatedPopupChainLink* chainHead;
+			AnimatedPopupChainLink* chainTail;
+
 		public:
-			AnimatedPopupsManager(float maxAge);
+			AnimatedPopupsManager();
 			void popup(string text);
-			void processTimeStep(float dt);
-			const list<AnimatedPopupText>& getPopups() const { return popups; }
+			const AnimatedPopupChainLink* getChainHead() const { return chainHead; }
 
 			virtual ~AnimatedPopupsManager();
 		};
-
 	}
 }
 #endif

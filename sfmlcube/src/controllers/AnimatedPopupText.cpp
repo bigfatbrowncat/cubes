@@ -14,7 +14,7 @@ namespace sfmlcubes
 		int AnimatedPopupText::lastUId = 0;
 
 		AnimatedPopupText::AnimatedPopupText(string text) :
-				text(text), age(0)
+				text(text)
 		{
 			uId = lastUId;
 		}
