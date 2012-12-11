@@ -29,7 +29,6 @@ namespace sfmlcubes
 		public:
 			AnimatedPopupsManager(float maxAge);
 			void popup(string text);
-			void free(const AnimatedPopupText& popup);
 			void processTimeStep(float dt);
 			const list<AnimatedPopupText>& getPopups() const { return popups; }
 

@@ -20,8 +20,8 @@ namespace sfmlcubes
 		class AnimatedPopupTextWidget : public sf::Drawable
 		{
 		private:
-			const sf::Font& font;
 			const AnimatedPopupText& apt;
+			const sf::Font& font;
 
 			float sourceX, sourceY, sourceSize, sourceAngle;
 			float destinationX, destinationY, destinationSize, destinationAngle;

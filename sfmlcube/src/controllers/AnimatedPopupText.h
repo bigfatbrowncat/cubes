@@ -34,9 +34,13 @@ namespace sfmlcubes
 
 			void processTimeStep(float dt) { age += dt; }
 
-			bool operator == (const AnimatedPopupText& other)
+			bool operator == (const AnimatedPopupText& other) const
 			{
 				return other.uId == uId;
+			}
+			bool operator < (const AnimatedPopupText& other) const
+			{
+				return other.uId < uId;
 			}
 
 			virtual ~AnimatedPopupText();

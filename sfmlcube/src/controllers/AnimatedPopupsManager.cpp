@@ -42,11 +42,6 @@ namespace sfmlcubes
 			}
 		}
 
-		void AnimatedPopupsManager::free(const AnimatedPopupText& popup)
-		{
-			popups.remove(popup);
-		}
-
 		AnimatedPopupsManager::~AnimatedPopupsManager()
 		{
 
