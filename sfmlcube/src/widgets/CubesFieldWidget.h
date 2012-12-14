@@ -20,16 +20,14 @@ namespace sfmlcubes
 		{
 		private:
 			const CubesField& cubesField;
-			AnimatedPopupsWidget animatedPopupsPainter;
 
 			CubePainter cubePainter;
 			ShapePainter shapePainter;
 
-			void setPerspective();
 		public:
 			CubesFieldWidget(const CubesField& cubesField, const sf::Font& font);
+			Coordinates fromCubeInShapeCoordsToFieldCoords(const Shape& shape, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const;
 			void drawBoard(sf::RenderTarget& target);
-			void processTimeStep(float dt) { animatedPopupsPainter.processTimeStep(dt); }
 			virtual ~CubesFieldWidget();
 		};
 	}

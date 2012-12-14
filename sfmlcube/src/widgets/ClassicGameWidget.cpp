@@ -174,21 +174,6 @@ namespace sfmlcubes
 			win.popGLStates();
 		}
 
-
-		void ClassicGameWidget::setView()
-		{
-			sf::View view(sf::FloatRect(0, 0, mainWindow.getSize().x, mainWindow.getSize().y));
-			mainWindow.setView(view);
-		}
-
-		void ClassicGameWidget::setPerspective()
-		{
-		    glMatrixMode(GL_PROJECTION);
-		    glLoadIdentity();
-		    gluPerspective(100.f, (float)mainWindow.getSize().x / mainWindow.getSize().y, 1.f, 1000.f);
-		}
-
-
 		void ClassicGameWidget::prepareScene()
 		{
 		    // Set the color and depth clear values
@@ -202,8 +187,8 @@ namespace sfmlcubes
 		    glEnable(GL_BLEND);
 		    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-		    setPerspective();
-		    setView();
+			sf::View view(sf::FloatRect(0, 0, mainWindow.getSize().x, mainWindow.getSize().y));
+			mainWindow.setView(view);
 		}
 
 
@@ -214,7 +199,6 @@ namespace sfmlcubes
 
 			win.pushGLStates();
 			win.setActive(true);
-	//		win.setSmooth(true);
 	        glViewport(0, 0, win.getSize().x, win.getSize().y);
 
 		    // Clear color and depth buffer
@@ -222,9 +206,18 @@ namespace sfmlcubes
 
 	        glEnable(GL_DEPTH_TEST);
 
-		    // Drawing the cube
-	        setPerspective();
-	        cubesFieldWidget.drawBoard(win);
+	        // Setting perspective
+	        glMatrixMode(GL_PROJECTION);
+		    glLoadIdentity();
+		    gluPerspective(100.f, (float)mainWindow.getSize().x / mainWindow.getSize().y, 1.f, 1000.f);
+
+		    // Drawing the board
+		    cubesFieldWidget.drawBoard(win);
+
+		    // Drawing the animated text popups
+			win.draw(animatedPopupsPainter, sf::RenderStates::Default);
+
+		    // Drawing the "next shape" view
 	        shapeDealerWidget.setViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 3,
 	    	                              (win.getSize().y - 80 * k) - 1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2 - 17 * k,
 	    	                              80 * k,
@@ -247,7 +240,8 @@ namespace sfmlcubes
 				counterFont(counterFont),
 				counterHeavyFont(counterHeavyFont),
 				cubesFieldWidget(gameController.getCubesField(), textFont),
-				shapeDealerWidget(gameController.getCubesField().getShapeDealer())
+				shapeDealerWidget(gameController.getCubesField().getShapeDealer()),
+				animatedPopupsPainter(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), textFont)
 
 		{
 			pauseText = new sf::Text();

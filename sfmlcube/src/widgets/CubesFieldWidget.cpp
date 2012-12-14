@@ -16,12 +16,27 @@ namespace sfmlcubes
 	{
 		CubesFieldWidget::CubesFieldWidget(const CubesField& cubesField, const sf::Font& font) :
 				cubesField(cubesField),
-				animatedPopupsPainter(cubesField.getScoreCounter().getAnimatedPopupsManager(), font),
 				cubePainter(CubePainter::uField),
 				shapePainter(cubePainter)
 
 		{
 
+		}
+
+		Coordinates CubesFieldWidget::fromCubeInShapeCoordsToFieldCoords(const Shape& shape, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const
+		{
+			Coordinates res = shapePainter.fromCubeInShapeCoordsToShapeCoords(shape, currentCubeCoords, coordsInTheCubeSpace);
+
+			float delta_x = (cubesField.getWidth() - 0.5) / 2;
+			float delta_y = (cubesField.getHeight() - 0.5) / 2;
+			float cubeSize = 30;
+			res = res.translate(-delta_x, delta_y, 0.f);
+
+			res = res.scale(cubeSize, cubeSize, cubeSize);
+
+			res = res.translate(0.f, 0.f, -300.f);
+
+			return res;
 		}
 
 		void CubesFieldWidget::drawBoard(sf::RenderTarget& target)
@@ -53,10 +68,6 @@ namespace sfmlcubes
 			{
 				shapePainter.paint(*iter);
 			}
-
-
-			target.draw(animatedPopupsPainter, sf::RenderStates::Default);
-
 		}
 
 		CubesFieldWidget::~CubesFieldWidget()

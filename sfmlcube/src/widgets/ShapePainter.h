@@ -24,7 +24,7 @@ namespace sfmlcubes
 			CubePainter& cubePainter;
 		public:
 			ShapePainter(CubePainter& cubePainter);
-			Coordinates fromShapeCoordsToFieldCoords(const Shape& shape, CubeCoordinates currentCubeCoords, Coordinates cubeCoords) const;
+			Coordinates fromCubeInShapeCoordsToShapeCoords(const Shape& shape, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const;
 			void paint(const Shape& cube) const;
 			virtual ~ShapePainter();
 		};
