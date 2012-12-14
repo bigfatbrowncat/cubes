@@ -20,10 +20,10 @@ namespace sfmlcubes
 			chainTail = chainHead;
 		}
 
-		void AnimatedPopupsManager::popup(string text)
+		void AnimatedPopupsManager::popup(string text, const Shape& shape)
 		{
 			Logger::DEFAULT.logInfo("popup");
-			chainTail->popupText = new AnimatedPopupText(text);
+			chainTail->popupText = new AnimatedPopupText(text, shape);
 			chainTail->next = new AnimatedPopupChainLink(NULL, NULL);
 			chainTail = chainTail->next;
 		}

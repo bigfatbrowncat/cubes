@@ -10,6 +10,7 @@
 
 #include "../controllers/AnimatedPopupText.h"
 #include "../controllers/AnimatedPopupsManager.h"
+#include "../movingcubes/Shape.h"
 
 #include "../Logger.h"
 
@@ -20,6 +21,8 @@ using namespace std;
 namespace sfmlcubes
 {
 	using namespace controllers;
+	using namespace movingcubes;
+
 	namespace widgets
 	{
 
@@ -49,7 +52,9 @@ namespace sfmlcubes
 			{
 				Logger::DEFAULT.logInfo("add");
 				const AnimatedPopupText& apt = *currentPopup->getPopupText();
-				AnimatedPopupTextWidget aptw(apt, font, 0, 0, 10, 0, 200, 100, 50, 30, 3);
+				Shape shp = apt.getShape();
+
+				AnimatedPopupTextWidget aptw(apt, font, shp.getRight(), shp.getBottom(), 30, -10, shp.getRight() + 50, shp.getBottom() + 10, 50, 30, 3);
 				std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptw);
 				popupWidgets.insert(newPair);
 				currentPopup = currentPopup->getNext();

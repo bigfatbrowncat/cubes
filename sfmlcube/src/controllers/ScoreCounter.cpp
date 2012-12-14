@@ -24,20 +24,19 @@ namespace sfmlcubes
 		{
 		}
 
-		void ScoreCounter::beforeShapeFallen()
+		void ScoreCounter::beforeShapeFallen(const Shape& shape)
 		{
-			// 1. Giving 1 point for a fallen shape
-			score += 1;
+			lastFallenShape = shape;
 			holesBeforeFallen = fallenController.countHoles();
 		}
 
 		void ScoreCounter::afterShapeFallen()
 		{
 			int newHoles = fallenController.countHoles();
-			int bonus = 0;
+			int bonus = 1; // 1. Giving 1 point for each fallen shape
 			if (newHoles == holesBeforeFallen)
 			{
-				// 2. If the shape hasn't make a new hole, giving another point
+				// 2. If the shape hasn't made a new hole, giving another point
 				bonus += 1;
 			}
 			else if (newHoles < holesBeforeFallen)
@@ -50,7 +49,7 @@ namespace sfmlcubes
 			if (bonus > 0)
 			{
 				stringstream ss; ss << "+" << bonus;
-				animatedPopupsManager.popup(ss.str());
+				animatedPopupsManager.popup(ss.str(), lastFallenShape);
 			}
 			score += bonus;
 

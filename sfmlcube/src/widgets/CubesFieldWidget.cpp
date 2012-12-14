@@ -16,7 +16,10 @@ namespace sfmlcubes
 	{
 		CubesFieldWidget::CubesFieldWidget(const CubesField& cubesField, const sf::Font& font) :
 				cubesField(cubesField),
-				animatedPopupsPainter(cubesField.getScoreCounter().getAnimatedPopupsManager(), font)
+				animatedPopupsPainter(cubesField.getScoreCounter().getAnimatedPopupsManager(), font),
+				cubePainter(CubePainter::uField),
+				shapePainter(cubePainter)
+
 		{
 
 		}
@@ -39,7 +42,18 @@ namespace sfmlcubes
 			glScalef(cubeSize, cubeSize, cubeSize);
 			glTranslatef(-delta_x, delta_y, 0.f);
 
-			cubesField.glDraw();
+			shapePainter.paint(cubesField.getWallsController().getShape());
+			shapePainter.paint(cubesField.getFallingShapeController().getShape());
+
+			list<Shape> shps = cubesField.getFallenController().getShapes();
+
+			for (list<Shape>::const_iterator iter = shps.begin();
+				 iter != shps.end();
+				 iter++)
+			{
+				shapePainter.paint(*iter);
+			}
+
 
 			target.draw(animatedPopupsPainter, sf::RenderStates::Default);
 

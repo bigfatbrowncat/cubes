@@ -22,6 +22,9 @@ namespace sfmlcubes
 			const CubesField& cubesField;
 			AnimatedPopupsWidget animatedPopupsPainter;
 
+			CubePainter cubePainter;
+			ShapePainter shapePainter;
+
 			void setPerspective();
 		public:
 			CubesFieldWidget(const CubesField& cubesField, const sf::Font& font);

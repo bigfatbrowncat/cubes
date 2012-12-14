@@ -25,10 +25,11 @@ namespace sfmlcubes
 			int linesComboCollector;
 			const FallenController& fallenController;
 			AnimatedPopupsManager animatedPopupsManager;
+			Shape lastFallenShape;
 		public:
 			ScoreCounter(const FallenController& fallenController);
 
-			void beforeShapeFallen();
+			void beforeShapeFallen(const Shape& shape);
 			void afterShapeFallen();
 			void linesHasBeenFired();
 

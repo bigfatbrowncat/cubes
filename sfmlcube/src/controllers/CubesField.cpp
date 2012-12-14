@@ -32,9 +32,6 @@ namespace sfmlcubes
 				fallingShapeController(wallsController, fallenController, velocityController),
 				scoreCounter(fallenController),
 
-				cubePainter(CubePainter::uField),
-				shapePainter(cubePainter),
-
 				time(0),
 				momentWhenFallIssued(0),
 				paused(false)
@@ -65,7 +62,7 @@ namespace sfmlcubes
 
 					if (fallingShapeController.getState() == fscsLanded)
 					{
-						scoreCounter.beforeShapeFallen();
+						scoreCounter.beforeShapeFallen(fallingShapeController.getShape());
 						fallenController.mergeShape(fallingShapeController.getShape());
 						fallingShapeController.clearShape();
 						scoreCounter.afterShapeFallen();
@@ -162,20 +159,5 @@ namespace sfmlcubes
 			}
 		}
 
-		void CubesField::glDraw() const
-		{
-			shapePainter.paint(wallsController.getShape());
-			shapePainter.paint(fallingShapeController.getShape());
-
-			list<Shape> shps = fallenController.getShapes();
-
-			for (list<Shape>::const_iterator iter = shps.begin();
-				 iter != shps.end();
-				 iter++)
-			{
-				shapePainter.paint(*iter);
-			}
-
-		}
 	}
 }

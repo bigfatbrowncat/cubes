@@ -11,6 +11,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "../movingcubes/Cube.h"
+#include "../movingcubes/Coordinates.h"
 
 namespace sfmlcubes
 {

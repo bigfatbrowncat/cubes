@@ -13,8 +13,8 @@ namespace sfmlcubes
 	{
 		int AnimatedPopupText::lastUId = 0;
 
-		AnimatedPopupText::AnimatedPopupText(string text) :
-				text(text)
+		AnimatedPopupText::AnimatedPopupText(string text, const Shape& shape) :
+				text(text), shape(shape)
 		{
 			uId = lastUId;
 		}

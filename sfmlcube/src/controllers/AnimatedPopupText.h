@@ -11,11 +11,13 @@
 #include <string>
 
 #include <SFML/Graphics.hpp>
+#include "../movingcubes/Shape.h"
 
 using namespace std;
 
 namespace sfmlcubes
 {
+	using namespace movingcubes;
 	namespace controllers
 	{
 		class AnimatedPopupText
@@ -24,11 +26,13 @@ namespace sfmlcubes
 			static int lastUId;
 		private:
 			string text;
+			Shape shape;
 			int uId;
 		public:
-			AnimatedPopupText(string text);
+			AnimatedPopupText(string text, const Shape& shape);
 
 			string getText() const { return text; }
+			const Shape& getShape() const { return shape; }
 
 			bool operator == (const AnimatedPopupText& other) const
 			{

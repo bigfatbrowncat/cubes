@@ -59,9 +59,6 @@ namespace sfmlcubes
 			ShapeDealer shapeDealer;
 			ScoreCounter scoreCounter;
 
-			CubePainter cubePainter;
-			ShapePainter shapePainter;
-
 			double time;
 			double momentWhenFallIssued;
 			bool paused;
@@ -71,6 +68,9 @@ namespace sfmlcubes
 			virtual ~CubesField();
 
 			const ShapeDealer& getShapeDealer() const { return shapeDealer; }
+			const WallsController& getWallsController() const { return wallsController; }
+			const FallingShapeController& getFallingShapeController() const { return fallingShapeController; }
+			const FallenController& getFallenController() const { return fallenController; }
 
 			int getWidth() const { return width; }
 			int getHeight() const { return height; }
@@ -91,7 +91,6 @@ namespace sfmlcubes
 
 			bool isPaused() const { return paused; }
 
-			void glDraw() const;
 		};
 	}
 }
