@@ -23,7 +23,7 @@ namespace sfmlcubes
 
 		}
 
-		Coordinates CubesFieldWidget::fromCubeInShapeCoordsToFieldCoords(const Shape& shape, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const
+		Coordinates CubesFieldWidget::fromCubeInShapeCoordsToFieldCoords(sf::RenderTarget& target, const Shape& shape, const CubeCoordinates& currentCubeCoords, const Coordinates& coordsInTheCubeSpace) const
 		{
 			Coordinates res = shapePainter.fromCubeInShapeCoordsToShapeCoords(shape, currentCubeCoords, coordsInTheCubeSpace);
 
@@ -36,12 +36,25 @@ namespace sfmlcubes
 
 			res = res.translate(0.f, 0.f, -300.f);
 
+			float aspect = (float)target.getSize().x / target.getSize().y;
+			res = res.project(100.0f, aspect, 1.f, 1000.f);
+
+			res = res.scale(-0.5 * 300 / target.getSize().y,
+					         0.5 * 300 / target.getSize().x, 1);
+
+			res = res.translate(target.getSize().x / 2, target.getSize().y / 2, 0);
 			return res;
 		}
 
 		void CubesFieldWidget::drawBoard(sf::RenderTarget& target)
 		{
-			glMatrixMode(GL_MODELVIEW);
+	        // Setting perspective
+	        glMatrixMode(GL_PROJECTION);
+		    glLoadIdentity();
+		    gluPerspective(100.f, (float)target.getSize().x / target.getSize().y, 1.f, 1000.f);
+
+		    // Dawing models
+		    glMatrixMode(GL_MODELVIEW);
 			glLoadIdentity();
 			glTranslatef(0.f, 0.f, -300.f);
 

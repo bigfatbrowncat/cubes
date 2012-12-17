@@ -82,9 +82,10 @@ namespace sfmlcubes
  *          |   0               0               (zFar + zNear) / (zNear - zFar)      2 * zFar * zNear / (zNear - zFar)   |
  *          |   0               0              -1                                    0                                   |
  */
+			float f = 1.0 / tan(fovy / 2);
 
-		    float Rxx = fovy / aspect;
-		    float Ryy = fovy;
+		    float Rxx = f / aspect;
+		    float Ryy = f;
 		    float Rzz = (zFar + zNear) / (zNear - zFar);
 		    float Rwz = 2 * zFar * zNear / (zNear - zFar);
 		    float Rzw = -1;

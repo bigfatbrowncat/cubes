@@ -17,11 +17,14 @@ namespace sfmlcubes
 	using namespace controllers;
 	namespace widgets
 	{
+		class CubesFieldWidget;
+
 		class AnimatedPopupTextWidget : public sf::Drawable
 		{
 		private:
 			const AnimatedPopupText& apt;
 			const sf::Font& font;
+			const CubesFieldWidget& cubesFieldWidget;
 
 			float sourceX, sourceY, sourceSize, sourceAngle;
 			float destinationX, destinationY, destinationSize, destinationAngle;
@@ -35,7 +38,7 @@ namespace sfmlcubes
 			void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 		public:
-			AnimatedPopupTextWidget(const AnimatedPopupText& apt, const sf::Font& font, float sourceX, float sourceY, float sourceSize, float sourceAngle,
+			AnimatedPopupTextWidget(const AnimatedPopupText& apt, const sf::Font& font, const CubesFieldWidget& cubesFieldWidget, float sourceX, float sourceY, float sourceSize, float sourceAngle,
 	                  float destinationX, float destinationY, float destinationSize, float destinationAngle, float fadeOutTime);
 
 			void processTimeStep(float dt);

@@ -191,8 +191,6 @@ namespace sfmlcubes
 			mainWindow.setView(view);
 		}
 
-
-
 		void ClassicGameWidget::drawScene(sf::RenderTexture& win)
 		{
 			float k = (float)win.getSize().y / 480;
@@ -205,11 +203,6 @@ namespace sfmlcubes
 	        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	        glEnable(GL_DEPTH_TEST);
-
-	        // Setting perspective
-	        glMatrixMode(GL_PROJECTION);
-		    glLoadIdentity();
-		    gluPerspective(100.f, (float)mainWindow.getSize().x / mainWindow.getSize().y, 1.f, 1000.f);
 
 		    // Drawing the board
 		    cubesFieldWidget.drawBoard(win);
@@ -241,7 +234,7 @@ namespace sfmlcubes
 				counterHeavyFont(counterHeavyFont),
 				cubesFieldWidget(gameController.getCubesField(), textFont),
 				shapeDealerWidget(gameController.getCubesField().getShapeDealer()),
-				animatedPopupsPainter(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), textFont)
+				animatedPopupsPainter(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), textFont, cubesFieldWidget)
 
 		{
 			pauseText = new sf::Text();
@@ -271,6 +264,21 @@ namespace sfmlcubes
 			mainWindow.clear(sf::Color(32, 32, 20));
 			mainWindow.draw(*mainWindowSprite, *mainWindowRS);
 			drawText(mainWindow, sf::RenderStates::Default);
+
+			for (int i = 0; i < gameController.getCubesField().getWidth(); i++)
+			for (int j = 0; j < gameController.getCubesField().getHeight(); j++)
+			{
+				sf::CircleShape cs(1.f, 10);
+
+				CubeCoordinates shapeCenter(i, j);
+				Coordinates zero(0, 0, 0);
+				Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(mainWindow, gameController.getCubesField().getWallsController().getShape(), shapeCenter, zero);
+
+				cs.setPosition(pos.getX(), pos.getY());
+				cs.setFillColor(sf::Color::Red);
+				mainWindow.draw(cs, sf::RenderStates::Default);
+			}
+
 
 			mainWindow.display();
 		}

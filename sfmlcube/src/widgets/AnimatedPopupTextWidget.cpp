@@ -5,16 +5,26 @@
  *      Author: imizus
  */
 
+#include <sstream>
+
+#include "../Logger.h"
+#include "../movingcubes/Coordinates.h"
+#include "../movingcubes/CubeCoordinates.h"
+
 #include "AnimatedPopupTextWidget.h"
+#include "CubesFieldWidget.h"
+
+using namespace std;
 
 namespace sfmlcubes
 {
+	using namespace movingcubes;
 	namespace widgets
 	{
 
-		AnimatedPopupTextWidget::AnimatedPopupTextWidget(const AnimatedPopupText& apt, const sf::Font& font, float sourceX, float sourceY, float sourceSize, float sourceAngle,
+		AnimatedPopupTextWidget::AnimatedPopupTextWidget(const AnimatedPopupText& apt, const sf::Font& font, const CubesFieldWidget& cubesFieldWidget, float sourceX, float sourceY, float sourceSize, float sourceAngle,
                 float destinationX, float destinationY, float destinationSize, float destinationAngle, float fadeOutTime) :
-				apt(apt), font(font),
+				apt(apt), font(font), cubesFieldWidget(cubesFieldWidget),
 				sourceX(sourceX), sourceY(sourceY), sourceSize(sourceSize), sourceAngle(sourceAngle),
 				destinationX(destinationX), destinationY(destinationY), destinationSize(destinationSize), destinationAngle(destinationAngle), fadeOutTime(fadeOutTime),
 				alpha(1.0), x(sourceX), y(sourceY), size(sourceSize), angle(sourceAngle), time(0), fadeOutComplete(false)
@@ -44,10 +54,19 @@ namespace sfmlcubes
 		void AnimatedPopupTextWidget::draw(sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			sf::Text tx(apt.getText(), font, size);
-			tx.setPosition(x, y);
+			CubeCoordinates shapeCenter(apt.getShape().rotatingCenterX, apt.getShape().rotatingCenterY);
+			Coordinates zero(0, 0, 0);
+			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(target, apt.getShape(), shapeCenter, zero);
+
+			//tx.setPosition(pos.getX() + target.getSize().x / 2, -pos.getY() + target.getSize().y / 2);
+			tx.setPosition(pos.getX(), pos.getY());
+
 			tx.setRotation(angle);
 			tx.setColor(sf::Color(255, 255, 255, alpha * 255));
 
+			stringstream ss;
+			ss << pos.getX() << ", " << pos.getY();
+			Logger::DEFAULT.logInfo(ss.str());
 			target.draw(tx, states);
 		}
 

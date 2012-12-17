@@ -26,10 +26,11 @@ namespace sfmlcubes
 	namespace widgets
 	{
 
-		AnimatedPopupsWidget::AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& font) :
+		AnimatedPopupsWidget::AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& font, const CubesFieldWidget& cubesFieldWidget) :
 				animatedPopupsManager(animatedPopupsManager),
 				currentPopup(animatedPopupsManager.getChainHead()),
-				font(font)
+				font(font),
+				cubesFieldWidget(cubesFieldWidget)
 		{
 
 		}
@@ -54,7 +55,7 @@ namespace sfmlcubes
 				const AnimatedPopupText& apt = *currentPopup->getPopupText();
 				Shape shp = apt.getShape();
 
-				AnimatedPopupTextWidget aptw(apt, font, shp.getRight(), shp.getBottom(), 30, -10, shp.getRight() + 50, shp.getBottom() + 10, 50, 30, 3);
+				AnimatedPopupTextWidget aptw(apt, font, cubesFieldWidget, shp.getRight(), shp.getBottom(), 30, -10, shp.getRight() + 50, shp.getBottom() + 10, 50, 30, 3);
 				std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptw);
 				popupWidgets.insert(newPair);
 				currentPopup = currentPopup->getNext();

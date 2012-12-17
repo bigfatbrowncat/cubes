@@ -58,6 +58,7 @@ namespace sfmlcubes
 			void updateDynamicText(sf::RenderTarget& win);
 			void drawText(sf::RenderTarget& win, sf::RenderStates rs);
 			void prepareScene();
+			Coordinates fromCubeInShapeCoordsToScreenCoords(const Shape& shape, const CubeCoordinates& currentCubeCoords, const Coordinates& coordsInTheCubeSpace) const;
 			void drawScene(sf::RenderTexture& win);
 		public:
 			ClassicGameWidget(sf::RenderWindow& mainWindow,

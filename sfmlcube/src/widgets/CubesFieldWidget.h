@@ -26,7 +26,7 @@ namespace sfmlcubes
 
 		public:
 			CubesFieldWidget(const CubesField& cubesField, const sf::Font& font);
-			Coordinates fromCubeInShapeCoordsToFieldCoords(const Shape& shape, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const;
+			Coordinates fromCubeInShapeCoordsToFieldCoords(sf::RenderTarget& target, const Shape& shape, const CubeCoordinates& currentCubeCoords, const Coordinates& coordsInTheCubeSpace) const;
 			void drawBoard(sf::RenderTarget& target);
 			virtual ~CubesFieldWidget();
 		};

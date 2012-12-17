@@ -21,6 +21,8 @@ namespace sfmlcubes
 	using namespace controllers;
 	namespace widgets
 	{
+		class CubesFieldWidget;
+
 		class AnimatedPopupsWidget : public sf::Drawable
 		{
 		private:
@@ -28,10 +30,11 @@ namespace sfmlcubes
 			const AnimatedPopupChainLink* currentPopup;
 			map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> popupWidgets;
 			const sf::Font& font;
+			const CubesFieldWidget& cubesFieldWidget;
 
 			void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 		public:
-			AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& font);
+			AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& font, const CubesFieldWidget& cubesFieldWidget);
 
 			void processTimeStep(float dt);
 
