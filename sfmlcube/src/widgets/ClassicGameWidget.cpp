@@ -187,8 +187,8 @@ namespace sfmlcubes
 		    glEnable(GL_BLEND);
 		    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-			sf::View view(sf::FloatRect(0, 0, mainWindow.getSize().x, mainWindow.getSize().y));
-			mainWindow.setView(view);
+			//sf::View view(sf::FloatRect(0, 0, mainWindow.getSize().x, mainWindow.getSize().y));
+			//mainWindow.setView(view);
 		}
 
 		void ClassicGameWidget::drawScene(sf::RenderTexture& win)
@@ -265,6 +265,7 @@ namespace sfmlcubes
 			mainWindow.draw(*mainWindowSprite, *mainWindowRS);
 			drawText(mainWindow, sf::RenderStates::Default);
 
+			/*
 			for (int i = 0; i < gameController.getCubesField().getWidth(); i++)
 			for (int j = 0; j < gameController.getCubesField().getHeight(); j++)
 			{
@@ -276,9 +277,10 @@ namespace sfmlcubes
 
 				cs.setPosition(pos.getX(), pos.getY());
 				cs.setFillColor(sf::Color::Red);
+
 				mainWindow.draw(cs, sf::RenderStates::Default);
 			}
-
+			 */
 
 			mainWindow.display();
 		}

@@ -60,13 +60,11 @@ namespace sfmlcubes
 
 			//tx.setPosition(pos.getX() + target.getSize().x / 2, -pos.getY() + target.getSize().y / 2);
 			tx.setPosition(pos.getX(), pos.getY());
-
+			tx.move( - tx.getGlobalBounds().width + x,  - tx.getGlobalBounds().height + y);
 			tx.setRotation(angle);
 			tx.setColor(sf::Color(255, 255, 255, alpha * 255));
 
-			stringstream ss;
-			ss << pos.getX() << ", " << pos.getY();
-			Logger::DEFAULT.logInfo(ss.str());
+
 			target.draw(tx, states);
 		}
 

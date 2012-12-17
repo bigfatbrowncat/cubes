@@ -51,11 +51,12 @@ namespace sfmlcubes
 		{
 			while (currentPopup->getNext() != NULL)
 			{
-				Logger::DEFAULT.logInfo("add");
 				const AnimatedPopupText& apt = *currentPopup->getPopupText();
 				Shape shp = apt.getShape();
 
-				AnimatedPopupTextWidget aptw(apt, font, cubesFieldWidget, shp.getRight(), shp.getBottom(), 30, -10, shp.getRight() + 50, shp.getBottom() + 10, 50, 30, 3);
+				AnimatedPopupTextWidget aptw(
+						apt, font, cubesFieldWidget, 0, 0, 20, -20,
+						                             100, 20, 50, 30, 1);
 				std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptw);
 				popupWidgets.insert(newPair);
 				currentPopup = currentPopup->getNext();
