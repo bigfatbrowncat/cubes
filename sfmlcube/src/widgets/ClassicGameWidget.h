@@ -13,7 +13,7 @@
 #include "CubesFieldWidget.h"
 #include "ShapeDealerWidget.h"
 
-#include "TextWithShadowPainter.h"
+#include "GaussianGlowingTextPainter.h"
 #include "AnimatedPopupTextWidget.h"
 #include "AnimatedPopupsWidget.h"
 
@@ -51,7 +51,7 @@ namespace sfmlcubes
 			sf::Text* speedValueText;
 			sf::Text* nextShapeText;
 
-			TextWithShadowPainter* textWithShadowPainter;
+			GaussianGlowingTextPainter* textWithShadowPainter;
 
 			void initLayers();
 			void updateStaticText(sf::RenderTarget& win);

@@ -144,25 +144,27 @@ namespace sfmlcubes
 			win.pushGLStates();
 			updateDynamicText(win);
 
-			textWithShadowPainter->drawText(*linesFiredText, win, rs);
-			textWithShadowPainter->drawText(*linesFiredValueText, win, rs);
+			sf::Color shadowColor(0, 0, 0);
 
-			textWithShadowPainter->drawText(*scoreText, win, rs);
-			textWithShadowPainter->drawText(*scoreValueText, win, rs);
+			textWithShadowPainter->drawText(*linesFiredText, win, shadowColor, rs);
+			textWithShadowPainter->drawText(*linesFiredValueText, win, shadowColor, rs);
 
-			textWithShadowPainter->drawText(*speedText, win, rs);
-			textWithShadowPainter->drawText(*speedValueText, win, rs);
+			textWithShadowPainter->drawText(*scoreText, win, shadowColor, rs);
+			textWithShadowPainter->drawText(*scoreValueText, win, shadowColor, rs);
 
-			textWithShadowPainter->drawText(*nextShapeText, win, rs);
+			textWithShadowPainter->drawText(*speedText, win, shadowColor, rs);
+			textWithShadowPainter->drawText(*speedValueText, win, shadowColor, rs);
+
+			textWithShadowPainter->drawText(*nextShapeText, win, shadowColor, rs);
 			if (gameController.getCubesField().getState() == cmsGameOver)
 			{
 				mainWindow.setTitle("Cubes (Game Over)");
-				textWithShadowPainter->drawText(*gameOverText, win, rs);
+				textWithShadowPainter->drawText(*gameOverText, win, shadowColor, rs);
 			}
 			else if (gameController.getCubesField().isPaused())
 			{
 				mainWindow.setTitle("Cubes (Paused)");
-				textWithShadowPainter->drawText(*pauseText, win, rs);
+				textWithShadowPainter->drawText(*pauseText, win, shadowColor, rs);
 			}
 			else
 			{
@@ -247,7 +249,7 @@ namespace sfmlcubes
 			speedValueText = new sf::Text();
 			nextShapeText = new sf::Text();
 
-			textWithShadowPainter = new TextWithShadowPainter();
+			textWithShadowPainter = new GaussianGlowingTextPainter();
 
 			initLayers();
 			updateStaticText(mainWindow);

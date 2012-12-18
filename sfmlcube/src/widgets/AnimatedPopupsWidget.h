@@ -12,6 +12,7 @@
 #include <SFML/Graphics.hpp>
 
 #include "AnimatedPopupTextWidget.h"
+#include "GaussianGlowingTextPainter.h"
 #include "../controllers/AnimatedPopupsManager.h"
 
 using namespace std;
@@ -35,7 +36,7 @@ namespace sfmlcubes
 		public:
 			AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& font, const CubesFieldWidget& cubesFieldWidget);
 
-			void draw(TextWithShadowPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const;
+			void draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const;
 			void processTimeStep(float dt);
 
 			virtual ~AnimatedPopupsWidget();

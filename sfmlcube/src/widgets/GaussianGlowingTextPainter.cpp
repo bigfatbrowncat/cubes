@@ -8,7 +8,7 @@
 #include "../sfmlcubes.h"
 #include "../Logger.h"
 
-#include "TextWithShadowPainter.h"
+#include "GaussianGlowingTextPainter.h"
 
 using namespace sf;
 
@@ -16,17 +16,17 @@ namespace sfmlcubes
 {
 	namespace widgets
 	{
-		sf::Shader** TextWithShadowPainter::shadowShaders;
-		sf::RenderStates** TextWithShadowPainter::shadowRenderStates;
+		sf::Shader** GaussianGlowingTextPainter::shadowShaders;
+		sf::RenderStates** GaussianGlowingTextPainter::shadowRenderStates;
 
-		void TextWithShadowPainter::initialize()
+		void GaussianGlowingTextPainter::initialize()
 		{
 			shadowRenderStates = new sf::RenderStates*[2];
 			shadowShaders = new sf::Shader*[2];
 
 			shadowShaders[0] = new sf::Shader;
 			shadowRenderStates[0] = new sf::RenderStates;
-			if (shadowShaders[0]->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "ui_shadows.frag")))
+			if (shadowShaders[0]->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "GaussianGlowingText.frag")))
 			{
 				shadowRenderStates[0]->shader = shadowShaders[0];
 				shadowShaders[0]->setParameter("texture", sf::Shader::CurrentTexture);
@@ -39,7 +39,7 @@ namespace sfmlcubes
 
 			shadowShaders[1] = new sf::Shader;
 			shadowRenderStates[1] = new sf::RenderStates;
-			if (shadowShaders[1]->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "ui_shadows.frag")))
+			if (shadowShaders[1]->loadFromFile(api->locateResource("res", "trivial.vert"), api->locateResource("res", "GaussianGlowingText.frag")))
 			{
 				shadowRenderStates[1]->shader = shadowShaders[1];
 				shadowShaders[1]->setParameter("texture", sf::Shader::CurrentTexture);
@@ -52,14 +52,14 @@ namespace sfmlcubes
 
 		}
 
-		void TextWithShadowPainter::finalize()
+		void GaussianGlowingTextPainter::finalize()
 		{
 			delete shadowShaders[0];
 			delete shadowShaders[1];
 			delete [] shadowShaders;
 		}
 
-		void TextWithShadowPainter::updateRealBounds(const Text& text)
+		void GaussianGlowingTextPainter::updateRealBounds(const Text& text)
 		{
 			realBounds = text.getGlobalBounds();
 			// This is experimental. I don't know why adding 2*margin is not enough
@@ -67,7 +67,7 @@ namespace sfmlcubes
 			realBounds.height *= 2;
 		}
 
-		void TextWithShadowPainter::initTexturesAndSprites(const Text& text)
+		void GaussianGlowingTextPainter::initTexturesAndSprites(const Text& text)
 		{
 			textures = new RenderTexture*[2];
 			sprites = new Sprite*[2];
@@ -90,7 +90,7 @@ namespace sfmlcubes
 			}
 		}
 
-		void TextWithShadowPainter::updateTexturesAndSprites(const Text& text)
+		void GaussianGlowingTextPainter::updateTexturesAndSprites(const Text& text)
 		{
 			if (text.getGlobalBounds().width > realBounds.width ||
 				text.getGlobalBounds().height > realBounds.height)
@@ -103,7 +103,7 @@ namespace sfmlcubes
 			}
 		}
 
-		void TextWithShadowPainter::freeTexturesAndSprites()
+		void GaussianGlowingTextPainter::freeTexturesAndSprites()
 		{
 			delete textures[0];
 			delete textures[1];
@@ -113,7 +113,7 @@ namespace sfmlcubes
 			delete [] sprites; sprites = NULL;
 		}
 
-		TextWithShadowPainter::TextWithShadowPainter() :
+		GaussianGlowingTextPainter::GaussianGlowingTextPainter() :
 				textures(NULL), sprites(NULL),
 				shadowWidth(6),
 				margin(0),
@@ -122,7 +122,7 @@ namespace sfmlcubes
 
 		}
 
-		void TextWithShadowPainter::drawText(const Text& text, RenderTarget& target, RenderStates states)
+		void GaussianGlowingTextPainter::drawText(const Text& text, RenderTarget& target, const Color& glowingColor, RenderStates states)
 		{
 			updateTexturesAndSprites(text);
 			if (realBounds.width > 0 && realBounds.height > 0)
@@ -132,13 +132,15 @@ namespace sfmlcubes
 				RenderStates rs[2];
 
 				shadowShaders[0]->setParameter("blur_radius", (float)shadowWidth);
-				shadowShaders[0]->setParameter("shadow_pressure", (float)(1.2f));
+				shadowShaders[0]->setParameter("glowing_color", (float)glowingColor.r / 255, (float)glowingColor.g / 255, (float)glowingColor.b / 255, (float)glowingColor.a / 255);
+				shadowShaders[0]->setParameter("glowing_pressure", (float)(1.2f));
 				shadowShaders[0]->setParameter("screen_width", realBounds.width);
 				shadowShaders[0]->setParameter("screen_height", realBounds.height);
 				rs[0].shader = shadowShaders[0];
 
 				shadowShaders[1]->setParameter("blur_radius", (float)shadowWidth);
-				shadowShaders[1]->setParameter("shadow_pressure", (float)(1.2f));
+				shadowShaders[1]->setParameter("glowing_color", (float)glowingColor.r / 255, (float)glowingColor.g / 255, (float)glowingColor.b / 255, (float)glowingColor.a / 255);
+				shadowShaders[1]->setParameter("glowing_pressure", (float)(1.2f));
 				shadowShaders[1]->setParameter("screen_width", realBounds.width);
 				shadowShaders[1]->setParameter("screen_height", realBounds.height);
 				rs[1].shader = shadowShaders[1];
@@ -162,7 +164,7 @@ namespace sfmlcubes
 		}
 
 
-		TextWithShadowPainter::~TextWithShadowPainter()
+		GaussianGlowingTextPainter::~GaussianGlowingTextPainter()
 		{
 			freeTexturesAndSprites();
 		}

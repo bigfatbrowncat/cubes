@@ -10,7 +10,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "TextWithShadowPainter.h"
+#include "GaussianGlowingTextPainter.h"
 
 #include "../controllers/AnimatedPopupText.h"
 
@@ -43,7 +43,7 @@ namespace sfmlcubes
 
 			void processTimeStep(float dt);
 
-			void draw(TextWithShadowPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const;
+			void draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const;
 
 			bool isFadeOutComplete() const { return fadeOutComplete; }
 			float getAlpha() const { return alpha; }

@@ -87,10 +87,10 @@ namespace sfmlcubes
 			virtual const Shape& getShape() const { return *this; }
 			virtual void setShape(const Shape& shape) { *this = shape; }
 
-			int getLeft();
-			int getRight();
-			int getTop();
-			int getBottom();
+			int getLeft() const;
+			int getRight() const;
+			int getTop() const;
+			int getBottom() const;
 
 			list<Cube> cubeAt(int i, int j) const;
 

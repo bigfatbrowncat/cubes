@@ -49,7 +49,7 @@ namespace sfmlcubes
 			if (bonus > 0)
 			{
 				stringstream ss; ss << "+" << bonus;
-				animatedPopupsManager.popup(ss.str(), bonus, lastFallenShape);
+				animatedPopupsManager.popup(ss.str(), bonus, AnimatedPopupText::tScore, lastFallenShape);
 			}
 			score += bonus;
 
@@ -59,6 +59,13 @@ namespace sfmlcubes
 		void ScoreCounter::linesHasBeenFired()
 		{
 			int count = fallenController.getLinesJustFired();
+			// Showing the lines popup
+			if (count > 0)
+			{
+				stringstream ss; ss << "+" << count;
+				animatedPopupsManager.popup(ss.str(), count, AnimatedPopupText::tLines, fallenController.getShape());
+			}
+
 			int bonus = 0;
 			if (count > 0)
 			{
@@ -87,7 +94,7 @@ namespace sfmlcubes
 			if (bonus > 0)
 			{
 				stringstream ss; ss << "+" << bonus;
-				animatedPopupsManager.popup(ss.str(), bonus, lastFallenShape);
+				animatedPopupsManager.popup(ss.str(), bonus, AnimatedPopupText::tScore, lastFallenShape);
 			}
 			score += bonus;
 		}

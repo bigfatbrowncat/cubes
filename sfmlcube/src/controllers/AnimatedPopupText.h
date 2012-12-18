@@ -22,15 +22,22 @@ namespace sfmlcubes
 	{
 		class AnimatedPopupText
 		{
+		public:
+			enum Type
+			{
+				tScore, tLines
+			};
 		private:
 			string text;
 			int value;
+			Type type;
 			Shape shape;
 		public:
-			AnimatedPopupText(string text, int value, const Shape& shape);
+			AnimatedPopupText(string text, int value, Type type, const Shape& shape);
 
 			string getText() const { return text; }
 			int getValue() const { return value; }
+			Type getType() const { return type; }
 			const Shape& getShape() const { return shape; }
 
 			virtual ~AnimatedPopupText();
