@@ -50,7 +50,7 @@ namespace sfmlcubes
 			return *this;
 		}
 
-		int Shape::getLeft()
+		int Shape::getLeft() const
 		{
 			int left = (*getCubes().begin()).x;
 			for (list<Cube>::const_iterator iter = getCubes().begin();
@@ -62,7 +62,7 @@ namespace sfmlcubes
 			return left;
 		}
 
-		int Shape::getRight()
+		int Shape::getRight() const
 		{
 			int right = (*getCubes().begin()).x;
 			for (list<Cube>::const_iterator iter = getCubes().begin();
@@ -74,7 +74,7 @@ namespace sfmlcubes
 			return right;
 		}
 
-		int Shape::getTop()
+		int Shape::getTop() const
 		{
 			int top = (*getCubes().begin()).y;
 			for (list<Cube>::const_iterator iter = getCubes().begin();
@@ -86,7 +86,7 @@ namespace sfmlcubes
 			return top;
 		}
 
-		int Shape::getBottom()
+		int Shape::getBottom() const
 		{
 			int bottom = (*getCubes().begin()).y;
 			for (list<Cube>::const_iterator iter = getCubes().begin();

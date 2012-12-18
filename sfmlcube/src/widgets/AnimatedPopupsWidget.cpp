@@ -7,6 +7,7 @@
 
 #include <list>
 #include <sstream>
+#include <cmath>
 
 #include "../controllers/AnimatedPopupText.h"
 #include "../controllers/AnimatedPopupsManager.h"
@@ -35,14 +36,14 @@ namespace sfmlcubes
 
 		}
 
-		void AnimatedPopupsWidget::draw(sf::RenderTarget& target, sf::RenderStates states) const
+		void AnimatedPopupsWidget::draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			target.pushGLStates();
 			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget>::const_iterator iter = popupWidgets.begin();
 			     iter != popupWidgets.end();
 			     iter++)
 			{
-				target.draw((*iter).second, states);
+				(*iter).second.draw(textWithShadowPainter, target, states);
 			}
 			target.popGLStates();
 		}
@@ -54,9 +55,12 @@ namespace sfmlcubes
 				const AnimatedPopupText& apt = *currentPopup->getPopupText();
 				Shape shp = apt.getShape();
 
+				// Calculating "size by value" multiplicator
+				float smul = sqrt(log(apt.getValue() + 1) / log(10));
+
 				AnimatedPopupTextWidget aptw(
-						apt, font, cubesFieldWidget, 0, 0, 20, -20,
-						                             100, 20, 50, 30, 1);
+						apt, font, cubesFieldWidget, 0, 0, 40 * smul, -30,
+						                             200 * smul, 20, 100 * smul, 20, 2 * smul);
 				std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptw);
 				popupWidgets.insert(newPair);
 				currentPopup = currentPopup->getNext();

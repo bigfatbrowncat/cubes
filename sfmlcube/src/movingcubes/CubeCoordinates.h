@@ -18,6 +18,7 @@ namespace sfmlcubes
 		private:
 			int x, y;
 		public:
+			CubeCoordinates();
 			CubeCoordinates(int x, int y);
 
 			int getX() const { return x; }

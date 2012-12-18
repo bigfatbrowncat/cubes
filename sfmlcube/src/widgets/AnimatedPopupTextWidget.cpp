@@ -44,28 +44,59 @@ namespace sfmlcubes
 
 			float d = time / fadeOutTime;
 			float s = 1 - d;
-			alpha = 1.0 - d * d;
+			alpha = 1.0 - d * d * d;
 			x = sourceX * s + destinationX * d;
 			y = sourceY * s + destinationY * d;
 			size = sourceSize * s + destinationSize * d;
 			angle = sourceAngle * s + destinationAngle * d;
 		}
 
-		void AnimatedPopupTextWidget::draw(sf::RenderTarget& target, sf::RenderStates states) const
+		void AnimatedPopupTextWidget::draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
 		{
-			sf::Text tx(apt.getText(), font, size);
-			CubeCoordinates shapeCenter(apt.getShape().rotatingCenterX, apt.getShape().rotatingCenterY);
-			Coordinates zero(0, 0, 0);
-			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(target, apt.getShape(), shapeCenter, zero);
+			float maxsize = max(sourceSize, destinationSize);
 
-			//tx.setPosition(pos.getX() + target.getSize().x / 2, -pos.getY() + target.getSize().y / 2);
+			sf::Text tx(apt.getText(), font, maxsize);
+
+			float cx = ((float)apt.getShape().getLeft() + apt.getShape().getRight()) / 2;
+			float cy = ((float)apt.getShape().getTop() + apt.getShape().getBottom()) / 2;
+
+			CubeCoordinates shapeCenter((int)cx, (int)cy);
+			Coordinates center((cx - (int)cx), -(cy - (int)cy), 0);
+
+			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(target, apt.getShape(), shapeCenter, center);
+
+			if (apt.getType() == AnimatedPopupText::tScore)
+			{
+				tx.scale(size / maxsize, size / maxsize);
+			}
+			else if (apt.getType() == AnimatedPopupText::tLines)
+			{
+				tx.scale(2 * size / maxsize, 2 * size / maxsize);
+			}
+			else
+			{
+				Logger::DEFAULT.logError("Incorrect value of apt type");
+			}
+
 			tx.setPosition(pos.getX(), pos.getY());
-			tx.move( - tx.getGlobalBounds().width + x,  - tx.getGlobalBounds().height + y);
+			tx.move(-tx.getGlobalBounds().width + x, -tx.getGlobalBounds().height + y);
+
 			tx.setRotation(angle);
-			tx.setColor(sf::Color(255, 255, 255, alpha * 255));
 
+			if (apt.getType() == AnimatedPopupText::tScore)
+			{
+				tx.setColor(sf::Color(192, 192, 255, alpha * 255));
+			}
+			else if (apt.getType() == AnimatedPopupText::tLines)
+			{
+				tx.setColor(sf::Color(255, 192, 192, alpha * 255));
+			}
+			else
+			{
+				Logger::DEFAULT.logError("Incorrect value of apt type");
+			}
 
-			target.draw(tx, states);
+			textWithShadowPainter.drawText(tx, target, sf::Color(0, 0, 0, alpha * 255), states);
 		}
 
 		AnimatedPopupTextWidget::~AnimatedPopupTextWidget()

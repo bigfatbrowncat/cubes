@@ -22,26 +22,23 @@ namespace sfmlcubes
 	{
 		class AnimatedPopupText
 		{
-		private:
-			static int lastUId;
+		public:
+			enum Type
+			{
+				tScore, tLines
+			};
 		private:
 			string text;
+			int value;
+			Type type;
 			Shape shape;
-			int uId;
 		public:
-			AnimatedPopupText(string text, const Shape& shape);
+			AnimatedPopupText(string text, int value, Type type, const Shape& shape);
 
 			string getText() const { return text; }
+			int getValue() const { return value; }
+			Type getType() const { return type; }
 			const Shape& getShape() const { return shape; }
-
-			bool operator == (const AnimatedPopupText& other) const
-			{
-				return other.uId == uId;
-			}
-			bool operator < (const AnimatedPopupText& other) const
-			{
-				return other.uId < uId;
-			}
 
 			virtual ~AnimatedPopupText();
 		};

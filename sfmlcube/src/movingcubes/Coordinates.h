@@ -18,6 +18,7 @@ namespace sfmlcubes
 		private:
 			float x, y, z;
 		public:
+			Coordinates();
 			Coordinates(float x, float y, float z);
 
 			Coordinates rotate(float angle, float vx, float vy, float vz) const;

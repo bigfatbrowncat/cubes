@@ -14,7 +14,7 @@ namespace sfmlcubes
 {
 	namespace widgets
 	{
-		class TextWithShadowPainter
+		class GaussianGlowingTextPainter
 		{
 		private:
 			static sf::Shader** shadowShaders;
@@ -36,13 +36,13 @@ namespace sfmlcubes
 			void updateRealBounds(const sf::Text& text);
 
 		public:
-			TextWithShadowPainter();
+			GaussianGlowingTextPainter();
 
-			virtual void drawText(const sf::Text& text, sf::RenderTarget& target, sf::RenderStates states);
+			virtual void drawText(const sf::Text& text, sf::RenderTarget& target, const sf::Color& glowingColor, sf::RenderStates states);
 
 			void setShadowWidth(float value) { shadowWidth = value; margin = 2 * shadowWidth; }
 
-			virtual ~TextWithShadowPainter();
+			virtual ~GaussianGlowingTextPainter();
 		};
 	}
 }

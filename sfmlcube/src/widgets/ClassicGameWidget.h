@@ -13,7 +13,7 @@
 #include "CubesFieldWidget.h"
 #include "ShapeDealerWidget.h"
 
-#include "TextWithShadowPainter.h"
+#include "GaussianGlowingTextPainter.h"
 #include "AnimatedPopupTextWidget.h"
 #include "AnimatedPopupsWidget.h"
 
@@ -34,7 +34,7 @@ namespace sfmlcubes
 
 			CubesFieldWidget cubesFieldWidget;
 			ShapeDealerWidget shapeDealerWidget;
-			AnimatedPopupsWidget animatedPopupsPainter;
+			AnimatedPopupsWidget animatedPopupsWidget;
 
 			sf::RenderTexture* mainWindowTexture;
 			sf::Sprite* mainWindowSprite;
@@ -51,7 +51,7 @@ namespace sfmlcubes
 			sf::Text* speedValueText;
 			sf::Text* nextShapeText;
 
-			TextWithShadowPainter* textWithShadowPainter;
+			GaussianGlowingTextPainter* textWithShadowPainter;
 
 			void initLayers();
 			void updateStaticText(sf::RenderTarget& win);
@@ -68,7 +68,7 @@ namespace sfmlcubes
 			                const sf::Font& counterFont,
 			                const sf::Font& counterHeavyFont);
 			void draw();
-			void processTimeStep(float dt) { animatedPopupsPainter.processTimeStep(dt); }
+			void processTimeStep(float dt) { animatedPopupsWidget.processTimeStep(dt); }
 			virtual ~ClassicGameWidget();
 		};
 

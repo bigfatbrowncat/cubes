@@ -11,12 +11,9 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
-		int AnimatedPopupText::lastUId = 0;
-
-		AnimatedPopupText::AnimatedPopupText(string text, const Shape& shape) :
-				text(text), shape(shape)
+		AnimatedPopupText::AnimatedPopupText(string text, int value, Type type, const Shape& shape) :
+				text(text), value(value), type(type), shape(shape)
 		{
-			uId = lastUId;
 		}
 
 

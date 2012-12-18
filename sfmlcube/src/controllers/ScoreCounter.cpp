@@ -49,7 +49,7 @@ namespace sfmlcubes
 			if (bonus > 0)
 			{
 				stringstream ss; ss << "+" << bonus;
-				animatedPopupsManager.popup(ss.str(), lastFallenShape);
+				animatedPopupsManager.popup(ss.str(), bonus, AnimatedPopupText::tScore, lastFallenShape);
 			}
 			score += bonus;
 
@@ -59,6 +59,14 @@ namespace sfmlcubes
 		void ScoreCounter::linesHasBeenFired()
 		{
 			int count = fallenController.getLinesJustFired();
+			// Showing the lines popup
+			if (count > 0)
+			{
+				stringstream ss; ss << "+" << count;
+				animatedPopupsManager.popup(ss.str(), count, AnimatedPopupText::tLines, fallenController.getShape());
+			}
+
+			int bonus = 0;
 			if (count > 0)
 			{
 				linesComboCollector ++;
@@ -67,14 +75,14 @@ namespace sfmlcubes
 
 				// 6. [Combo] If you cleared some lines during the consequent falling shapes, you
 				// have a bonus, proportional to the square of number of the moves
-				score += addScore * linesComboCollector * linesComboCollector;
+				bonus = addScore * linesComboCollector * linesComboCollector;
 
 				int newHoles = fallenController.countHoles();
 				if (holesAfterFallen > newHoles && holesBeforeFallen == newHoles)
 				{
 					// 5. If we created a hole with the falling shape and opened it immediately
 					// when the lines has been cleared, give a double bonus to the points for lines clearing
-					score += addScore;
+					bonus += addScore;
 				}
 			}
 			else
@@ -82,6 +90,13 @@ namespace sfmlcubes
 				linesComboCollector = 0;
 			}
 
+			// Showing the bonus popup
+			if (bonus > 0)
+			{
+				stringstream ss; ss << "+" << bonus;
+				animatedPopupsManager.popup(ss.str(), bonus, AnimatedPopupText::tScore, lastFallenShape);
+			}
+			score += bonus;
 		}
 
 		ScoreCounter::~ScoreCounter()
