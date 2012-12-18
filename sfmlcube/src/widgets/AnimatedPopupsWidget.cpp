@@ -35,14 +35,14 @@ namespace sfmlcubes
 
 		}
 
-		void AnimatedPopupsWidget::draw(sf::RenderTarget& target, sf::RenderStates states) const
+		void AnimatedPopupsWidget::draw(TextWithShadowPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			target.pushGLStates();
 			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget>::const_iterator iter = popupWidgets.begin();
 			     iter != popupWidgets.end();
 			     iter++)
 			{
-				target.draw((*iter).second, states);
+				(*iter).second.draw(textWithShadowPainter, target, states);
 			}
 			target.popGLStates();
 		}
@@ -56,7 +56,7 @@ namespace sfmlcubes
 
 				AnimatedPopupTextWidget aptw(
 						apt, font, cubesFieldWidget, 0, 0, 20, -20,
-						                             100, 20, 50, 30, 1);
+						                             200, -20, 80, 30, 1);
 				std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptw);
 				popupWidgets.insert(newPair);
 				currentPopup = currentPopup->getNext();

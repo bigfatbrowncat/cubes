@@ -100,7 +100,7 @@ namespace sfmlcubes
 			nextShapeText->setPosition(panelLeft,
 									   1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
 
-			textWithShadowPainter->setShadowWidth(3 * k);
+			textWithShadowPainter->setShadowWidth(4 * k);
 		}
 
 		void ClassicGameWidget::updateDynamicText(sf::RenderTarget& win)
@@ -208,7 +208,7 @@ namespace sfmlcubes
 		    cubesFieldWidget.drawBoard(win);
 
 		    // Drawing the animated text popups
-			win.draw(animatedPopupsPainter, sf::RenderStates::Default);
+		    animatedPopupsWidget.draw(*textWithShadowPainter, win, sf::RenderStates::Default);
 
 		    // Drawing the "next shape" view
 	        shapeDealerWidget.setViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 3,
@@ -234,7 +234,7 @@ namespace sfmlcubes
 				counterHeavyFont(counterHeavyFont),
 				cubesFieldWidget(gameController.getCubesField(), textFont),
 				shapeDealerWidget(gameController.getCubesField().getShapeDealer()),
-				animatedPopupsPainter(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), textFont, cubesFieldWidget)
+				animatedPopupsWidget(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), counterFont, cubesFieldWidget)
 
 		{
 			pauseText = new sf::Text();

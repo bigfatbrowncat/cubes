@@ -11,6 +11,11 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
+		CubeCoordinates::CubeCoordinates() :
+				x(0), y(0)
+		{
+
+		}
 
 		CubeCoordinates::CubeCoordinates(int x, int y) :
 				x(x), y(y)

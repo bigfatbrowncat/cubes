@@ -34,7 +34,7 @@ namespace sfmlcubes
 
 			CubesFieldWidget cubesFieldWidget;
 			ShapeDealerWidget shapeDealerWidget;
-			AnimatedPopupsWidget animatedPopupsPainter;
+			AnimatedPopupsWidget animatedPopupsWidget;
 
 			sf::RenderTexture* mainWindowTexture;
 			sf::Sprite* mainWindowSprite;
@@ -68,7 +68,7 @@ namespace sfmlcubes
 			                const sf::Font& counterFont,
 			                const sf::Font& counterHeavyFont);
 			void draw();
-			void processTimeStep(float dt) { animatedPopupsPainter.processTimeStep(dt); }
+			void processTimeStep(float dt) { animatedPopupsWidget.processTimeStep(dt); }
 			virtual ~ClassicGameWidget();
 		};
 

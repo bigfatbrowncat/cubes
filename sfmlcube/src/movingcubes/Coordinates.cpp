@@ -14,6 +14,11 @@ namespace sfmlcubes
 	namespace movingcubes
 	{
 
+		Coordinates::Coordinates() :
+				x(0), y(0), z(0)
+		{
+
+		}
 		Coordinates::Coordinates(float x, float y, float z) :
 				x(x), y(y), z(z)
 		{

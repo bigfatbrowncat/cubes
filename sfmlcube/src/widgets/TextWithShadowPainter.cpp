@@ -115,7 +115,7 @@ namespace sfmlcubes
 
 		TextWithShadowPainter::TextWithShadowPainter() :
 				textures(NULL), sprites(NULL),
-				shadowWidth(5),
+				shadowWidth(6),
 				margin(0),
 				realBounds(0, 0, 0, 0)
 		{

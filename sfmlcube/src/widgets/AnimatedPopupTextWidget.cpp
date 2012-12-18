@@ -51,21 +51,30 @@ namespace sfmlcubes
 			angle = sourceAngle * s + destinationAngle * d;
 		}
 
-		void AnimatedPopupTextWidget::draw(sf::RenderTarget& target, sf::RenderStates states) const
+		void AnimatedPopupTextWidget::draw(TextWithShadowPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
 		{
 			sf::Text tx(apt.getText(), font, size);
-			CubeCoordinates shapeCenter(apt.getShape().rotatingCenterX, apt.getShape().rotatingCenterY);
-			Coordinates zero(0, 0, 0);
-			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(target, apt.getShape(), shapeCenter, zero);
 
-			//tx.setPosition(pos.getX() + target.getSize().x / 2, -pos.getY() + target.getSize().y / 2);
+			CubeCoordinates shapeCenter(apt.getShape().rotatingCenterX, apt.getShape().rotatingCenterY);
+			Coordinates center;
+			if (apt.getShape().rotatingCenterType == rctCorner)
+			{
+				center = Coordinates(-0.5, 0.5, 0);
+			}
+
+			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(target, apt.getShape(), shapeCenter, center);
+
 			tx.setPosition(pos.getX(), pos.getY());
 			tx.move( - tx.getGlobalBounds().width + x,  - tx.getGlobalBounds().height + y);
+			stringstream ss;
+			ss << tx.getGlobalBounds().width << ", " << tx.getGlobalBounds().height;
+			Logger::DEFAULT.logInfo(ss.str());
+
 			tx.setRotation(angle);
-			tx.setColor(sf::Color(255, 255, 255, alpha * 255));
 
+			tx.setColor(sf::Color(192, 192, 255, alpha * 255));
 
-			target.draw(tx, states);
+			textWithShadowPainter.drawText(tx, target, states);
 		}
 
 		AnimatedPopupTextWidget::~AnimatedPopupTextWidget()
