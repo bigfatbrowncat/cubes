@@ -263,7 +263,7 @@ namespace sfmlcubes
 			drawScene(*mainWindowTexture);
 			mainWindowTexture->display();
 
-			mainWindow.clear(sf::Color(32, 32, 20));
+			mainWindow.clear(sf::Color(128, 128, 80));
 			mainWindow.draw(*mainWindowSprite, *mainWindowRS);
 			drawText(mainWindow, sf::RenderStates::Default);
 

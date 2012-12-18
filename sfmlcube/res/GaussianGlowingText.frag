@@ -19,7 +19,7 @@ void main()
 	float ddmin = 1.0 / (-(abs(blur_radius + 1.0) + 1.0) / blur_radius * 2.0);
 	for (float j = -blur_radius; j <= blur_radius; j++)
 	{
-		float dd = 1.0 / (-(abs(j) + 1) / blur_radius * 2.0) - ddmin;
+		float dd = 1.0 / (-(abs(j) + 1.0) / blur_radius * 2.0) - ddmin;
 		pixel += texture2D(texture, textureCoords.xy + delta * j) * dd;
 		d += dd;
 	}

@@ -28,6 +28,8 @@
 									<listOptionValue builtIn="false" value="sfml-system-s-d"/>
 									<listOptionValue builtIn="false" value="jpeg"/>
 									<listOptionValue builtIn="false" value="freetype"/>
+									<listOptionValue builtIn="false" value="bz2"/>
+									<listOptionValue builtIn="false" value="z"/>
 								</option>
 								<option id="macosx.cpp.link.option.paths.621304156" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/out/lib}&quot;"/>
