@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?fileVersion 4.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042" moduleId="org.eclipse.cdt.core.settings" name="OSX-Debug">
@@ -29,7 +31,6 @@
 								</option>
 								<option id="macosx.cpp.link.option.paths.621304156" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/out/lib}&quot;"/>
-									<listOptionValue builtIn="false" value="/usr/X11R6/lib"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/extlibs/libs-osx/lib}&quot;"/>
 								</option>
 								<option id="macosx.cpp.link.option.flags.1817295130" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-framework OpenGL -framework AGL -framework Cocoa -framework Carbon -framework Foundation -framework IOKit" valueType="string"/>
@@ -90,23 +91,25 @@
 					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.debug.1658144042.1997306268." name="/" resourcePath="">
 						<toolChain id="cdt.managedbuild.toolchain.gnu.macosx.base.744162958" name="MacOSX GCC" superClass="cdt.managedbuild.toolchain.gnu.macosx.base">
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.MachO64" id="cdt.managedbuild.target.gnu.platform.macosx.base.1767024520" name="Debug Platform" osList="macosx" superClass="cdt.managedbuild.target.gnu.platform.macosx.base"/>
-							<builder buildPath="${workspace_loc:/sfmlcube/Debug}" id="org.eclipse.cdt.build.core.internal.builder.752699737" keepEnvironmentInBuildfile="false" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
+							<builder buildPath="${workspace_loc:/sfmlcube/OSX-Release}" id="org.eclipse.cdt.build.core.internal.builder.360023073" keepEnvironmentInBuildfile="false" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="cdt.managedbuild.tool.macosx.c.linker.macosx.base.1307776125" name="MacOS X C Linker" superClass="cdt.managedbuild.tool.macosx.c.linker.macosx.base"/>
 							<tool id="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base.355682807" name="MacOS X C++ Linker" superClass="cdt.managedbuild.tool.macosx.cpp.linker.macosx.base">
 								<option id="macosx.cpp.link.option.libs.1994011511" name="Libraries (-l)" superClass="macosx.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="sfml-graphics-s"/>
+									<listOptionValue builtIn="false" value="sfml-graphics-s"/>
 									<listOptionValue builtIn="false" value="glew"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="sfml-window-s"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="sfml-system-s"/>
+									<listOptionValue builtIn="false" value="sfml-window-s"/>
+									<listOptionValue builtIn="false" value="sfml-system-s"/>
 									<listOptionValue builtIn="false" value="jpeg"/>
 									<listOptionValue builtIn="false" value="freetype"/>
+									<listOptionValue builtIn="false" value="bz2"/>
+									<listOptionValue builtIn="false" value="z"/>
 								</option>
 								<option id="macosx.cpp.link.option.paths.1032903705" name="Library search path (-L)" superClass="macosx.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/out/lib}&quot;"/>
-									<listOptionValue builtIn="false" value="/usr/X11R6/lib"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/sfmlcube/SFML/extlibs/libs-osx/lib}&quot;"/>
 								</option>
 								<option id="macosx.cpp.link.option.flags.80991554" name="Linker flags" superClass="macosx.cpp.link.option.flags" value="-framework OpenGL -framework AGL -framework Cocoa -framework Carbon -framework Foundation -framework IOKit" valueType="string"/>
+								<option id="macosx.cpp.link.option.userobjs.1101526361" name="Other objects" superClass="macosx.cpp.link.option.userobjs" valueType="userObjs"/>
 								<inputType id="cdt.managedbuild.tool.macosx.cpp.linker.input.1800843004" superClass="cdt.managedbuild.tool.macosx.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
