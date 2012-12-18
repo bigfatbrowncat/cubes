@@ -44,7 +44,7 @@ namespace sfmlcubes
 
 		public:
 			AnimatedPopupsManager();
-			void popup(string text, const Shape& shape);
+			void popup(string text, int value, const Shape& shape);
 			const AnimatedPopupChainLink* getChainHead() const { return chainHead; }
 
 			virtual ~AnimatedPopupsManager();

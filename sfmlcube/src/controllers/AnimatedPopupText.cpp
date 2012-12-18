@@ -11,8 +11,8 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
-		AnimatedPopupText::AnimatedPopupText(string text, const Shape& shape) :
-				text(text), shape(shape)
+		AnimatedPopupText::AnimatedPopupText(string text, int value, const Shape& shape) :
+				text(text), value(value), shape(shape)
 		{
 		}
 

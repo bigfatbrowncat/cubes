@@ -66,9 +66,6 @@ namespace sfmlcubes
 
 			tx.setPosition(pos.getX(), pos.getY());
 			tx.move( - tx.getGlobalBounds().width + x,  - tx.getGlobalBounds().height + y);
-			stringstream ss;
-			ss << tx.getGlobalBounds().width << ", " << tx.getGlobalBounds().height;
-			Logger::DEFAULT.logInfo(ss.str());
 
 			tx.setRotation(angle);
 

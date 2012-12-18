@@ -7,6 +7,7 @@
 
 #include <list>
 #include <sstream>
+#include <cmath>
 
 #include "../controllers/AnimatedPopupText.h"
 #include "../controllers/AnimatedPopupsManager.h"
@@ -54,9 +55,12 @@ namespace sfmlcubes
 				const AnimatedPopupText& apt = *currentPopup->getPopupText();
 				Shape shp = apt.getShape();
 
+				// Calculating "size by value" multiplicator
+				float smul = sqrt(log(apt.getValue() + 1) / log(10));
+
 				AnimatedPopupTextWidget aptw(
-						apt, font, cubesFieldWidget, 0, 0, 20, -20,
-						                             200, -20, 80, 30, 1);
+						apt, font, cubesFieldWidget, 0, 0, 30 * smul, -30,
+						                             200 * smul, -20, 100 * smul, 20, 1.5 * smul);
 				std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptw);
 				popupWidgets.insert(newPair);
 				currentPopup = currentPopup->getNext();

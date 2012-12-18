@@ -24,11 +24,13 @@ namespace sfmlcubes
 		{
 		private:
 			string text;
+			int value;
 			Shape shape;
 		public:
-			AnimatedPopupText(string text, const Shape& shape);
+			AnimatedPopupText(string text, int value, const Shape& shape);
 
 			string getText() const { return text; }
+			int getValue() const { return value; }
 			const Shape& getShape() const { return shape; }
 
 			virtual ~AnimatedPopupText();
