@@ -172,6 +172,8 @@ namespace sfmlcubes
 			}
 
 			//animatedPopupsPainter.paint(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), win, rs);
+		    // Drawing the animated text popups
+		    animatedPopupsWidget.draw(*textWithShadowPainter, win, sf::RenderStates::Default);
 
 			win.popGLStates();
 		}
@@ -208,9 +210,6 @@ namespace sfmlcubes
 
 		    // Drawing the board
 		    cubesFieldWidget.drawBoard(win);
-
-		    // Drawing the animated text popups
-		    animatedPopupsWidget.draw(*textWithShadowPainter, win, sf::RenderStates::Default);
 
 		    // Drawing the "next shape" view
 	        shapeDealerWidget.setViewport(23.0 * win.getSize().x / 28 - nextShapeText->getGlobalBounds().width / 3,

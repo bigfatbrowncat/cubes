@@ -96,7 +96,9 @@ namespace sfmlcubes
 				Logger::DEFAULT.logError("Incorrect value of apt type");
 			}
 
+			target.pushGLStates();
 			textWithShadowPainter.drawText(tx, target, sf::Color(0, 0, 0, alpha * 255), states);
+			target.popGLStates();
 		}
 
 		AnimatedPopupTextWidget::~AnimatedPopupTextWidget()
