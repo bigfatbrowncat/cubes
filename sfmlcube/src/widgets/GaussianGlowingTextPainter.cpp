@@ -124,6 +124,7 @@ namespace sfmlcubes
 
 		void GaussianGlowingTextPainter::drawText(const Text& text, RenderTarget& target, const Color& glowingColor, RenderStates states)
 		{
+			target.pushGLStates();
 			updateTexturesAndSprites(text);
 			if (realBounds.width > 0 && realBounds.height > 0)
 			{
@@ -156,11 +157,13 @@ namespace sfmlcubes
 				textures[1]->display();
 
 
+
 				sprites[1]->setPosition(text.getPosition().x - margin,
 										text.getPosition().y - margin + text.getGlobalBounds().height / 2);
 				target.draw(*(sprites[1]), rs[1]);
 				target.draw(text, states);
 			}
+			target.popGLStates();
 		}
 
 
