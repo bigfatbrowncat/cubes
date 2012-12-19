@@ -59,14 +59,6 @@ namespace sfmlcubes
 			delete [] shadowShaders;
 		}
 
-		void GaussianGlowingTextPainter::updateRealBounds(const Text& text)
-		{
-			realBounds = text.getGlobalBounds();
-			// This is experimental. I don't know why adding 2*margin is not enough
-			realBounds.width *= 2;
-			realBounds.height *= 2;
-		}
-
 		void GaussianGlowingTextPainter::initTexturesAndSprites(const Text& text)
 		{
 			textures = new RenderTexture*[2];
@@ -75,14 +67,17 @@ namespace sfmlcubes
 			textures[0] = textures[1] = 0;
 			sprites[0] = sprites[1] = 0;
 
-			updateRealBounds(text);
+			realBounds = text.getGlobalBounds();
+			// This is experimental. I don't know why adding 2*margin is not enough
+			realBounds.width *= 2;
+			realBounds.height *= 2;
 
 			if (realBounds.width > 0 && realBounds.height > 0)
 			{
 				textures[0] = new RenderTexture;
-				textures[0]->create(realBounds.width, realBounds.height, true);
+				textures[0]->create(realBounds.width, realBounds.height, false);
 				textures[1] = new RenderTexture;
-				textures[1]->create(realBounds.width, realBounds.height, true);
+				textures[1]->create(realBounds.width, realBounds.height, false);
 				sprites[0] = new Sprite;
 				sprites[0]->setTexture(textures[0]->getTexture(), true);
 				sprites[1] = new Sprite;
@@ -95,22 +90,22 @@ namespace sfmlcubes
 			if (text.getGlobalBounds().width > realBounds.width ||
 				text.getGlobalBounds().height > realBounds.height)
 			{
-				if (textures != NULL || sprites != NULL)
-				{
-					freeTexturesAndSprites();
-				}
+				freeTexturesAndSprites();
 				initTexturesAndSprites(text);
 			}
 		}
 
 		void GaussianGlowingTextPainter::freeTexturesAndSprites()
 		{
-			delete textures[0];
-			delete textures[1];
-			delete sprites[0];
-			delete sprites[1];
-			delete [] textures; textures = NULL;
-			delete [] sprites; sprites = NULL;
+			if (textures != NULL || sprites != NULL)
+			{
+				delete textures[0];
+				delete textures[1];
+				delete sprites[0];
+				delete sprites[1];
+				delete [] textures; textures = NULL;
+				delete [] sprites; sprites = NULL;
+			}
 		}
 
 		GaussianGlowingTextPainter::GaussianGlowingTextPainter() :
@@ -151,12 +146,10 @@ namespace sfmlcubes
 				textures[0]->draw(t, RenderStates::Default);
 				textures[0]->display();
 
-				textures[1]->clear(sf::Color(0, 0, 0, 0));
 				// Drawing the first layer to the second one
+				textures[1]->clear(sf::Color(0, 0, 0, 0));
 				textures[1]->draw(*(sprites[0]), rs[0]);
 				textures[1]->display();
-
-
 
 				sprites[1]->setPosition(text.getPosition().x - margin,
 										text.getPosition().y - margin + text.getGlobalBounds().height / 2);
