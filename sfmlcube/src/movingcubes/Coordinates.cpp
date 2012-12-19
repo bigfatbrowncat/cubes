@@ -93,7 +93,7 @@ namespace sfmlcubes
 		    float Ryy = f;
 		    float Rzz = (zFar + zNear) / (zNear - zFar);
 		    float Rwz = 2 * zFar * zNear / (zNear - zFar);
-		    float Rzw = -1;
+		    //float Rzw = -1;
 
 		    // Applying the matrix
 			float xr, yr, zr;
