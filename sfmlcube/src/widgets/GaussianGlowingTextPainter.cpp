@@ -5,12 +5,15 @@
  *      Author: imizus
  */
 
+#include <sstream>
+
 #include "../sfmlcubes.h"
 #include "../Logger.h"
 
 #include "GaussianGlowingTextPainter.h"
 
 using namespace sf;
+using namespace std;
 
 namespace sfmlcubes
 {
@@ -68,9 +71,17 @@ namespace sfmlcubes
 			sprites[0] = sprites[1] = 0;
 
 			realBounds = text.getGlobalBounds();
-			// This is experimental. I don't know why adding 2*margin is not enough
+
+			if (text.getGlobalBounds().width + 2 * margin > realBounds.width)
+				realBounds.width = text.getGlobalBounds().width + 2 * margin;
+			if (text.getGlobalBounds().height + 2 * margin > realBounds.height)
+				realBounds.height = text.getGlobalBounds().height + 2 * margin;
+
 			realBounds.width *= 2;
 			realBounds.height *= 2;
+
+			//realBounds.width = text.findCharacterPos(0).x + text.findCharacterPos(-1).x;
+			//realBounds.height = text.findCharacterPos(0).y + text.findCharacterPos(-1).y;
 
 			if (realBounds.width > 0 && realBounds.height > 0)
 			{
@@ -87,8 +98,8 @@ namespace sfmlcubes
 
 		void GaussianGlowingTextPainter::updateTexturesAndSprites(const Text& text)
 		{
-			if (text.getGlobalBounds().width > realBounds.width ||
-				text.getGlobalBounds().height > realBounds.height)
+			if (text.getGlobalBounds().width + 2 * margin > realBounds.width ||
+				text.getGlobalBounds().height + 2 * margin > realBounds.height)
 			{
 				freeTexturesAndSprites();
 				initTexturesAndSprites(text);
@@ -123,7 +134,7 @@ namespace sfmlcubes
 			if (realBounds.width > 0 && realBounds.height > 0)
 			{
 				Text t(text);
-				t.setPosition(margin, -text.getGlobalBounds().height / 2 + margin);
+				t.setPosition(margin, margin);
 				RenderStates rs[2];
 
 				shadowShaders[0]->setParameter("blur_radius", (float)shadowWidth);
@@ -151,7 +162,7 @@ namespace sfmlcubes
 				textures[1]->display();
 
 				sprites[1]->setPosition(text.getPosition().x - margin,
-										text.getPosition().y - margin + text.getGlobalBounds().height / 2);
+										text.getPosition().y - margin);
 
 				target.pushGLStates();
 				target.draw(*(sprites[1]), rs[1]);
