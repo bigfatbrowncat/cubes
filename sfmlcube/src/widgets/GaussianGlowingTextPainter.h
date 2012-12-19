@@ -33,7 +33,6 @@ namespace sfmlcubes
 			void initTexturesAndSprites(const sf::Text& text);
 			void updateTexturesAndSprites(const sf::Text& text);
 			void freeTexturesAndSprites();
-			void updateRealBounds(const sf::Text& text);
 
 		public:
 			GaussianGlowingTextPainter();
