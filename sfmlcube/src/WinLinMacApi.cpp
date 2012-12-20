@@ -85,15 +85,56 @@ string WinLinMacApi::locateResource(const string& path, const string& filename)
 
 void WinLinMacApi::setMainWindowIcon(const sf::Window& win)
 {
+	// We do nothing here for OS X cause it loads the icon from the bundle
 }
 
-#else
+#elif __WIN32__
+
 // Win32 includes/methods
 #include <windows.h>
+#include <direct.h>
+#define GetCurrentDir _getcwd
+
+BOOL FileExists(string szPath)
+{
+  DWORD dwAttrib = GetFileAttributes(szPath.c_str());
+
+  return (dwAttrib != INVALID_FILE_ATTRIBUTES &&
+         !(dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+}
 
 string WinLinMacApi::locateResource(const string& path, const string& filename)
 {
-	return simpleLocateResource(path, filename);
+	char szAppPath[MAX_PATH] = "";
+	char szAppDirectory[MAX_PATH]= "";
+
+	if (!GetModuleFileName(0, szAppPath, MAX_PATH - 1))
+	{
+		sfmlcubes::Logger::DEFAULT.logWarning("can't get our executable's filename");
+
+		// Trying to locate the resource locally...
+		return simpleLocateResource(path, filename);
+	}
+
+	strncpy(szAppDirectory, szAppPath, strrchr(szAppPath, '\\') - szAppPath);
+	szAppDirectory[MAX_PATH - 1] = '\0';				// For sure...
+
+	stringstream ss;
+	ss << szAppDirectory << "/" << path << "/" << filename; 	// We are in Windows, but here we should use slash cause of objloader
+
+	if (!FileExists(ss.str()))
+	{
+		{
+			stringstream ss2;
+			ss2 << "can't find " << ss.str();
+			sfmlcubes::Logger::DEFAULT.logInfo(ss2.str());
+		}
+
+		// Trying to locate the resource locally...
+		return simpleLocateResource(path, filename);
+	}
+
+	return ss.str();
 }
 
 void WinLinMacApi::setMainWindowIcon(const sf::Window& win)
