@@ -3,6 +3,7 @@
 	<name>win-nsis-setup</name>
 	<comment></comment>
 	<projects>
+		<project>sfmlcube</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

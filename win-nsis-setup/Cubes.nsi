@@ -181,23 +181,23 @@ FunctionEnd
 # Installer Language Strings
 
 LangString ^UninstallLink ${LANG_ENGLISH} "Uninstall $(^Name)"
-LangString ^UninstallLink ${LANG_RUSSIAN} "РЈРґР°Р»РёС‚СЊ $(^Name)"
+LangString ^UninstallLink ${LANG_RUSSIAN} "Удалить $(^Name)"
 
 LangString ^CubesLink ${LANG_ENGLISH} "Play $(^Name)"
-LangString ^CubesLink ${LANG_RUSSIAN} "Р—Р°РїСѓСЃС‚РёС‚СЊ $(^Name)"
+LangString ^CubesLink ${LANG_RUSSIAN} "Запустить $(^Name)"
 
 LangString ^CubesLinkDesktop ${LANG_ENGLISH} "$(^Name)"
 LangString ^CubesLinkDesktop ${LANG_RUSSIAN} "$(^Name)"
 
 LangString ^DesktopShortcut ${LANG_ENGLISH} "Shortcut on desktop"
-LangString ^DesktopShortcut ${LANG_RUSSIAN} "РЇСЂР»С‹Рє РЅР° Р Р°Р±РѕС‡РµРј СЃС‚РѕР»Рµ"
+LangString ^DesktopShortcut ${LANG_RUSSIAN} "Ярлык на Рабочем столе"
 
 LangString ^Cubes ${LANG_ENGLISH} "Cubes"
 LangString ^Cubes ${LANG_RUSSIAN} "Cubes"
 
 LangString ^DesktopShortcutDescription ${LANG_ENGLISH} "Select this if you want to create a shortcut to the game on your desktop"
-LangString ^DesktopShortcutDescription ${LANG_RUSSIAN} "Р’С‹Р±РµСЂРёС‚Рµ СЌС‚РѕС‚ РїСѓРЅРєС‚, С‡С‚РѕР±С‹ СЃРѕР·РґР°С‚СЊ СЏСЂР»С‹Рє Рє РёРіСЂРµ РЅР° Р Р°Р±РѕС‡РµРј СЃС‚РѕР»Рµ"
+LangString ^DesktopShortcutDescription ${LANG_RUSSIAN} "Выберите этот пункт, чтобы создать ярлык к игре на Рабочем столе"
 
 LangString ^CubesSectionDescription ${LANG_ENGLISH} "The game files. Should be installed."
-LangString ^CubesSectionDescription ${LANG_RUSSIAN} "Р¤Р°Р№Р»С‹ РёРіСЂС‹. РЈСЃС‚Р°РЅРѕРІРєР° РѕР±СЏР·Р°С‚РµР»СЊРЅР°."
+LangString ^CubesSectionDescription ${LANG_RUSSIAN} "Файлы игры. Установка обязательна."
 

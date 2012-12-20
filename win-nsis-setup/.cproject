@@ -46,10 +46,20 @@
 	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
 		<project id="win-nsis-setup.null.912584048" name="win-nsis-setup"/>
 	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Default">
+			<resource resourceType="PROJECT" workspacePath="/win-nsis-setup"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.mingw.base.605186727;cdt.managedbuild.toolchain.gnu.mingw.base.605186727.988581516;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1234596786;cdt.managedbuild.tool.gnu.cpp.compiler.input.343430464">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.toolchain.gnu.mingw.base.605186727;cdt.managedbuild.toolchain.gnu.mingw.base.605186727.988581516;cdt.managedbuild.tool.gnu.c.compiler.mingw.base.772806085;cdt.managedbuild.tool.gnu.c.compiler.input.1348178658">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="refreshScope" versionNumber="1">
-		<resource resourceType="PROJECT" workspacePath="/win-nsis-setup"/>
-	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 </cproject>
