@@ -1,5 +1,7 @@
 # Cubes setup for Windows
 
+RequestExecutionLevel admin
+
 Name Cubes
 
 # General Symbol Definitions
@@ -52,6 +54,17 @@ Var StartMenuGroup
 !insertmacro MUI_PAGE_DIRECTORY
 !insertmacro MUI_PAGE_STARTMENU Application $StartMenuGroup
 !insertmacro MUI_PAGE_INSTFILES
+
+# Installer sections
+Section $(^Cubes) SEC0000
+    SectionIn RO
+    SetOutPath $INSTDIR
+    SetOverwrite on
+    File /r ..\sfmlcube\res
+    File ..\sfmlcube\MinGW-${BUILD_TYPE}\sfmlcube.exe
+SectionEnd
+
+!define MUI_FINISHPAGE_RUN "$INSTDIR\sfmlcube.exe"
 !insertmacro MUI_PAGE_FINISH
 !insertmacro MUI_UNPAGE_CONFIRM
 !insertmacro MUI_UNPAGE_INSTFILES
@@ -78,16 +91,8 @@ VIAddVersionKey /LANG=${LANG_ENGLISH} LegalCopyright ""
 InstallDirRegKey HKLM "${REGKEY}" Path
 ShowUninstDetails show
 
-# Installer sections
-Section $(^Cubes) SEC0000
-    SectionIn RO
-    SetOutPath $INSTDIR
-    SetOverwrite on
-    File /r ..\sfmlcube\res
-    File ..\sfmlcube\MinGW-${BUILD_TYPE}\sfmlcube.exe
-SectionEnd
-
 Section -post SEC0001
+    SetShellVarContext all
     WriteRegStr HKLM "${REGKEY}" Path $INSTDIR
     SetOutPath $INSTDIR
     WriteUninstaller $INSTDIR\uninstall.exe
@@ -107,7 +112,7 @@ Section -post SEC0001
 SectionEnd
 
 Section /o $(^DesktopShortcut) SEC0002  #"$(^DesktopShortcut)"
-    SetShellVarContext current
+    SetShellVarContext all
     CreateShortCut "$DESKTOP\$(^CubesLinkDesktop).lnk" $INSTDIR\sfmlcube.exe
     WriteRegStr HKLM "${REGKEY}\Components" DesktopShortcut 1
 SectionEnd
@@ -133,15 +138,23 @@ Section -un.Cubes UNSEC0000
 SectionEnd
 
 Section -un.post UNSEC0001
-    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
+#    ${If} $MultiUser.InstallMode == 'AllUsers'
+        SetShellVarContext all
+#    ${ElseIf} $MultiUser.InstallMode == 'CurrentUser'
+#        SetShellVarContext current
+#    ${EndIf}
+        
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^UninstallLink).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^CubesLink).lnk"
+    RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
     Delete /REBOOTOK $INSTDIR\uninstall.exe
+
+    DeleteRegKey HKLM "SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\$(^Name)"
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
-    RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
+
     RmDir /REBOOTOK $INSTDIR
     Push $R0
     StrCpy $R0 $StartMenuGroup 1
@@ -151,7 +164,12 @@ no_smgroup:
 SectionEnd
 
 Section /o -un.DesktopShortcut UNSEC0002
-    SetShellVarContext current
+#    ${If} $MultiUser.InstallMode == 'AllUsers'
+        SetShellVarContext all
+#    ${ElseIf} $MultiUser.InstallMode == 'CurrentUser'
+#        SetShellVarContext current
+#    ${EndIf}
+
     Delete /REBOOTOK "$DESKTOP\$(^CubesLinkDesktop).lnk"
 SectionEnd
 
