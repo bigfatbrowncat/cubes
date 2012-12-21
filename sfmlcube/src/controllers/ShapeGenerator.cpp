@@ -16,9 +16,9 @@ namespace sfmlcubes
 		{
 			int k = 4;
 
-			float r = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-			float g = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
-			float b = 0.3 + 0.6 * (float)((int)rand() / (RAND_MAX / k)) / k;
+			float r = 0.3 + 0.6 * ((float)rand() / (RAND_MAX / k)) / k;
+			float g = 0.3 + 0.6 * ((float)rand() / (RAND_MAX / k)) / k;
+			float b = 0.3 + 0.6 * ((float)rand() / (RAND_MAX / k)) / k;
 
 			return sf::Color(255 * r, 255 * g, 255 * b);
 		}
@@ -26,6 +26,7 @@ namespace sfmlcubes
 
 		ShapeGenerator::ShapeGenerator()
 		{
+			srand (time(NULL));
 		}
 
 		Shape ShapeGenerator::createTBlock(const sf::Color& gen)
