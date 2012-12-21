@@ -41,8 +41,7 @@ namespace sfmlcubes
 			float rotatingAngle;	// 1 = 90 degrees
 
 			// Ambient color
-			sf::Color ambientStatic;
-			sf::Color ambientDynamic;
+			sf::Color ambient;
 			float transparency;
 
 			Shape() :
@@ -54,8 +53,7 @@ namespace sfmlcubes
 				rotatingCenterY(0),
 				rotatingAngle(0),
 
-				ambientStatic(128, 128, 128, 255),
-				ambientDynamic(255, 255, 255, 255),
+				ambient(128, 128, 128, 255),
 				transparency(1.0)
 			{
 			}
@@ -77,6 +75,20 @@ namespace sfmlcubes
 				}
 			}
 
+			void halfDesaturateCubes()
+			{
+				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end(); iter++)
+				{
+					sf::Color cl = (*iter).color;
+					float avgColor = (cl.r + cl.g + cl.b) / 3;
+
+					cl.r = (cl.r + avgColor) / 2;
+					cl.g = (cl.g + avgColor) / 2;
+					cl.b = (cl.b + avgColor) / 2;
+
+					(*iter).color = cl;
+				}
+			}
 
 			void clear() { cubes.clear(); }
 

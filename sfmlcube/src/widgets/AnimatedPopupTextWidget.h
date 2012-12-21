@@ -25,7 +25,8 @@ namespace sfmlcubes
 		{
 		private:
 			const AnimatedPopupText& apt;
-			const sf::Font& font;
+			const sf::Font& numberFont;
+			const sf::Font& textFont;
 			const CubesFieldWidget& cubesFieldWidget;
 
 			float sourceX, sourceY, sourceSize, sourceAngle;
@@ -38,7 +39,8 @@ namespace sfmlcubes
 			bool fadeOutComplete;
 
 		public:
-			AnimatedPopupTextWidget(const AnimatedPopupText& apt, const sf::Font& font, const CubesFieldWidget& cubesFieldWidget, float sourceX, float sourceY, float sourceSize, float sourceAngle,
+			AnimatedPopupTextWidget(const AnimatedPopupText& apt, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget,
+			          float sourceX, float sourceY, float sourceSize, float sourceAngle,
 	                  float destinationX, float destinationY, float destinationSize, float destinationAngle, float fadeOutTime);
 
 			void processTimeStep(float dt);

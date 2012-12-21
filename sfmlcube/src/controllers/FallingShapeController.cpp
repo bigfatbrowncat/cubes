@@ -83,7 +83,14 @@ namespace sfmlcubes
 						}
 						if (!canFallDown)
 						{
-							state = fscsLanded;
+							if (!fallingKinematics.getHorizontalTransition().isInProgress())
+							{
+								state = fscsLanded;
+							}
+							else
+							{
+								state = fscsLandingPending;
+							}
 							break;
 						}
 					}
@@ -98,6 +105,12 @@ namespace sfmlcubes
 							fallingKinematics.rotate(1, Transition::ppfArctangent, velocityController.getRotationLongitude());
 						}
 					}
+				}
+				break;
+			case fscsLandingPending:
+				if (!fallingKinematics.getHorizontalTransition().isInProgress())
+				{
+					state = fscsLanded;
 				}
 				break;
 			case fscsLanded:

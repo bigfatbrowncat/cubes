@@ -25,6 +25,7 @@ namespace sfmlcubes
 		enum FallingShapeControllerState
 		{
 			fscsFlying,
+			fscsLandingPending,
 			fscsLanded
 		};
 

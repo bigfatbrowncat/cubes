@@ -27,10 +27,10 @@ namespace sfmlcubes
 	namespace widgets
 	{
 
-		AnimatedPopupsWidget::AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& font, const CubesFieldWidget& cubesFieldWidget) :
+		AnimatedPopupsWidget::AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget) :
 				animatedPopupsManager(animatedPopupsManager),
 				currentPopup(animatedPopupsManager.getChainHead()),
-				font(font),
+				numberFont(numberFont), textFont(textFont),
 				cubesFieldWidget(cubesFieldWidget)
 		{
 
@@ -56,13 +56,37 @@ namespace sfmlcubes
 				Shape shp = apt.getShape();
 
 				// Calculating "size by value" multiplicator
-				float smul = sqrt(log(apt.getValue() + 1) / log(10));
+				float effVal = apt.getValue();
+				if (apt.getType() == AnimatedPopupText::tLines)
+				{
+					effVal *= 2;
+				}
 
-				AnimatedPopupTextWidget aptw(
-						apt, font, cubesFieldWidget, 0, 0, 20 * smul, -30,
-						                             100 * smul, 20, 50 * smul, 20, 2 * smul);
-				std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptw);
-				popupWidgets.insert(newPair);
+				float smul = sqrt(log(effVal + 1) / log(10));
+
+
+
+				if (apt.getAnimationType() == AnimatedPopupText::atBonusCounter)
+				{
+					AnimatedPopupTextWidget aptwFlyAway(apt, numberFont, textFont, cubesFieldWidget,
+					                                    0,          0,         20 * smul, -30,
+					                                    100 * smul, 20 * smul, 50 * smul,  20,  2 * smul);
+					std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptwFlyAway);
+					popupWidgets.insert(newPair);
+				}
+				else if (apt.getAnimationType() == AnimatedPopupText::atTextMessage)
+				{
+					AnimatedPopupTextWidget aptwZoomIn(apt, numberFont, textFont, cubesFieldWidget,
+					                                   0, 0, 20 * smul, 0,
+					                                   0, 0, 30 * smul, 0, 2.5 * smul);
+					std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptwZoomIn);
+					popupWidgets.insert(newPair);
+				}
+				else
+				{
+					Logger::DEFAULT.logError("Strange value of getAnimationType");
+				}
+
 				currentPopup = currentPopup->getNext();
 			}
 

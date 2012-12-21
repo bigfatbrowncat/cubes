@@ -95,7 +95,7 @@ namespace sfmlcubes
 						glTranslatef(1.0 / 2, -1.0 / 2, 0.f);
 					}
 
-					sf::Color ambient = shape.ambientStatic * shape.ambientDynamic;
+					sf::Color ambient = shape.ambient;
 					cubePainter.setAmbient(ambient);
 					cubePainter.setTransparency(shape.transparency);
 

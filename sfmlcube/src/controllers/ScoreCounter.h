@@ -11,6 +11,7 @@
 #include "AnimatedPopupsManager.h"
 
 #include "FallenController.h"
+#include "WallsController.h"
 
 namespace sfmlcubes
 {
@@ -24,10 +25,11 @@ namespace sfmlcubes
 			int holesAfterFallen;
 			int linesComboCollector;
 			const FallenController& fallenController;
+			const WallsController& wallsController;
 			AnimatedPopupsManager animatedPopupsManager;
 			Shape lastFallenShape;
 		public:
-			ScoreCounter(const FallenController& fallenController);
+			ScoreCounter(const FallenController& fallenController, const WallsController& wallsController);
 
 			void beforeShapeFallen(const Shape& shape);
 			void afterShapeFallen();

@@ -30,7 +30,7 @@ namespace sfmlcubes
 				fallenController(1, 0, width - 2, height - 2),
 				velocityController(),
 				fallingShapeController(wallsController, fallenController, velocityController),
-				scoreCounter(fallenController),
+				scoreCounter(fallenController, wallsController),
 
 				time(0),
 				momentWhenFallIssued(0),
@@ -63,7 +63,13 @@ namespace sfmlcubes
 					if (fallingShapeController.getState() == fscsLanded)
 					{
 						scoreCounter.beforeShapeFallen(fallingShapeController.getShape());
-						fallenController.mergeShape(fallingShapeController.getShape());
+
+						// Desaturating the shape
+						Shape falling = fallingShapeController.getShape();
+						falling.halfDesaturateCubes();
+
+						// Merging
+						fallenController.mergeShape(falling);
 						fallingShapeController.clearShape();
 						scoreCounter.afterShapeFallen();
 						fallenController.fireFullLines();

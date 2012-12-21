@@ -30,11 +30,12 @@ namespace sfmlcubes
 			const AnimatedPopupsManager& animatedPopupsManager;
 			const AnimatedPopupChainLink* currentPopup;
 			map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> popupWidgets;
-			const sf::Font& font;
+			const sf::Font& numberFont;
+			const sf::Font& textFont;
 			const CubesFieldWidget& cubesFieldWidget;
 
 		public:
-			AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& font, const CubesFieldWidget& cubesFieldWidget);
+			AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget);
 
 			void draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const;
 			void processTimeStep(float dt);
