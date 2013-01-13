@@ -100,7 +100,7 @@ namespace sfmlcubes
 			nextShapeText->setPosition(panelLeft,
 									   1.0 * win.getSize().y / 8 - nextShapeText->getGlobalBounds().height / 2);
 
-			textWithShadowPainter->setShadowWidth(4 * k);
+			textWithShadowPainter->setShadowWidth(6 * k);
 		}
 
 		void ClassicGameWidget::updateDynamicText(sf::RenderTarget& win)
@@ -141,7 +141,10 @@ namespace sfmlcubes
 
 		void ClassicGameWidget::drawText(sf::RenderTarget& win, sf::RenderStates rs)
 		{
-			win.pushGLStates();
+		    // Drawing the animated text popups
+		    animatedPopupsWidget.draw(*textWithShadowPainter, win, sf::RenderStates::Default);
+
+//			win.pushGLStates();
 			updateDynamicText(win);
 
 			sf::Color shadowColor(0, 0, 0);
@@ -158,24 +161,18 @@ namespace sfmlcubes
 			textWithShadowPainter->drawText(*nextShapeText, win, shadowColor, rs);
 			if (gameController.getCubesField().getState() == cmsGameOver)
 			{
-				mainWindow.setTitle("Cubes (Game Over)");
 				textWithShadowPainter->drawText(*gameOverText, win, shadowColor, rs);
 			}
 			else if (gameController.getCubesField().isPaused())
 			{
-				mainWindow.setTitle("Cubes (Paused)");
 				textWithShadowPainter->drawText(*pauseText, win, shadowColor, rs);
 			}
 			else
 			{
 				mainWindow.setTitle("Cubes");
 			}
+//			win.popGLStates();
 
-			//animatedPopupsPainter.paint(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), win, rs);
-		    // Drawing the animated text popups
-		    animatedPopupsWidget.draw(*textWithShadowPainter, win, sf::RenderStates::Default);
-
-			win.popGLStates();
 		}
 
 		void ClassicGameWidget::prepareScene()
@@ -262,7 +259,7 @@ namespace sfmlcubes
 			drawScene(*mainWindowTexture);
 			mainWindowTexture->display();
 
-			mainWindow.clear(sf::Color(32, 32, 20));
+			mainWindow.clear(sf::Color(32, 32, 28));
 			mainWindow.draw(*mainWindowSprite, *mainWindowRS);
 			drawText(mainWindow, sf::RenderStates::Default);
 

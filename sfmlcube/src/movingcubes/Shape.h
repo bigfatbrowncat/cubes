@@ -75,16 +75,16 @@ namespace sfmlcubes
 				}
 			}
 
-			void halfDesaturateCubes()
+			void changeToFallenColor()
 			{
 				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end(); iter++)
 				{
 					sf::Color cl = (*iter).color;
 					float avgColor = (cl.r + cl.g + cl.b) / 3;
 
-					cl.r = (cl.r + avgColor) / 2;
-					cl.g = (cl.g + avgColor) / 2;
-					cl.b = (cl.b + avgColor) / 2;
+					cl.r = (cl.r + 2 * avgColor) / 3 * 0.8;
+					cl.g = (cl.g + 2 * avgColor) / 3 * 0.8;
+					cl.b = (cl.b + 2 * avgColor) / 3 * 0.8;
 
 					(*iter).color = cl;
 				}

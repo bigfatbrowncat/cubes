@@ -66,7 +66,7 @@ namespace sfmlcubes
 
 						// Desaturating the shape
 						Shape falling = fallingShapeController.getShape();
-						falling.halfDesaturateCubes();
+						falling.changeToFallenColor();
 
 						// Merging
 						fallenController.mergeShape(falling);

@@ -29,7 +29,23 @@ namespace sfmlcubes
 				destinationX(destinationX), destinationY(destinationY), destinationSize(destinationSize), destinationAngle(destinationAngle), fadeOutTime(fadeOutTime),
 				alpha(1.0), x(sourceX), y(sourceY), size(sourceSize), angle(sourceAngle), time(0), fadeOutComplete(false)
 		{
+			const sf::Font* pf;
+			maxsize = max(sourceSize, destinationSize);
 
+			if (apt.getAnimationType() == AnimatedPopupText::atTextMessage)
+			{
+				pf = &textFont;
+			}
+			else if (apt.getAnimationType() == AnimatedPopupText::atBonusCounter)
+			{
+				pf = &numberFont;
+			}
+			else
+			{
+				Logger::DEFAULT.logError("Incorrect value of animation type");
+			}
+
+			text = sf::Text(apt.getText(), *pf, maxsize);
 		}
 
 		void AnimatedPopupTextWidget::processTimeStep(float dt)
@@ -49,27 +65,36 @@ namespace sfmlcubes
 			y = sourceY * s + destinationY * d;
 			size = sourceSize * s + destinationSize * d;
 			angle = sourceAngle * s + destinationAngle * d;
+
+			// Updating text
+
+			text.setScale(size / maxsize, size / maxsize);
+
+			float textWidth0 = text.getGlobalBounds().width;
+			float textHeight0 = text.getGlobalBounds().height;
+			text.setPosition(-textWidth0 / 2 + x, -textHeight0 / 2 + y);
+
+			text.setRotation(angle);
+
+			if (apt.getType() == AnimatedPopupText::tScore)
+			{
+				text.setColor(sf::Color(192, 192, 255, alpha * 255));
+			}
+			else if (apt.getType() == AnimatedPopupText::tLines)
+			{
+				text.setColor(sf::Color(255, 192, 192, alpha * 255));
+			}
+			else
+			{
+				Logger::DEFAULT.logError("Incorrect value of apt type");
+			}
+
+
 		}
 
 		void AnimatedPopupTextWidget::draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
 		{
-			float maxsize = max(sourceSize, destinationSize);
-
-			sf::Font f;
-			if (apt.getAnimationType() == AnimatedPopupText::atTextMessage)
-			{
-				f = textFont;
-			}
-			else if (apt.getAnimationType() == AnimatedPopupText::atBonusCounter)
-			{
-				f = numberFont;
-			}
-			else
-			{
-				Logger::DEFAULT.logError("Incorrect value of animation type");
-			}
-
-			sf::Text tx(apt.getText(), f, maxsize);
+			target.pushGLStates();
 
 			float cx = ((float)apt.getShape().getLeft() + apt.getShape().getRight()) / 2;
 			float cy = ((float)apt.getShape().getTop() + apt.getShape().getBottom()) / 2;
@@ -78,46 +103,16 @@ namespace sfmlcubes
 			Coordinates center((cx - (int)cx), -(cy - (int)cy), 0);
 
 			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(target, apt.getShape(), shapeCenter, center);
+			sf::Text tx = text;
+			tx.move(pos.getX(), pos.getY());
 
-			/*if (apt.getType() == AnimatedPopupText::tScore)
-			{*/
-				tx.scale(size / maxsize, size / maxsize);
-			/*}
-			else if (apt.getType() == AnimatedPopupText::tLines)
-			{
-				tx.scale(2 * size / maxsize, 2 * size / maxsize);
-			}
-			else
-			{
-				Logger::DEFAULT.logError("Incorrect value of apt type");
-			}*/
-
-			tx.setPosition(pos.getX(), pos.getY());
-			tx.move(-tx.getGlobalBounds().width / 2 + x, -tx.getGlobalBounds().height / 2 + y);
-
-			tx.setRotation(angle);
-
-			if (apt.getType() == AnimatedPopupText::tScore)
-			{
-				tx.setColor(sf::Color(192, 192, 255, alpha * 255));
-			}
-			else if (apt.getType() == AnimatedPopupText::tLines)
-			{
-				tx.setColor(sf::Color(255, 192, 192, alpha * 255));
-			}
-			else
-			{
-				Logger::DEFAULT.logError("Incorrect value of apt type");
-			}
-
-			target.pushGLStates();
-			textWithShadowPainter.drawText(tx, target, sf::Color(0, 0, 0, alpha * 255), states);
 			target.popGLStates();
+			textWithShadowPainter.drawText(tx, target, sf::Color(0, 0, 0, alpha * 255), states);
 		}
 
 		AnimatedPopupTextWidget::~AnimatedPopupTextWidget()
 		{
-
+			//delete text;
 		}
 
 	}

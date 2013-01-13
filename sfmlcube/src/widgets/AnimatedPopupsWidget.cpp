@@ -42,9 +42,9 @@ namespace sfmlcubes
 			     iter != popupWidgets.end();
 			     iter++)
 			{
-				target.pushGLStates();
+				//target.pushGLStates();
 				(*iter).second.draw(textWithShadowPainter, target, states);
-				target.popGLStates();
+				//target.popGLStates();
 			}
 		}
 

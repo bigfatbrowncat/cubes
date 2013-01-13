@@ -152,14 +152,18 @@ namespace sfmlcubes
 				rs[1].shader = shadowShaders[1];
 
 				// Drawing the first layer to the second one
+				target.pushGLStates();
 				textures[0]->clear(sf::Color(0, 0, 0, 0));
 				textures[0]->draw(t, RenderStates::Default);
 				textures[0]->display();
+				target.popGLStates();
 
 				// Drawing the first layer to the second one
+				target.pushGLStates();
 				textures[1]->clear(sf::Color(0, 0, 0, 0));
 				textures[1]->draw(*(sprites[0]), rs[0]);
 				textures[1]->display();
+				target.popGLStates();
 
 				sprites[1]->setPosition(text.getPosition().x - margin,
 										text.getPosition().y - margin);

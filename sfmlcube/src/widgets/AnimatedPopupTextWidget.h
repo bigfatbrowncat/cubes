@@ -29,6 +29,9 @@ namespace sfmlcubes
 			const sf::Font& textFont;
 			const CubesFieldWidget& cubesFieldWidget;
 
+			sf::Text text;
+			float maxsize;
+
 			float sourceX, sourceY, sourceSize, sourceAngle;
 			float destinationX, destinationY, destinationSize, destinationAngle;
 			float fadeOutTime;

@@ -16,7 +16,7 @@ namespace sfmlcubes
 	using namespace widgets;
 	using namespace controllers;
 
-	// Global application-level singletones
+	// Global application-level singletons
 	static sf::RenderWindow* mainWindow;
 
 	static sf::Font* textFont;
