@@ -167,10 +167,7 @@ namespace sfmlcubes
 			{
 				textWithShadowPainter->drawText(*pauseText, win, shadowColor, rs);
 			}
-			else
-			{
-				mainWindow.setTitle("Cubes");
-			}
+
 //			win.popGLStates();
 
 		}
