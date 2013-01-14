@@ -23,9 +23,9 @@ namespace sfmlcubes
 
 		}
 
-		Coordinates CubesFieldWidget::fromCubeInShapeCoordsToFieldCoords(sf::RenderTarget& target, const Shape& shape, const CubeCoordinates& currentCubeCoords, const Coordinates& coordsInTheCubeSpace) const
+		Coordinates CubesFieldWidget::fromCubeInShapeCoordsToFieldCoords(const sf::Vector2u& targetSize, const Shape& shape, const CubeCoordinates& currentCubeCoords, const Coordinates& coordsInTheCubeSpace) const
 		{
-			float k = (float)target.getSize().y / 480;
+			float k = (float)targetSize.y / 480;
 			Coordinates res = shapePainter.fromCubeInShapeCoordsToShapeCoords(shape, currentCubeCoords, coordsInTheCubeSpace);
 
 			float delta_x = (cubesField.getWidth() - 0.5) / 2;
@@ -37,7 +37,7 @@ namespace sfmlcubes
 
 			res = res.translate(0.f, 0.f, -300.f);
 
-			float aspect = (float)target.getSize().x / target.getSize().y;
+			float aspect = (float)targetSize.x / targetSize.y;
 			res = res.project(100.0f, aspect, 1.f, 1000.f);
 
 			// Here we have a magic constant
@@ -46,7 +46,7 @@ namespace sfmlcubes
 			res = res.scale(- k * magic,
 					          k * magic / aspect, 1);
 
-			res = res.translate(target.getSize().x / 2, target.getSize().y / 2, 0);
+			res = res.translate(targetSize.x / 2, targetSize.y / 2, 0);
 			return res;
 		}
 

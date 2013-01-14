@@ -27,8 +27,9 @@ namespace sfmlcubes
 	namespace widgets
 	{
 
-		AnimatedPopupsWidget::AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget) :
+		AnimatedPopupsWidget::AnimatedPopupsWidget(const AnimatedPopupsManager& animatedPopupsManager, const sf::RenderTarget& target, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget) :
 				animatedPopupsManager(animatedPopupsManager),
+				target(target),
 				currentPopup(animatedPopupsManager.getChainHead()),
 				numberFont(numberFont), textFont(textFont),
 				cubesFieldWidget(cubesFieldWidget)
@@ -38,13 +39,11 @@ namespace sfmlcubes
 
 		void AnimatedPopupsWidget::draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
 		{
-			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget>::const_iterator iter = popupWidgets.begin();
+			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget*>::const_iterator iter = popupWidgets.begin();
 			     iter != popupWidgets.end();
 			     iter++)
 			{
-				//target.pushGLStates();
-				(*iter).second.draw(textWithShadowPainter, target, states);
-				//target.popGLStates();
+				(*iter).second->draw(textWithShadowPainter, target, states);
 			}
 		}
 
@@ -68,18 +67,18 @@ namespace sfmlcubes
 
 				if (apt.getAnimationType() == AnimatedPopupText::atBonusCounter)
 				{
-					AnimatedPopupTextWidget aptwFlyAway(apt, numberFont, textFont, cubesFieldWidget,
+					AnimatedPopupTextWidget* aptwFlyAway = new AnimatedPopupTextWidget(apt, target.getSize(), numberFont, textFont, cubesFieldWidget,
 					                                    0,          0,         20 * smul, -30,
 					                                    100 * smul, 20 * smul, 50 * smul,  20,  2 * smul);
-					std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptwFlyAway);
+					std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget*> newPair(currentPopup, aptwFlyAway);
 					popupWidgets.insert(newPair);
 				}
 				else if (apt.getAnimationType() == AnimatedPopupText::atTextMessage)
 				{
-					AnimatedPopupTextWidget aptwZoomIn(apt, numberFont, textFont, cubesFieldWidget,
+					AnimatedPopupTextWidget* aptwZoomIn = new AnimatedPopupTextWidget(apt, target.getSize(), numberFont, textFont, cubesFieldWidget,
 					                                   0, 0, 20 * smul, 0,
 					                                   0, 0, 30 * smul, 0, 2.5 * smul);
-					std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget> newPair(currentPopup, aptwZoomIn);
+					std::pair<const AnimatedPopupChainLink*, AnimatedPopupTextWidget*> newPair(currentPopup, aptwZoomIn);
 					popupWidgets.insert(newPair);
 				}
 				else
@@ -91,10 +90,11 @@ namespace sfmlcubes
 			}
 
 			// Removing the old popups
-			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget>::iterator iter = popupWidgets.begin(); iter != popupWidgets.end() && popupWidgets.size() > 0; )
+			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget*>::iterator iter = popupWidgets.begin(); iter != popupWidgets.end() && popupWidgets.size() > 0; )
 			{
-				if ((*iter).second.isFadeOutComplete())
+				if ((*iter).second->isFadeOutComplete())
 				{
+					delete (*iter).second;
 					popupWidgets.erase(iter++);
 				}
 				else
@@ -102,10 +102,10 @@ namespace sfmlcubes
 			}
 
 			// Processing time step with children
-			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget>::iterator iter = popupWidgets.begin();
+			for (map<const AnimatedPopupChainLink*, AnimatedPopupTextWidget*>::iterator iter = popupWidgets.begin();
 					iter != popupWidgets.end(); iter++)
 			{
-				(*iter).second.processTimeStep(dt);
+				(*iter).second->processTimeStep(dt);
 			}
 		}
 

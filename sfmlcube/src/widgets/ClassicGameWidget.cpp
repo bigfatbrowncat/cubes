@@ -232,7 +232,7 @@ namespace sfmlcubes
 				counterHeavyFont(counterHeavyFont),
 				cubesFieldWidget(gameController.getCubesField(), textFont),
 				shapeDealerWidget(gameController.getCubesField().getShapeDealer()),
-				animatedPopupsWidget(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), counterFont, textFont, cubesFieldWidget)
+				animatedPopupsWidget(gameController.getCubesField().getScoreCounter().getAnimatedPopupsManager(), mainWindow, counterFont, textFont, cubesFieldWidget)
 
 		{
 			pauseText = new sf::Text();

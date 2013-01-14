@@ -22,9 +22,9 @@ namespace sfmlcubes
 	namespace widgets
 	{
 
-		AnimatedPopupTextWidget::AnimatedPopupTextWidget(const AnimatedPopupText& apt, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget, float sourceX, float sourceY, float sourceSize, float sourceAngle,
+		AnimatedPopupTextWidget::AnimatedPopupTextWidget(const AnimatedPopupText& apt, sf::Vector2u targetSize, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget, float sourceX, float sourceY, float sourceSize, float sourceAngle,
                 float destinationX, float destinationY, float destinationSize, float destinationAngle, float fadeOutTime) :
-				apt(apt), numberFont(numberFont), textFont(textFont), cubesFieldWidget(cubesFieldWidget),
+				apt(apt), targetSize(targetSize), numberFont(numberFont), textFont(textFont), cubesFieldWidget(cubesFieldWidget),
 				sourceX(sourceX), sourceY(sourceY), sourceSize(sourceSize), sourceAngle(sourceAngle),
 				destinationX(destinationX), destinationY(destinationY), destinationSize(destinationSize), destinationAngle(destinationAngle), fadeOutTime(fadeOutTime),
 				alpha(1.0), x(sourceX), y(sourceY), size(sourceSize), angle(sourceAngle), time(0), fadeOutComplete(false)
@@ -89,25 +89,24 @@ namespace sfmlcubes
 				Logger::DEFAULT.logError("Incorrect value of apt type");
 			}
 
-
-		}
-
-		void AnimatedPopupTextWidget::draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
-		{
-			target.pushGLStates();
-
 			float cx = ((float)apt.getShape().getLeft() + apt.getShape().getRight()) / 2;
 			float cy = ((float)apt.getShape().getTop() + apt.getShape().getBottom()) / 2;
 
 			CubeCoordinates shapeCenter((int)cx, (int)cy);
 			Coordinates center((cx - (int)cx), -(cy - (int)cy), 0);
 
-			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(target, apt.getShape(), shapeCenter, center);
-			sf::Text tx = text;
-			tx.move(pos.getX(), pos.getY());
+			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(targetSize, apt.getShape(), shapeCenter, center);
+			text.move(pos.getX(), pos.getY());
 
-			target.popGLStates();
-			textWithShadowPainter.drawText(tx, target, sf::Color(0, 0, 0, alpha * 255), states);
+		}
+
+		void AnimatedPopupTextWidget::draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
+		{
+			/*target.pushGLStates();
+
+
+			target.popGLStates();*/
+			textWithShadowPainter.drawText(text, target, sf::Color(0, 0, 0, alpha * 255), states);
 		}
 
 		AnimatedPopupTextWidget::~AnimatedPopupTextWidget()
