@@ -12,7 +12,7 @@
 
 #include <SFML/Graphics.hpp>
 
-#include "AnimatedPopupText.h"
+#include "AnimatedPopupMessage.h"
 
 using namespace std;
 
@@ -27,13 +27,13 @@ namespace sfmlcubes
 			friend class AnimatedPopupsManager;
 		private:
 			AnimatedPopupChainLink* next;
-			AnimatedPopupText* popupText;
+			AnimatedPopupMessage* popupText;
 		public:
-			AnimatedPopupChainLink(AnimatedPopupChainLink* next, AnimatedPopupText* text) :
+			AnimatedPopupChainLink(AnimatedPopupChainLink* next, AnimatedPopupMessage* text) :
 				next(next), popupText(text)
 			{}
 			const AnimatedPopupChainLink* getNext() const { return next; }
-			const AnimatedPopupText* getPopupText() const { return popupText; }
+			const AnimatedPopupMessage* getPopupText() const { return popupText; }
 		};
 
 		class AnimatedPopupsManager
@@ -44,7 +44,7 @@ namespace sfmlcubes
 
 		public:
 			AnimatedPopupsManager();
-			void popup(string text, int value, AnimatedPopupText::Type type, AnimatedPopupText::AnimationType animationType, const Shape& shape);
+			void popup(const AnimatedPopupMessage& message);
 			const AnimatedPopupChainLink* getChainHead() const { return chainHead; }
 
 			virtual ~AnimatedPopupsManager();

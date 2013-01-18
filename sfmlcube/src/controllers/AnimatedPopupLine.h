@@ -20,33 +20,42 @@ namespace sfmlcubes
 	using namespace movingcubes;
 	namespace controllers
 	{
-		class AnimatedPopupText
+		class AnimatedPopupMessage;
+
+		class AnimatedPopupLine
 		{
+			friend class AnimatedPopupMessage;
 		public:
-			enum Type
+			enum ResourceType
 			{
 				tScore, tLines
 			};
 			enum AnimationType
 			{
-				atBonusCounter, atTextMessage
+				atCounter, atMessage
 			};
 		private:
 			string text;
 			int value;
-			Type type;
+			ResourceType type;
 			AnimationType animationType;
-			Shape shape;
+			AnimatedPopupMessage* message;
 		public:
-			AnimatedPopupText(string text, int value, Type type, AnimationType animationType, const Shape& shape);
+			AnimatedPopupLine(string text, int value, ResourceType type, AnimationType animationType);
 
-			string getText() const { return text; }
+			string getText() const
+			{
+				return text;
+			}
 			int getValue() const { return value; }
-			Type getType() const { return type; }
+			ResourceType getType() const { return type; }
 			AnimationType getAnimationType() const { return animationType; }
-			const Shape& getShape() const { return shape; }
+			const AnimatedPopupMessage& getMessage() const
+			{
+				return *message;
+			}
 
-			virtual ~AnimatedPopupText();
+			virtual ~AnimatedPopupLine();
 		};
 
 	}

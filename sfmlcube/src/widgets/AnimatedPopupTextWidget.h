@@ -12,7 +12,7 @@
 
 #include "GaussianGlowingTextPainter.h"
 
-#include "../controllers/AnimatedPopupText.h"
+#include "../controllers/AnimatedPopupLine.h"
 
 namespace sfmlcubes
 {
@@ -24,7 +24,7 @@ namespace sfmlcubes
 		class AnimatedPopupTextWidget
 		{
 		private:
-			const AnimatedPopupText& apt;
+			const AnimatedPopupLine& apt;
 			sf::Vector2u targetSize;
 			const sf::Font& numberFont;
 			const sf::Font& textFont;
@@ -43,7 +43,7 @@ namespace sfmlcubes
 			bool fadeOutComplete;
 
 		public:
-			AnimatedPopupTextWidget(const AnimatedPopupText& apt, sf::Vector2u targetSize, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget,
+			AnimatedPopupTextWidget(const AnimatedPopupLine& apt, sf::Vector2u targetSize, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget,
 			          float sourceX, float sourceY, float sourceSize, float sourceAngle,
 	                  float destinationX, float destinationY, float destinationSize, float destinationAngle, float fadeOutTime);
 

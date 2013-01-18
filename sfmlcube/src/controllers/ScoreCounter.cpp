@@ -10,6 +10,9 @@
 
 #include "ScoreCounter.h"
 
+#include "AnimatedPopupMessage.h"
+#include "AnimatedPopupLine.h"
+
 namespace sfmlcubes
 {
 	namespace controllers
@@ -33,6 +36,8 @@ namespace sfmlcubes
 
 		void ScoreCounter::afterShapeFallen()
 		{
+			AnimatedPopupMessage apm(lastFallenShape);
+
 			int newHoles = fallenController.countHoles();
 			int bonus = 1; // 1. Giving 1 point for each fallen shape
 			if (newHoles == holesBeforeFallen)
@@ -50,7 +55,10 @@ namespace sfmlcubes
 			if (bonus > 0)
 			{
 				stringstream ss; ss << "+" << bonus;
-				animatedPopupsManager.popup(ss.str(), bonus, AnimatedPopupText::tScore, AnimatedPopupText::atBonusCounter, lastFallenShape);
+				AnimatedPopupLine apl(ss.str(), bonus, AnimatedPopupLine::tScore, AnimatedPopupLine::atCounter);
+
+				apm.addLine(apl);
+				animatedPopupsManager.popup(apm);
 			}
 			score += bonus;
 
@@ -59,23 +67,26 @@ namespace sfmlcubes
 
 		void ScoreCounter::linesHasBeenFired()
 		{
+			AnimatedPopupMessage apm_message(wallsController.getShape());
+			AnimatedPopupMessage apm_counter(lastFallenShape);
+
 			int count = fallenController.getLinesJustFired();
 			// Showing the lines popup
 			if (count > 0)
 			{
 				stringstream ss; ss << "+" << count;
-				animatedPopupsManager.popup(ss.str(), count * 2, AnimatedPopupText::tLines, AnimatedPopupText::atBonusCounter, fallenController.getShape());
+				apm_counter.addLine(AnimatedPopupLine(ss.str(), count * 2, AnimatedPopupLine::tLines, AnimatedPopupLine::atCounter));
 			}
 
 			int bonus = 0;
 			if (count > 0)
 			{
-				stringstream ss;
 				linesComboCollector ++;
 				// 4. Giving 10 (width) points for a line, 40 for two, 90 for three and 160 for four
 				int addScore = count * count * fallenController.getWidth();
 				if (count > 1)
 				{
+					stringstream ss;
 					switch (count)
 					{
 					case 2:
@@ -85,19 +96,35 @@ namespace sfmlcubes
 						ss << "Three lines together!";
 						break;
 					case 4:
-						ss << "Four at the same time";
+						ss << "Four at the same time!";
 						break;
 					}
+					apm_message.addLine(AnimatedPopupLine(ss.str(), count * (3 + linesComboCollector), AnimatedPopupLine::tLines, AnimatedPopupLine::atMessage));
 				}
 
 				// 6. [Combo] If you cleared some lines during the consequent falling shapes, you
 				// have a bonus, proportional to the square of number of the moves
 				bonus = addScore * linesComboCollector * linesComboCollector;
-				if (linesComboCollector > 0)
+				if (linesComboCollector == 1 && count == 1)
 				{
-					if (ss.str().length() > 0) ss << "\n";
-					ss << linesComboCollector << " in a row!";
-					animatedPopupsManager.popup(ss.str(), count * (3 + linesComboCollector), AnimatedPopupText::tLines, AnimatedPopupText::atTextMessage, wallsController.getShape());
+					stringstream ss;
+					ss << "Line cleared";
+					apm_message.addLine(AnimatedPopupLine(ss.str(), count * (3 + linesComboCollector), AnimatedPopupLine::tLines, AnimatedPopupLine::atMessage));
+				}
+				else if (linesComboCollector > 1)
+				{
+					stringstream ss;
+					ss << linesComboCollector;
+					if (rand() % 2 == 0)
+					{
+						ss << " in a row";
+					}
+					else
+					{
+						ss << " sequently";
+					}
+
+					apm_message.addLine(AnimatedPopupLine(ss.str(), count * (3 + linesComboCollector), AnimatedPopupLine::tLines, AnimatedPopupLine::atMessage));
 				}
 
 				int newHoles = fallenController.countHoles();
@@ -107,9 +134,9 @@ namespace sfmlcubes
 					// when the lines has been cleared, give a double bonus to the points for lines clearing
 					bonus += addScore;
 					{
-						if (ss.str().length() > 0) ss << "\n";
-						stringstream ss; ss << "Cork bonus";
-						animatedPopupsManager.popup(ss.str(), count * (3 + linesComboCollector), AnimatedPopupText::tLines, AnimatedPopupText::atTextMessage, wallsController.getShape());
+						stringstream ss;
+						ss << "Cork bonus";
+						apm_message.addLine(AnimatedPopupLine(ss.str(), count * (3 + linesComboCollector), AnimatedPopupLine::tLines, AnimatedPopupLine::atMessage));
 					}
 				}
 			}
@@ -122,9 +149,12 @@ namespace sfmlcubes
 			if (bonus > 0)
 			{
 				stringstream ss; ss << "+" << bonus;
-				animatedPopupsManager.popup(ss.str(), bonus, AnimatedPopupText::tScore, AnimatedPopupText::atBonusCounter, lastFallenShape);
+				apm_message.addLine(AnimatedPopupLine(ss.str(), bonus * 2, AnimatedPopupLine::tScore, AnimatedPopupLine::atCounter));
 			}
 			score += bonus;
+
+			animatedPopupsManager.popup(apm_message);
+			animatedPopupsManager.popup(apm_counter);
 		}
 
 		ScoreCounter::~ScoreCounter()

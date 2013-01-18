@@ -22,7 +22,7 @@ namespace sfmlcubes
 	namespace widgets
 	{
 
-		AnimatedPopupTextWidget::AnimatedPopupTextWidget(const AnimatedPopupText& apt, sf::Vector2u targetSize, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget, float sourceX, float sourceY, float sourceSize, float sourceAngle,
+		AnimatedPopupTextWidget::AnimatedPopupTextWidget(const AnimatedPopupLine& apt, sf::Vector2u targetSize, const sf::Font& numberFont, const sf::Font& textFont, const CubesFieldWidget& cubesFieldWidget, float sourceX, float sourceY, float sourceSize, float sourceAngle,
                 float destinationX, float destinationY, float destinationSize, float destinationAngle, float fadeOutTime) :
 				apt(apt), targetSize(targetSize), numberFont(numberFont), textFont(textFont), cubesFieldWidget(cubesFieldWidget),
 				sourceX(sourceX), sourceY(sourceY), sourceSize(sourceSize), sourceAngle(sourceAngle),
@@ -32,11 +32,11 @@ namespace sfmlcubes
 			const sf::Font* pf;
 			maxsize = max(sourceSize, destinationSize);
 
-			if (apt.getAnimationType() == AnimatedPopupText::atTextMessage)
+			if (apt.getAnimationType() == AnimatedPopupLine::atMessage)
 			{
 				pf = &textFont;
 			}
-			else if (apt.getAnimationType() == AnimatedPopupText::atBonusCounter)
+			else if (apt.getAnimationType() == AnimatedPopupLine::atCounter)
 			{
 				pf = &numberFont;
 			}
@@ -76,11 +76,11 @@ namespace sfmlcubes
 
 			text.setRotation(angle);
 
-			if (apt.getType() == AnimatedPopupText::tScore)
+			if (apt.getType() == AnimatedPopupLine::tScore)
 			{
 				text.setColor(sf::Color(192, 192, 255, alpha * 255));
 			}
-			else if (apt.getType() == AnimatedPopupText::tLines)
+			else if (apt.getType() == AnimatedPopupLine::tLines)
 			{
 				text.setColor(sf::Color(255, 192, 192, alpha * 255));
 			}
@@ -89,23 +89,19 @@ namespace sfmlcubes
 				Logger::DEFAULT.logError("Incorrect value of apt type");
 			}
 
-			float cx = ((float)apt.getShape().getLeft() + apt.getShape().getRight()) / 2;
-			float cy = ((float)apt.getShape().getTop() + apt.getShape().getBottom()) / 2;
+			float cx = ((float)apt.getMessage().getShape().getLeft() + apt.getMessage().getShape().getRight()) / 2;
+			float cy = ((float)apt.getMessage().getShape().getTop() + apt.getMessage().getShape().getBottom()) / 2;
 
 			CubeCoordinates shapeCenter((int)cx, (int)cy);
 			Coordinates center((cx - (int)cx), -(cy - (int)cy), 0);
 
-			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(targetSize, apt.getShape(), shapeCenter, center);
+			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(targetSize, apt.getMessage().getShape(), shapeCenter, center);
 			text.move(pos.getX(), pos.getY());
 
 		}
 
 		void AnimatedPopupTextWidget::draw(GaussianGlowingTextPainter& textWithShadowPainter, sf::RenderTarget& target, sf::RenderStates states) const
 		{
-			/*target.pushGLStates();
-
-
-			target.popGLStates();*/
 			textWithShadowPainter.drawText(text, target, sf::Color(0, 0, 0, alpha * 255), states);
 		}
 
