@@ -4,12 +4,14 @@
  *  Created on: Nov 27, 2012
  *      Author: imizus
  */
+#include <sstream>
 
 #include "../movingcubes/ShapeDynamics.h"
 
 #include "../Logger.h"
 #include "FallenController.h"
 
+using namespace std;
 using namespace sfmlcubes::movingcubes;
 
 namespace sfmlcubes
@@ -78,8 +80,8 @@ namespace sfmlcubes
 		void FallenController::collectLinesToFire()
 		{
 			linesJustFired = 0;
-			bool lastLineWasFired = true;
-			int count = 0;
+			bool previousLineWasFired = true;
+			int moveBy = 0;
 			for (int j = bottom; j >= top; j--)
 			{
 				// Check if this line is full
@@ -92,18 +94,19 @@ namespace sfmlcubes
 				if (thisRowIsFull)
 				{
 					// First of all we close the recent group if it exists
-					if (!lastLineWasFired && fallenNotFiredParts.size() > 0)
+					if (!previousLineWasFired && fallenNotFiredParts.size() > 0)
 					{
-						firingLineCounts.insert(pair<ShapeKinematics*, int> (fallenNotFiredPartKinematics.back(), count) );
+						firingLineCounts.insert(pair<ShapeKinematics*, int> (fallenNotFiredPartKinematics.back(), moveBy) );
 					}
 
-					count ++;
-					lastLineWasFired = true;
+					linesJustFired ++;
+					moveBy ++;
+					previousLineWasFired = true;
 				}
 				else
 				{
 					// This line isn't fired
-					if (lastLineWasFired)
+					if (previousLineWasFired)
 					{
 						// The last line was fired, so we start a new group
 
@@ -126,23 +129,22 @@ namespace sfmlcubes
 							fallen.removeCube(i, j);
 						}
 					}
-					lastLineWasFired = false;
+					previousLineWasFired = false;
 				}
 			}
 
 			// close the last group
 			if (fallenNotFiredParts.size() > 0)
 			{
-				if (count > 0)
+				if (moveBy > 0)
 				{
-					firingLineCounts.insert(pair<ShapeKinematics*, int> (fallenNotFiredPartKinematics.back(), count) );
+					firingLineCounts.insert(pair<ShapeKinematics*, int> (fallenNotFiredPartKinematics.back(), moveBy) );
 				}
-					//firingGroups.back()->moveVertical(count, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
 			}
 
 			//linesFired += count;
 
-			if (count > 0)
+			if (moveBy > 0)
 			{
 				// Starting the blinking of the firing lines
 				fallenKinematics.blink(BLINKING_LONGITUDE, 3);
@@ -161,8 +163,14 @@ namespace sfmlcubes
 			for (map<ShapeKinematics*, int>::iterator iter = firingLineCounts.begin(); iter != firingLineCounts.end(); iter++)
 			{
 				(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
-				linesFired += (*iter).second;
-				linesJustFired += (*iter).second;
+			}
+
+			linesFired += linesJustFired;
+
+			{
+				stringstream ss;
+				ss << "Just cleared: " << linesJustFired << " lines";
+				Logger::DEFAULT.logInfo(ss.str());
 			}
 
 			// Clearing the fallen part of the board

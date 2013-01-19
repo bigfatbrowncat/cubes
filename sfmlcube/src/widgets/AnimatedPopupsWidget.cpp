@@ -49,7 +49,6 @@ namespace sfmlcubes
 
 		void AnimatedPopupsWidget::processTimeStep(float dt)
 		{
-			int popup_index = 0;
 			while (currentPopup->getNext() != NULL)
 			{
 				const AnimatedPopupMessage& apt = *currentPopup->getPopupText();
@@ -90,13 +89,9 @@ namespace sfmlcubes
 				// Laying out
 				float sourceDeltaY = sourceGlobalDeltaY;
 				float destinationDeltaY = destinationGlobalDeltaY;
-				int index = 0;
 				for (list<AnimatedPopupLine>::const_iterator iter = apt.getLinesBegin(); iter != apt.getLinesEnd(); iter++)
 				{
 					const AnimatedPopupLine& line = *iter;
-					stringstream ss; ss << line.getText() << " (" << popup_index << ", " << index << ")";
-					Logger::DEFAULT.logInfo(ss.str());
-					index++;
 
 					// Calculating "size by value" multiplier
 					float effVal = line.getValue();
@@ -139,7 +134,6 @@ namespace sfmlcubes
 				}
 
 				currentPopup = currentPopup->getNext();
-				popup_index++;
 			}
 
 			// Removing the old popups

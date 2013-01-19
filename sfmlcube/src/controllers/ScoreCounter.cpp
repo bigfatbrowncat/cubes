@@ -136,7 +136,7 @@ namespace sfmlcubes
 					{
 						stringstream ss;
 						ss << "Cork bonus";
-						apm_message.addLine(AnimatedPopupLine(ss.str(), count * (3 + linesComboCollector), AnimatedPopupLine::tLines, AnimatedPopupLine::atMessage));
+						apm_message.addLine(AnimatedPopupLine(ss.str(), count * (3 + linesComboCollector), AnimatedPopupLine::tScore, AnimatedPopupLine::atMessage));
 					}
 				}
 			}
