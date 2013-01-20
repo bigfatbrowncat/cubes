@@ -71,7 +71,7 @@ namespace sfmlcubes
 			text.setScale(size / maxsize, size / maxsize);
 
 			float textWidth0 = text.findCharacterPos(-1).x - text.findCharacterPos(0).x;
-			float textHeight0 = text.getLocalBounds().height;
+			float textHeight0 = text.getCharacterSize() * text.getScale().y;
 			text.setPosition(-textWidth0 / 2 + x, -textHeight0 / 2 + y);
 
 			text.setRotation(angle);

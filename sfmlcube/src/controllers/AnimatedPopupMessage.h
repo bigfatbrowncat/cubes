@@ -41,6 +41,7 @@ namespace sfmlcubes
 				lines.back().message = this;
 			}
 
+			int getLinesCount() const { return lines.size(); }
 			const Shape& getShape() const { return shape; }
 			const list<AnimatedPopupLine>::const_iterator getLinesBegin() const { return lines.begin(); }
 			const list<AnimatedPopupLine>::const_iterator getLinesEnd() const { return lines.end(); }

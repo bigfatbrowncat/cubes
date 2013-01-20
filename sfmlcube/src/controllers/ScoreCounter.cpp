@@ -105,13 +105,7 @@ namespace sfmlcubes
 				// 6. [Combo] If you cleared some lines during the consequent falling shapes, you
 				// have a bonus, proportional to the square of number of the moves
 				bonus = addScore * linesComboCollector * linesComboCollector;
-				if (linesComboCollector == 1 && count == 1)
-				{
-					stringstream ss;
-					ss << "Line cleared";
-					apm_message.addLine(AnimatedPopupLine(ss.str(), count * (3 + linesComboCollector), AnimatedPopupLine::tLines, AnimatedPopupLine::atMessage));
-				}
-				else if (linesComboCollector > 1)
+				if (linesComboCollector > 1)
 				{
 					stringstream ss;
 					ss << linesComboCollector;
@@ -148,8 +142,17 @@ namespace sfmlcubes
 			// Showing the bonus popup
 			if (bonus > 0)
 			{
-				stringstream ss; ss << "+" << bonus;
-				apm_message.addLine(AnimatedPopupLine(ss.str(), bonus * 2, AnimatedPopupLine::tScore, AnimatedPopupLine::atCounter));
+				if (linesComboCollector == 1 && count == 1)
+				{
+					stringstream ss; ss << "+" << bonus;
+					apm_counter.addLine(AnimatedPopupLine(ss.str(), bonus, AnimatedPopupLine::tScore, AnimatedPopupLine::atCounter));
+
+				}
+				else
+				{
+					stringstream ss; ss << "+" << bonus;
+					apm_message.addLine(AnimatedPopupLine(ss.str(), bonus * 2, AnimatedPopupLine::tScore, AnimatedPopupLine::atCounter));
+				}
 			}
 			score += bonus;
 
