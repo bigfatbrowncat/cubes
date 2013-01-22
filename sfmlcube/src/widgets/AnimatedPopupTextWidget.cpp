@@ -29,8 +29,11 @@ namespace sfmlcubes
 				destinationX(destinationX), destinationY(destinationY), destinationSize(destinationSize), destinationAngle(destinationAngle), fadeOutTime(fadeOutTime),
 				alpha(1.0), x(sourceX), y(sourceY), size(sourceSize), angle(sourceAngle), time(0), fadeOutComplete(false)
 		{
-			const sf::Font* pf;
-			maxsize = max(sourceSize, destinationSize);
+			const sf::Font* pf = NULL;
+
+			float k = (float)targetSize.y / 480;
+			maxsize = max(sourceSize, destinationSize) * (k / 2);
+
 
 			if (apt.getAnimationType() == AnimatedPopupLine::atMessage)
 			{
@@ -63,7 +66,11 @@ namespace sfmlcubes
 			alpha = 1.0 - d * d * d;
 			x = sourceX * s + destinationX * d;
 			y = sourceY * s + destinationY * d;
-			size = sourceSize * s + destinationSize * d;
+
+			float k = (float)targetSize.y / 480;
+			float kk = 0.7 * k;
+			size = (sourceSize * s + destinationSize * d) * kk;
+
 			angle = sourceAngle * s + destinationAngle * d;
 
 			// Updating text

@@ -49,6 +49,9 @@ namespace sfmlcubes
 
 		void AnimatedPopupsWidget::processTimeStep(float dt)
 		{
+			float k = (float)target.getSize().y / 480;
+			float kk = 0.7 * k;
+
 			while (currentPopup->getNext() != NULL)
 			{
 				const AnimatedPopupMessage& apt = *currentPopup->getPopupText();
@@ -69,7 +72,7 @@ namespace sfmlcubes
 						effVal *= 2;
 					}
 
-					float smul = sqrt(log(effVal + 1) / log(10));
+					float smul = sqrt(log(effVal + 1) / log(20));
 
 					if (line.getAnimationType() == AnimatedPopupLine::atCounter)
 					{
@@ -104,28 +107,28 @@ namespace sfmlcubes
 
 					if (line.getAnimationType() == AnimatedPopupLine::atCounter)
 					{
-						sourceDeltaY += 20 * smul / 2;       // half of my source size
-						destinationDeltaY += 50 * smul / 2;  // half of my destination size
+						sourceDeltaY += 20 * smul / 2 * kk;       // half of my source size
+						destinationDeltaY += 50 * smul / 2 * kk;  // half of my destination size
 
 						AnimatedPopupTextWidget* aptwFlyAway = new AnimatedPopupTextWidget(line, target.getSize(), numberFont, textFont, cubesFieldWidget,
 															0,        0 + sourceDeltaY,              20 * smul, -30,
 															100 * smul, 20 * smul + destinationDeltaY, 50 * smul,  20,  2 * smul);
 						popupWidgets.push_back(aptwFlyAway);
-						sourceDeltaY += 20 * smul / 2;       // another half of my source size
-						destinationDeltaY += 50 * smul / 2;  // another half of my destination size
+						sourceDeltaY += 20 * smul / 2 * kk;       // another half of my source size
+						destinationDeltaY += 50 * smul / 2 * kk;  // another half of my destination size
 					}
 					else if (line.getAnimationType() == AnimatedPopupLine::atMessage)
 					{
-						sourceDeltaY += 20 * smul / 2;       // half of my source size
-						destinationDeltaY += 30 * smul / 2;  // half of my destination size
+						sourceDeltaY += 20 * smul / 2 * kk;       // half of my source size
+						destinationDeltaY += 30 * smul / 2 * kk;  // half of my destination size
 
 						AnimatedPopupTextWidget* aptwZoomIn = new AnimatedPopupTextWidget(line, target.getSize(), numberFont, textFont, cubesFieldWidget,
 														   0, 0 + sourceDeltaY,      20 * smul, 0,
 														   0, 0 + destinationDeltaY, 30 * smul, 0, 2.5 * smul);
 						popupWidgets.push_back(aptwZoomIn);
 
-						sourceDeltaY += 20 * smul / 2;       // another half of my source size
-						destinationDeltaY += 30 * smul / 2;  // another half of my destination size
+						sourceDeltaY += 20 * smul / 2 * kk;       // another half of my source size
+						destinationDeltaY += 30 * smul / 2 * kk;  // another half of my destination size
 					}
 					else
 					{
