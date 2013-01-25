@@ -139,14 +139,14 @@ namespace sfmlcubes
 
 				shadowShaders[0]->setParameter("blur_radius", (float)shadowWidth);
 				shadowShaders[0]->setParameter("glowing_color", (float)glowingColor.r / 255, (float)glowingColor.g / 255, (float)glowingColor.b / 255, (float)glowingColor.a / 255);
-				shadowShaders[0]->setParameter("glowing_pressure", (float)(1.2f));
+				shadowShaders[0]->setParameter("glowing_pressure", (float)(1.4f));
 				shadowShaders[0]->setParameter("screen_width", realBounds.width);
 				shadowShaders[0]->setParameter("screen_height", realBounds.height);
 				rs[0].shader = shadowShaders[0];
 
 				shadowShaders[1]->setParameter("blur_radius", (float)shadowWidth);
 				shadowShaders[1]->setParameter("glowing_color", (float)glowingColor.r / 255, (float)glowingColor.g / 255, (float)glowingColor.b / 255, (float)glowingColor.a / 255);
-				shadowShaders[1]->setParameter("glowing_pressure", (float)(1.2f));
+				shadowShaders[1]->setParameter("glowing_pressure", (float)(1.4f));
 				shadowShaders[1]->setParameter("screen_width", realBounds.width);
 				shadowShaders[1]->setParameter("screen_height", realBounds.height);
 				rs[1].shader = shadowShaders[1];
