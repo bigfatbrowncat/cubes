@@ -11,6 +11,7 @@
 #include "../movingcubes/ShapeContainer.h"
 #include "../movingcubes/Shape.h"
 #include "../movingcubes/ShapeKinematics.h"
+#include "WallsController.h"
 
 namespace sfmlcubes
 {
@@ -20,7 +21,6 @@ namespace sfmlcubes
 	{
 		class FallenController : public ShapeContainer
 		{
-			static float FALLING_DOWN_FIRED_LONGITUDE;
 			static float BLINKING_LONGITUDE;
 
 		public:
@@ -32,6 +32,9 @@ namespace sfmlcubes
 			};
 		private:
 			State state;
+
+			WallsController& wallsController;
+			const VelocityController& velocityController;
 
 			int left, top, right, bottom;
 			int linesFired;
@@ -50,7 +53,7 @@ namespace sfmlcubes
 			void firingGroupsToFallen();
 
 		public:
-			FallenController(int top, int bottom, int left, int right);
+			FallenController(WallsController& wallsController, const VelocityController& velocityController, int top, int bottom, int left, int right);
 
 			const Shape& getShape() const { return fallen; }
 			list<Shape> getShapes() const

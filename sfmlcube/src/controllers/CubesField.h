@@ -51,9 +51,9 @@ namespace sfmlcubes
 			int width, height;
 			CubesMechanicState state;
 
+			VelocityController velocityController;
 			WallsController wallsController;
 			FallenController fallenController;
-			VelocityController velocityController;
 			FallingShapeController fallingShapeController;
 
 			ShapeDealer shapeDealer;

@@ -26,9 +26,9 @@ namespace sfmlcubes
 
 				width(width), height(height),
 				state(cmsBetweenShapes),
-				wallsController(width, height),
-				fallenController(1, 0, width - 2, height - 2),
 				velocityController(),
+				wallsController(velocityController, width, height),
+				fallenController(wallsController, velocityController, 1, 0, width - 2, height - 2),
 				fallingShapeController(wallsController, fallenController, velocityController),
 				scoreCounter(fallenController, wallsController),
 
@@ -47,6 +47,7 @@ namespace sfmlcubes
 			{
 				fallingShapeController.processTimeStep(dt);
 				fallenController.processTimeStep(dt);
+				wallsController.processTimeStep(dt);
 
 				time += dt;
 

@@ -18,11 +18,12 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
-		float FallenController::FALLING_DOWN_FIRED_LONGITUDE = 0.3;
 		float FallenController::BLINKING_LONGITUDE = 0.6;
 
-		FallenController::FallenController(int left, int top, int right, int bottom) :
+		FallenController::FallenController(WallsController& wallsController, const VelocityController& velocityController, int left, int top, int right, int bottom) :
 				state(sPassive),
+				wallsController(wallsController),
+				velocityController(velocityController),
 				left(left), top(top), right(right), bottom(bottom),
 				linesFired(0),
 				linesJustFired(0),
@@ -49,6 +50,7 @@ namespace sfmlcubes
 				if (!fallenKinematics.getBlinkingTransition().isInProgress())
 				{
 					removeFiredAwayLines();
+					wallsController.moveDown();
 					state = sFiringFullLines;
 				}
 				break;
@@ -162,7 +164,7 @@ namespace sfmlcubes
 		{
 			for (map<ShapeKinematics*, int>::iterator iter = firingLineCounts.begin(); iter != firingLineCounts.end(); iter++)
 			{
-				(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, FALLING_DOWN_FIRED_LONGITUDE);
+				(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());
 			}
 
 			linesFired += linesJustFired;
