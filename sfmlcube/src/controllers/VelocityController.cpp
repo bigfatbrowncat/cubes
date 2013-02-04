@@ -35,6 +35,8 @@ namespace sfmlcubes
 		float VelocityController::VELOCITY_MULTIPLICATOR_BY_STEP = 1.005;		// For linear velocities
 		float VelocityController::EXPONENT_ARGUMENT_BY_STEP = 0.0003;			// For exponential velocities
 
+		float VelocityController::FALLING_DOWN_FIRED_LONGITUDE = 0.3;
+
 		VelocityController::VelocityController() : step(0)
 		{
 
@@ -69,6 +71,11 @@ namespace sfmlcubes
 		float VelocityController::getVelocityMultiplicator() const
 		{
 			return pow(VELOCITY_MULTIPLICATOR_BY_STEP, step);
+		}
+
+		float VelocityController::getFallingDownFiredLongitude() const
+		{
+			return FALLING_DOWN_FIRED_LONGITUDE;
 		}
 
 		void VelocityController::advanceStep()

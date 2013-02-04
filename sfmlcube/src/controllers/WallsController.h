@@ -10,7 +10,8 @@
 
 #include "../movingcubes/Shape.h"
 #include "../movingcubes/ShapeContainer.h"
-
+#include "../movingcubes/ShapeKinematics.h"
+#include "VelocityController.h"
 
 namespace sfmlcubes
 {
@@ -19,13 +20,30 @@ namespace sfmlcubes
 	{
 		class WallsController : public ShapeContainer
 		{
+			enum State
+			{
+				sIdle,
+				sMovingDown
+			};
+
+			const VelocityController& velocityController;
+
 			Shape walls;
+			ShapeKinematics wallsKinematics;
+			State state;
 			int width, height;
+
+			void startMovingDown();
+
 		public:
-			WallsController(int width, int height);
+			WallsController(const VelocityController& velocityController, int width, int height);
+
+			void processTimeStep(float dt);
 
 			const Shape& getShape() const { return walls; }
 			void setShape(const Shape& shape) { walls = shape; }
+
+			void moveDown();
 
 			virtual ~WallsController();
 		};

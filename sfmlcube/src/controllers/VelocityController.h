@@ -27,6 +27,9 @@ namespace sfmlcubes
 			static float FALLING_PERIOD;
 			static float VELOCITY_MULTIPLICATOR_BY_STEP;
 			static float EXPONENT_ARGUMENT_BY_STEP;
+
+			static float FALLING_DOWN_FIRED_LONGITUDE;
+
 		private:
 			int step;
 			float startToLimit(float start, float limit) const;
@@ -40,6 +43,7 @@ namespace sfmlcubes
 			float getHorizontalMovingLongitude() const;
 			float getFallingPeriod() const;
 			float getVelocityMultiplicator() const;
+			float getFallingDownFiredLongitude() const;
 
 			void advanceStep();
 

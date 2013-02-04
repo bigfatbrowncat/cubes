@@ -10,14 +10,16 @@
 #include "../movingcubes/Cube.h"
 
 #include "WallsController.h"
+#include "../Logger.h"
 
 namespace sfmlcubes
 {
 	using namespace movingcubes;
 	namespace controllers
 	{
-		WallsController::WallsController(int width, int height) :
-				width(width), height(height)
+		WallsController::WallsController(const VelocityController& velocityController, int width, int height) :
+				velocityController(velocityController),
+				wallsKinematics(*this), width(width), height(height), state(sIdle)
 		{
 			sf::Color wallColor = sf::Color(96, 96, 96);
 
@@ -34,6 +36,40 @@ namespace sfmlcubes
 				walls.addCube(Cube(0, j, Cube::mtWall, wallColor));
 				walls.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
 			}
+		}
+
+		void WallsController::processTimeStep(float dt)
+		{
+			wallsKinematics.advanceStep(dt);
+
+			switch (state)
+			{
+			case sIdle:
+				// Do nothing, just wait
+				break;
+
+			case sMovingDown:
+
+				if (!wallsKinematics.getVerticalTransition().isInProgress())
+				{
+					Logger::DEFAULT.logInfo("down ok");
+					state = sIdle;
+				}
+				break;
+			}
+		}
+
+		void WallsController::startMovingDown()
+		{
+			state = sMovingDown;
+			wallsKinematics.moveVertical(1, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());
+			Logger::DEFAULT.logInfo("down");
+		}
+
+		void WallsController::moveDown()
+		{
+			//walls.moveVerticalNoTransition(1);
+			startMovingDown();
 		}
 
 		WallsController::~WallsController()
