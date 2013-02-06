@@ -40,7 +40,7 @@ namespace sfmlcubes
 
 			void processTimeStep(float dt);
 
-			const Shape& getShape() const { return walls; }
+			Shape getShape() const { return walls; }
 			void setShape(const Shape& shape) { walls = shape; }
 
 			void moveDown();

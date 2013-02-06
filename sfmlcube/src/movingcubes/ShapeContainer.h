@@ -21,7 +21,7 @@ namespace sfmlcubes
 		class ShapeContainer
 		{
 		public:
-			virtual const Shape& getShape() const = 0;
+			virtual Shape getShape() const = 0;
 			virtual void setShape(const Shape& shape) = 0;
 		};
 

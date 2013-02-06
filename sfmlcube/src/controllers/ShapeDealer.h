@@ -29,8 +29,8 @@ namespace sfmlcubes
 
 			Shape dealNext();
 
-			virtual const Shape& getShape() const { return predictedShape; }
-			virtual void setShape(const Shape& shape) { predictedShape = shape; }
+			Shape getShape() const { return predictedShape; }
+			void setShape(const Shape& shape) { predictedShape = shape; }
 
 			virtual ~ShapeDealer();
 		};

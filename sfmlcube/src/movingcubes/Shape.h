@@ -63,6 +63,7 @@ namespace sfmlcubes
 			{
 				cubes.push_back(cube);
 			}
+
 			void removeCube(int x, int y)
 			{
 				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end(); iter++)
@@ -96,8 +97,8 @@ namespace sfmlcubes
 			void moveHorizontalNoTransition(int cells);
 			void rotateNoTransition(int angle);
 
-			virtual const Shape& getShape() const { return *this; }
-			virtual void setShape(const Shape& shape) { *this = shape; }
+			Shape getShape() const { return *this; }
+			void setShape(const Shape& shape) { *this = shape; }
 
 			int getLeft() const;
 			int getRight() const;

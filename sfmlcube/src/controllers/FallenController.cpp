@@ -18,7 +18,39 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
-		float FallenController::BLINKING_LONGITUDE = 0.6;
+		float FallenController::LineWithKinematics::BLINKING_LONGITUDE = 0.6;
+
+		FallenController::LineWithKinematics::LineWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j) :
+				velocityController(velocityController), kinematics(*this), left(left), right(right), j(j), blink(false), moveBy(0)
+		{
+			for (int i = left; i <= right; i++)
+			{
+				if (!source.cubeAt(i, j).empty())
+				{
+					// Adding the cube to the current firing group
+					if (source.cubeAt(i, j).size() > 1) Logger::DEFAULT.logWarning("cubeAt returned more than one cube");
+					line.addCube(source.cubeAt(i, j).back());
+				}
+			}
+		}
+
+		bool FallenController::LineWithKinematics::lineIsFull()
+		{
+			for (int i = left; i <= right; i++)
+			{
+				if (line.cubeAt(i, j).empty()) return false;
+			}
+			return true;
+		}
+
+		bool FallenController::LineWithKinematics::lineIsEmpty()
+		{
+			for (int i = left; i <= right; i++)
+			{
+				if (!line.cubeAt(i, j).empty()) return false;
+			}
+			return true;
+		}
 
 		FallenController::FallenController(WallsController& wallsController, const VelocityController& velocityController, int left, int top, int right, int bottom) :
 				state(sPassive),
@@ -26,19 +58,23 @@ namespace sfmlcubes
 				velocityController(velocityController),
 				left(left), top(top), right(right), bottom(bottom),
 				linesFired(0),
-				linesJustFired(0),
-				fallenKinematics(*this)
+				linesJustFired(0)
 		{
 		}
 
 		void FallenController::processTimeStep(float dt)
 		{
-			fallenKinematics.advanceStep(dt);
-			for (list<ShapeKinematics*>::iterator iter = fallenNotFiredPartKinematics.begin();
-				 iter != fallenNotFiredPartKinematics.end();
-				 iter ++)
+			for (list<LineWithKinematics>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
-				(*iter)->advanceStep(dt);
+				(*iter).advanceStep(dt);
+			}
+			for (list<LineWithKinematics>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			{
+				(*iter).advanceStep(dt);
+			}
+			for (list<LineWithKinematics>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			{
+				(*iter).advanceStep(dt);
 			}
 
 			switch (state)
@@ -46,128 +82,165 @@ namespace sfmlcubes
 			case sPassive:
 				// Do nothing
 				break;
-			case sBlinkingFullLines:
-				if (!fallenKinematics.getBlinkingTransition().isInProgress())
+			case sBlinking:
+				if (!isBlinkingInProgress())
 				{
-					removeFiredAwayLines();
+					removeBurntLinesAndStartFallingRemaining();
 					wallsController.moveDown();
-					state = sFiringFullLines;
+					state = sFalling;
 				}
 				break;
-			case sFiringFullLines:
-				if (!anyFiringTransitionsInProgress())
+			case sFalling:
+				if (!isFallingInProgress())
 				{
-					firingGroupsToFallen();
+					rebuildShape();
 					state = sPassive;
 				}
 				break;
 			}
 		}
 
-		bool FallenController::anyCollisions(const Shape& shape)
+		bool FallenController::anyCollisionsWithRemainingLines(const Shape& shape)
 		{
 			ShapeDynamics sd(shape);
 
-			for (list<Shape*>::const_iterator iter = fallenNotFiredParts.begin();
-				 iter != fallenNotFiredParts.end();
+			for (list<LineWithKinematics>::const_iterator iter = remainingLines.begin();
+				 iter != remainingLines.end();
 				 iter ++)
 			{
-				sd.addObstacle(**iter);
+				sd.addObstacle((*iter).getShape());
 			}
 			sd.addObstacle(fallen);
 
 			return sd.anyCollisions();
 		}
 
-		void FallenController::collectLinesToFire()
+		void FallenController::startFalling()
 		{
-			linesJustFired = 0;
-			bool previousLineWasFired = true;
-			int moveBy = 0;
-			for (int j = bottom; j >= top; j--)
+			for (list<LineWithKinematics>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
-				// Check if this line is full
-				bool thisRowIsFull = true;
-				for (int i = left; i <= right; i++)
-				{
-					if (fallen.cubeAt(i, j).empty()) thisRowIsFull = false;
-				}
-
-				if (thisRowIsFull)
-				{
-					// First of all we close the recent group if it exists
-					if (!previousLineWasFired && fallenNotFiredParts.size() > 0)
-					{
-						firingLineCounts.insert(pair<ShapeKinematics*, int> (fallenNotFiredPartKinematics.back(), moveBy) );
-					}
-
-					linesJustFired ++;
-					moveBy ++;
-					previousLineWasFired = true;
-				}
-				else
-				{
-					// This line isn't fired
-					if (previousLineWasFired)
-					{
-						// The last line was fired, so we start a new group
-
-						// and then we create a new one
-						Shape* s = new Shape();
-						ShapeKinematics* sd = new ShapeKinematics(*s);
-
-						fallenNotFiredParts.push_back(s);
-						fallenNotFiredPartKinematics.push_back(sd);
-					}
-
-					// Adding the line to the current group
-					for (int i = left; i <= right; i++)
-					{
-						if (!fallen.cubeAt(i, j).empty())
-						{
-							// Adding the cube to the current firing group
-							fallenNotFiredParts.back()->addCube(fallen.cubeAt(i, j).back());
-							// Removing the cube from the fallens
-							fallen.removeCube(i, j);
-						}
-					}
-					previousLineWasFired = false;
-				}
+				(*iter).startAnimation();
 			}
 
-			// close the last group
-			if (fallenNotFiredParts.size() > 0)
+			for (list<LineWithKinematics>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
-				if (moveBy > 0)
-				{
-					firingLineCounts.insert(pair<ShapeKinematics*, int> (fallenNotFiredPartKinematics.back(), moveBy) );
-				}
-			}
-
-			//linesFired += count;
-
-			if (moveBy > 0)
-			{
-				// Starting the blinking of the firing lines
-				fallenKinematics.blink(BLINKING_LONGITUDE, 3);
-				state = sBlinkingFullLines;
-			}
-			else
-			{
-				// Nothing to fire
-
-				state = sFiringFullLines;
+				(*iter).startAnimation();
 			}
 		}
 
-		void FallenController::removeFiredAwayLines()
+		void FallenController::startBlinking()
 		{
-			for (map<ShapeKinematics*, int>::iterator iter = firingLineCounts.begin(); iter != firingLineCounts.end(); iter++)
+			for (list<LineWithKinematics>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
-				(*iter).first->moveVertical((*iter).second, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());
+				(*iter).startAnimation();
+			}
+		}
+
+		bool FallenController::isBlinkingInProgress()
+		{
+			for (list<LineWithKinematics>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			{
+				if ((*iter).isBlinkingInProgress()) return true;
+			}
+			return false;
+		}
+
+		bool FallenController::isFallingInProgress()
+		{
+			for (list<LineWithKinematics>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			{
+				if ((*iter).isMovingInProgress()) return true;
 			}
 
+			for (list<LineWithKinematics>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			{
+				if ((*iter).isMovingInProgress()) return true;
+			}
+
+			return false;
+		}
+
+		void FallenController::collectLines()
+		{
+			bool burningBlockAtBottomEnd = true;
+			int flyingDownCount = 0;
+			int burningCount = 0;
+
+			// Collecting the lines to lists
+			for (int j = bottom; j >= top; j--)
+			{
+				LineWithKinematics curLine(velocityController, fallen, left, right, j);
+				if (curLine.lineIsFull())
+				{
+					if (burningBlockAtBottomEnd)
+					{
+						flyingDownLines.push_back(curLine);
+						flyingDownCount ++;
+					}
+					else
+					{
+						curLine.setBlink(true);
+						burningLines.push_back(curLine);
+						burningCount++;
+					}
+				}
+				else if (!curLine.lineIsEmpty())
+				{
+					curLine.setMoveBy(flyingDownCount + burningCount);
+					burningBlockAtBottomEnd = false;
+					remainingLines.push_back(curLine);
+				}
+			}
+
+			// Clearing the source shape
+			fallen.clear();
+
+			if (flyingDownCount > 0 || burningCount > 0)
+			{
+				// Starting the blinking of the firing lines
+				startBlinking();
+				state = sBlinking;
+			}
+			else
+			{
+				// Nothing to burn
+				rebuildShape();
+				state = sPassive;
+			}
+		}
+
+		void FallenController::rebuildShape()
+		{
+			for (list<LineWithKinematics>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			{
+				fallen += (*iter).getShape();
+			}
+			burningLines.clear();
+
+			for (list<LineWithKinematics>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			{
+				fallen += (*iter).getShape();
+			}
+			flyingDownLines.clear();
+
+			for (list<LineWithKinematics>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			{
+				fallen += (*iter).getShape();
+			}
+			remainingLines.clear();
+		}
+
+		void FallenController::removeBurntLinesAndStartFallingRemaining()
+		{
+			// Counting burnt lines
+			linesJustFired = burningLines.size();
 			linesFired += linesJustFired;
+
+			// Clearing the burnt lines
+			burningLines.clear();
+
+			// Starting falling
+			startFalling();
 
 			{
 				stringstream ss;
@@ -175,40 +248,7 @@ namespace sfmlcubes
 				Logger::DEFAULT.logInfo(ss.str());
 			}
 
-			// Clearing the fallen part of the board
-			fallen.clear();
-		}
-
-		bool FallenController::anyFiringTransitionsInProgress()
-		{
-			for (list<ShapeKinematics*>::iterator iter = fallenNotFiredPartKinematics.begin();
-				 iter != fallenNotFiredPartKinematics.end();
-				 iter++)
-			{
-				if ((*iter)->transitionIsInProgress()) return true;
-			}
-			return false;
-		}
-
-		void FallenController::firingGroupsToFallen()
-		{
-			while (fallenNotFiredParts.size() > 0)
-			{
-				Shape* cg = fallenNotFiredParts.back();
-
-				fallen += *cg;
-
-				fallenNotFiredParts.remove(cg);
-				delete cg;
-			}
-
-			while (fallenNotFiredPartKinematics.size() > 0)
-			{
-				ShapeKinematics* kin = fallenNotFiredPartKinematics.back();
-				fallenNotFiredPartKinematics.remove(kin);
-				firingLineCounts.erase(kin);
-				delete kin;
-			}
+			state = sFalling;
 		}
 
 		int FallenController::countHoles() const

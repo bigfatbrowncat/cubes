@@ -50,7 +50,7 @@ namespace sfmlcubes
 		public:
 			FallingShapeController(WallsController& wallsController, FallenController& fallenController, VelocityController& velocityController);
 
-			const Shape& getShape() const { return falling; }
+			Shape getShape() const { return falling; }
 			void setShape(const Shape& shape) { falling = shape; }
 
 			void processTimeStep(float dt);

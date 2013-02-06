@@ -12,6 +12,7 @@
 #include "../movingcubes/Shape.h"
 #include "../movingcubes/ShapeKinematics.h"
 #include "WallsController.h"
+#include "../Logger.h"
 
 namespace sfmlcubes
 {
@@ -21,14 +22,80 @@ namespace sfmlcubes
 	{
 		class FallenController : public ShapeContainer
 		{
-			static float BLINKING_LONGITUDE;
+			class LineWithKinematics : public ShapeContainer
+			{
+				static float BLINKING_LONGITUDE;
+
+			private:
+				const VelocityController& velocityController;
+
+				Shape line;
+				ShapeKinematics kinematics;
+				int left, right, j;
+				bool blink;
+				int moveBy;
+			public:
+				LineWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j);
+
+				bool lineIsFull();
+				bool lineIsEmpty();
+
+				void setBlink(bool value) { blink = value; }
+				bool getBlink() { return blink; }
+				void setMoveBy(int value) { moveBy = value; }
+				int getMoveBy() { return moveBy; }
+
+				void advanceStep(double delta)
+				{
+					kinematics.advanceStep(delta);
+				}
+
+				bool isBlinkingInProgress()
+				{
+					return kinematics.getBlinkingTransition().isInProgress();
+				}
+
+				bool isMovingInProgress()
+				{
+					return kinematics.getVerticalTransition().isInProgress();
+				}
+
+				void startAnimation()
+				{
+					if (blink)
+					{
+						if (kinematics.getBlinkingTransition().isInProgress())
+						{
+							Logger::DEFAULT.logWarning("try to start blinking twice");
+						}
+
+						kinematics.blink(BLINKING_LONGITUDE, 3);
+					}
+
+					if (moveBy != 0)
+					{
+						if (kinematics.getVerticalTransition().isInProgress())
+						{
+							Logger::DEFAULT.logWarning("try to start moving twice");
+						}
+
+						kinematics.moveVertical(moveBy, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());
+					}
+				}
+
+				Shape getShape() const
+				{
+					return line;
+				}
+				void setShape(const Shape& shape) { line = shape; }
+			};
 
 		public:
 			enum State
 			{
 				sPassive,
-				sBlinkingFullLines,
-				sFiringFullLines
+				sBlinking,
+				sFalling
 			};
 		private:
 			State state;
@@ -39,42 +106,48 @@ namespace sfmlcubes
 			int left, top, right, bottom;
 			int linesFired;
 			int linesJustFired;
+
 			Shape fallen;
 
-			list<Shape*> fallenNotFiredParts;
-			map<ShapeKinematics*, int> firingLineCounts;
-			list<ShapeKinematics*> fallenNotFiredPartKinematics;
+			list<LineWithKinematics> remainingLines;
+			list<LineWithKinematics> burningLines;
+			list<LineWithKinematics> flyingDownLines;
 
-			ShapeKinematics fallenKinematics;
+			void startFalling();
+			void startBlinking();
 
-			void collectLinesToFire();
-			void removeFiredAwayLines();
-			bool anyFiringTransitionsInProgress();
-			void firingGroupsToFallen();
+			bool isFallingInProgress();
+			bool isBlinkingInProgress();
+
+			void collectLines();
+			void rebuildShape();
+			void removeBurntLinesAndStartFallingRemaining();
+
+
 
 		public:
 			FallenController(WallsController& wallsController, const VelocityController& velocityController, int top, int bottom, int left, int right);
 
-			const Shape& getShape() const { return fallen; }
+			Shape getShape() const { return fallen; }
+			void setShape(const Shape& shape) { fallen = shape; }
 			list<Shape> getShapes() const
 			{
 				list<Shape> res;
 				res.push_back(fallen);
-				for (list<Shape*>::const_iterator iter = fallenNotFiredParts.begin();
-					 iter != fallenNotFiredParts.end();
+				for (list<LineWithKinematics>::const_iterator iter = remainingLines.begin();
+					 iter != remainingLines.end();
 					 iter++)
 				{
-					res.push_back(**iter);
+					res.push_back((*iter).getShape());
 				}
 				return res;
 			}
-			void setShape(const Shape& shape) { fallen = shape; }
 
 			void processTimeStep(float dt);
-			bool anyCollisions(const Shape& shape);
+			bool anyCollisionsWithRemainingLines(const Shape& shape);
 
 			void mergeShape(const Shape& other) { fallen += other; }
-			void fireFullLines() { collectLinesToFire(); }
+			void fireFullLines() { collectLines(); }
 			int getLinesFired() const { return linesFired; }
 			int getLinesJustFired() const { return linesJustFired; }
 

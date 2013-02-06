@@ -95,7 +95,7 @@ namespace sfmlcubes
 						//newShape.moveVerticalNoTransition(0);
 
 						// Checking for collisions
-						if (fallenController.anyCollisions(newShape))
+						if (fallenController.anyCollisionsWithRemainingLines(newShape))
 						{
 							// Our new shape collides with the fallen ones.
 							// That means the game is over
