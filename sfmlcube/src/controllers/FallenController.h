@@ -14,15 +14,17 @@
 #include "WallsController.h"
 #include "../Logger.h"
 
+#include <SFML/System/NonCopyable.hpp>
+
 namespace sfmlcubes
 {
 	using namespace movingcubes;
 
 	namespace controllers
 	{
-		class FallenController : public ShapeContainer
+		class FallenController : public ShapeContainer, sf::NonCopyable
 		{
-			class LineWithKinematics : public ShapeContainer
+			class LineWithKinematics : sf::NonCopyable
 			{
 				static float BLINKING_LONGITUDE;
 
@@ -83,11 +85,11 @@ namespace sfmlcubes
 					}
 				}
 
-				Shape getShape() const
+				const Shape& getLineShape() const
 				{
 					return line;
 				}
-				void setShape(const Shape& shape) { line = shape; }
+
 			};
 
 		public:
@@ -109,9 +111,9 @@ namespace sfmlcubes
 
 			Shape fallen;
 
-			list<LineWithKinematics> remainingLines;
-			list<LineWithKinematics> burningLines;
-			list<LineWithKinematics> flyingDownLines;
+			list<LineWithKinematics*> remainingLines;
+			list<LineWithKinematics*> burningLines;
+			list<LineWithKinematics*> flyingDownLines;
 
 			void startFalling();
 			void startBlinking();
@@ -128,17 +130,20 @@ namespace sfmlcubes
 		public:
 			FallenController(WallsController& wallsController, const VelocityController& velocityController, int top, int bottom, int left, int right);
 
-			Shape getShape() const { return fallen; }
+			Shape getShape() const
+			{
+				return fallen;
+			}
 			void setShape(const Shape& shape) { fallen = shape; }
 			list<Shape> getShapes() const
 			{
 				list<Shape> res;
 				res.push_back(fallen);
-				for (list<LineWithKinematics>::const_iterator iter = remainingLines.begin();
+				for (list<LineWithKinematics*>::const_iterator iter = remainingLines.begin();
 					 iter != remainingLines.end();
 					 iter++)
 				{
-					res.push_back((*iter).getShape());
+					res.push_back((**iter).getLineShape());
 				}
 				return res;
 			}

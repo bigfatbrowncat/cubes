@@ -29,7 +29,7 @@ namespace sfmlcubes
 			fscsLanded
 		};
 
-		class FallingShapeController : public ShapeContainer
+		class FallingShapeController : public ShapeContainer, sf::NonCopyable
 		{
 		private:
 			Shape falling;

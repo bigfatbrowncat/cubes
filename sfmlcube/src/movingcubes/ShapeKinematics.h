@@ -8,6 +8,8 @@
 #ifndef SHAPEKINEMATICS_H_
 #define SHAPEKINEMATICS_H_
 
+#include <SFML/System/NonCopyable.hpp>
+
 #include "transitions/Transition.h"
 #include "Shape.h"
 #include "ShapeContainer.h"
@@ -18,7 +20,7 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		class ShapeKinematics
+		class ShapeKinematics : sf::NonCopyable
 		{
 		private:
 			ShapeContainer& shapeContainer;

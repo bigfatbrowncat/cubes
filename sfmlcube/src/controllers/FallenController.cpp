@@ -21,7 +21,7 @@ namespace sfmlcubes
 		float FallenController::LineWithKinematics::BLINKING_LONGITUDE = 0.6;
 
 		FallenController::LineWithKinematics::LineWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j) :
-				velocityController(velocityController), kinematics(*this), left(left), right(right), j(j), blink(false), moveBy(0)
+				velocityController(velocityController), kinematics(line), left(left), right(right), j(j), blink(false), moveBy(0)
 		{
 			for (int i = left; i <= right; i++)
 			{
@@ -64,17 +64,17 @@ namespace sfmlcubes
 
 		void FallenController::processTimeStep(float dt)
 		{
-			for (list<LineWithKinematics>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
-				(*iter).advanceStep(dt);
+				(**iter).advanceStep(dt);
 			}
-			for (list<LineWithKinematics>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
-				(*iter).advanceStep(dt);
+				(**iter).advanceStep(dt);
 			}
-			for (list<LineWithKinematics>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
-				(*iter).advanceStep(dt);
+				(**iter).advanceStep(dt);
 			}
 
 			switch (state)
@@ -104,11 +104,11 @@ namespace sfmlcubes
 		{
 			ShapeDynamics sd(shape);
 
-			for (list<LineWithKinematics>::const_iterator iter = remainingLines.begin();
+			for (list<LineWithKinematics*>::const_iterator iter = remainingLines.begin();
 				 iter != remainingLines.end();
 				 iter ++)
 			{
-				sd.addObstacle((*iter).getShape());
+				sd.addObstacle((**iter).getLineShape());
 			}
 			sd.addObstacle(fallen);
 
@@ -117,44 +117,44 @@ namespace sfmlcubes
 
 		void FallenController::startFalling()
 		{
-			for (list<LineWithKinematics>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
-				(*iter).startAnimation();
+				(**iter).startAnimation();
 			}
 
-			for (list<LineWithKinematics>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
-				(*iter).startAnimation();
+				(**iter).startAnimation();
 			}
 		}
 
 		void FallenController::startBlinking()
 		{
-			for (list<LineWithKinematics>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
-				(*iter).startAnimation();
+				(**iter).startAnimation();
 			}
 		}
 
 		bool FallenController::isBlinkingInProgress()
 		{
-			for (list<LineWithKinematics>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
-				if ((*iter).isBlinkingInProgress()) return true;
+				if ((**iter).isBlinkingInProgress()) return true;
 			}
 			return false;
 		}
 
 		bool FallenController::isFallingInProgress()
 		{
-			for (list<LineWithKinematics>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
-				if ((*iter).isMovingInProgress()) return true;
+				if ((**iter).isMovingInProgress()) return true;
 			}
 
-			for (list<LineWithKinematics>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			for (list<LineWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
-				if ((*iter).isMovingInProgress()) return true;
+				if ((**iter).isMovingInProgress()) return true;
 			}
 
 			return false;
@@ -169,8 +169,8 @@ namespace sfmlcubes
 			// Collecting the lines to lists
 			for (int j = bottom; j >= top; j--)
 			{
-				LineWithKinematics curLine(velocityController, fallen, left, right, j);
-				if (curLine.lineIsFull())
+				LineWithKinematics* curLine = new LineWithKinematics(velocityController, fallen, left, right, j);
+				if (curLine->lineIsFull())
 				{
 					if (burningBlockAtBottomEnd)
 					{
@@ -179,14 +179,14 @@ namespace sfmlcubes
 					}
 					else
 					{
-						curLine.setBlink(true);
+						curLine->setBlink(true);
 						burningLines.push_back(curLine);
 						burningCount++;
 					}
 				}
-				else if (!curLine.lineIsEmpty())
+				else if (!curLine->lineIsEmpty())
 				{
-					curLine.setMoveBy(flyingDownCount + burningCount);
+					curLine->setMoveBy(flyingDownCount + burningCount);
 					burningBlockAtBottomEnd = false;
 					remainingLines.push_back(curLine);
 				}
@@ -211,23 +211,26 @@ namespace sfmlcubes
 
 		void FallenController::rebuildShape()
 		{
-			for (list<LineWithKinematics>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			fallen.clear();
+			while (burningLines.size() > 0)
 			{
-				fallen += (*iter).getShape();
+				fallen += (*burningLines.end())->getLineShape();
+				//delete (*burningLines.end());
+				burningLines.pop_back();
 			}
-			burningLines.clear();
-
-			for (list<LineWithKinematics>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			while (flyingDownLines.size() > 0)
 			{
-				fallen += (*iter).getShape();
+				fallen += (*flyingDownLines.end())->getLineShape();
+				//delete (*flyingDownLines.end());
+				flyingDownLines.pop_back();
 			}
-			flyingDownLines.clear();
-
-			for (list<LineWithKinematics>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			while (remainingLines.size() > 0)
 			{
-				fallen += (*iter).getShape();
+				LineWithKinematics* end = *remainingLines.end();
+				fallen += end->getLineShape();
+				//delete end;
+				remainingLines.pop_back();
 			}
-			remainingLines.clear();
 		}
 
 		void FallenController::removeBurntLinesAndStartFallingRemaining()
