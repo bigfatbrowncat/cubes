@@ -24,7 +24,7 @@ namespace sfmlcubes
 	{
 		class FallenController : public ShapeContainer, sf::NonCopyable
 		{
-			class LineWithKinematics : sf::NonCopyable
+			class LineWithKinematics : public ShapeContainer, sf::NonCopyable
 			{
 				static float BLINKING_LONGITUDE;
 
@@ -85,9 +85,13 @@ namespace sfmlcubes
 					}
 				}
 
-				const Shape& getLineShape() const
+				Shape getShape() const
 				{
 					return line;
+				}
+				void setShape(const Shape& shape)
+				{
+					line = shape;
 				}
 
 			};
@@ -143,7 +147,7 @@ namespace sfmlcubes
 					 iter != remainingLines.end();
 					 iter++)
 				{
-					res.push_back((**iter).getLineShape());
+					res.push_back((**iter).getShape());
 				}
 				return res;
 			}

@@ -21,7 +21,7 @@ namespace sfmlcubes
 		float FallenController::LineWithKinematics::BLINKING_LONGITUDE = 0.6;
 
 		FallenController::LineWithKinematics::LineWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j) :
-				velocityController(velocityController), kinematics(line), left(left), right(right), j(j), blink(false), moveBy(0)
+				velocityController(velocityController), kinematics(*this), left(left), right(right), j(j), blink(false), moveBy(0)
 		{
 			for (int i = left; i <= right; i++)
 			{
@@ -108,7 +108,7 @@ namespace sfmlcubes
 				 iter != remainingLines.end();
 				 iter ++)
 			{
-				sd.addObstacle((**iter).getLineShape());
+				sd.addObstacle((**iter).getShape());
 			}
 			sd.addObstacle(fallen);
 
@@ -214,20 +214,20 @@ namespace sfmlcubes
 			fallen.clear();
 			while (burningLines.size() > 0)
 			{
-				fallen += (*burningLines.end())->getLineShape();
+				fallen += (*burningLines.end())->getShape();
 				//delete (*burningLines.end());
 				burningLines.pop_back();
 			}
 			while (flyingDownLines.size() > 0)
 			{
-				fallen += (*flyingDownLines.end())->getLineShape();
+				fallen += (*flyingDownLines.end())->getShape();
 				//delete (*flyingDownLines.end());
 				flyingDownLines.pop_back();
 			}
 			while (remainingLines.size() > 0)
 			{
-				LineWithKinematics* end = *remainingLines.end();
-				fallen += end->getLineShape();
+				LineWithKinematics* end = remainingLines.back();
+				fallen += end->getShape();
 				//delete end;
 				remainingLines.pop_back();
 			}
