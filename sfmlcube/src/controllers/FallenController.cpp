@@ -52,13 +52,14 @@ namespace sfmlcubes
 			return true;
 		}
 
-		FallenController::FallenController(WallsController& wallsController, const VelocityController& velocityController, int left, int top, int right, int bottom) :
+		FallenController::FallenController(WallsController& wallsController, const VelocityController& velocityController,
+				                           int top, int fieldBottom, int visibleBottom, int left, int right) :
 				state(sPassive),
 				wallsController(wallsController),
 				velocityController(velocityController),
-				left(left), top(top), right(right), bottom(bottom),
-				linesFired(0),
-				linesJustFired(0)
+				left(left), top(top), right(right), fieldBottom(fieldBottom), visibleBottom(visibleBottom),
+				linesBurnt(0),
+				linesJustFilled(0)
 		{
 		}
 
@@ -86,7 +87,6 @@ namespace sfmlcubes
 				if (!isBlinkingInProgress())
 				{
 					removeBurntLinesAndStartFallingRemaining();
-					wallsController.moveDown();
 					state = sFalling;
 				}
 				break;
@@ -163,21 +163,26 @@ namespace sfmlcubes
 		void FallenController::collectLines()
 		{
 			bool burningBlockAtBottomEnd = true;
-			int flyingDownCount = 0;
+			linesJustFilled = 0;
+			linesJustFilledToFlyDown = 0;
 			int burningCount = 0;
 
 			// Collecting the lines to lists
-			for (int j = bottom; j >= top; j--)
+			for (int j = visibleBottom; j >= top; j--)
 			{
 				LineWithKinematics* curLine = new LineWithKinematics(velocityController, fallen, left, right, j);
-				if (curLine->lineIsFull())
+				if (j > fieldBottom)
+				{
+					if (!curLine->lineIsEmpty()) flyingDownLines.push_back(curLine);
+				}
+				else if (curLine->lineIsFull())
 				{
 					if (burningBlockAtBottomEnd)
 					{
 						flyingDownLines.push_back(curLine);
-						flyingDownCount ++;
+						linesJustFilledToFlyDown ++;
 					}
-					else
+					else if (!curLine->lineIsEmpty())
 					{
 						curLine->setBlink(true);
 						burningLines.push_back(curLine);
@@ -186,16 +191,22 @@ namespace sfmlcubes
 				}
 				else if (!curLine->lineIsEmpty())
 				{
-					curLine->setMoveBy(flyingDownCount + burningCount);
+					curLine->setMoveBy(linesJustFilledToFlyDown + burningCount);
 					burningBlockAtBottomEnd = false;
 					remainingLines.push_back(curLine);
 				}
 			}
 
+			// Set movement for flying down lines
+			for (list<LineWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			{
+				(*iter)->setMoveBy(linesJustFilledToFlyDown);
+			}
+
 			// Clearing the source shape
 			fallen.clear();
 
-			if (flyingDownCount > 0 || burningCount > 0)
+			if (linesJustFilledToFlyDown > 0 || burningCount > 0)
 			{
 				// Starting the blinking of the firing lines
 				startBlinking();
@@ -214,13 +225,13 @@ namespace sfmlcubes
 			fallen.clear();
 			while (burningLines.size() > 0)
 			{
-				fallen += (*burningLines.end())->getShape();
+				fallen += burningLines.back()->getShape();
 				//delete (*burningLines.end());
 				burningLines.pop_back();
 			}
 			while (flyingDownLines.size() > 0)
 			{
-				fallen += (*flyingDownLines.end())->getShape();
+				fallen += flyingDownLines.back()->getShape();
 				//delete (*flyingDownLines.end());
 				flyingDownLines.pop_back();
 			}
@@ -236,18 +247,20 @@ namespace sfmlcubes
 		void FallenController::removeBurntLinesAndStartFallingRemaining()
 		{
 			// Counting burnt lines
-			linesJustFired = burningLines.size();
-			linesFired += linesJustFired;
+			linesJustFilled = burningLines.size() + linesJustFilledToFlyDown;
+			linesBurnt += linesJustFilled;
 
 			// Clearing the burnt lines
 			burningLines.clear();
 
+			// Start falling down the walls
+			wallsController.startFalling(linesJustFilledToFlyDown);
 			// Starting falling
 			startFalling();
 
 			{
 				stringstream ss;
-				ss << "Just cleared: " << linesJustFired << " lines";
+				ss << "Just cleared: " << linesJustFilled << " lines";
 				Logger::DEFAULT.logInfo(ss.str());
 			}
 
@@ -261,7 +274,7 @@ namespace sfmlcubes
 			{
 				bool shapeTopFound = false;
 				bool previousWasHole = false;
-				for (int j = top; j <= bottom; j++)
+				for (int j = top; j <= fieldBottom; j++)
 				{
 					if (!fallen.cubeAt(i, j).empty())
 					{

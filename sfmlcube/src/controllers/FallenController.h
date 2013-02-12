@@ -36,6 +36,7 @@ namespace sfmlcubes
 				int left, right, j;
 				bool blink;
 				int moveBy;
+
 			public:
 				LineWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j);
 
@@ -109,9 +110,11 @@ namespace sfmlcubes
 			WallsController& wallsController;
 			const VelocityController& velocityController;
 
-			int left, top, right, bottom;
-			int linesFired;
-			int linesJustFired;
+			int left, top, right, fieldBottom, visibleBottom;
+			int linesBurnt;
+			int linesJustFilled;
+
+			int linesJustFilledToFlyDown;
 
 			Shape fallen;
 
@@ -132,7 +135,8 @@ namespace sfmlcubes
 
 
 		public:
-			FallenController(WallsController& wallsController, const VelocityController& velocityController, int top, int bottom, int left, int right);
+			FallenController(WallsController& wallsController, const VelocityController& velocityController,
+			                 int top, int fieldBottom, int visibleBottom, int left, int right);
 
 			Shape getShape() const
 			{
@@ -143,12 +147,28 @@ namespace sfmlcubes
 			{
 				list<Shape> res;
 				res.push_back(fallen);
+
 				for (list<LineWithKinematics*>::const_iterator iter = remainingLines.begin();
 					 iter != remainingLines.end();
 					 iter++)
 				{
 					res.push_back((**iter).getShape());
 				}
+
+				for (list<LineWithKinematics*>::const_iterator iter = flyingDownLines.begin();
+					 iter != flyingDownLines.end();
+					 iter++)
+				{
+					res.push_back((**iter).getShape());
+				}
+
+				for (list<LineWithKinematics*>::const_iterator iter = burningLines.begin();
+					 iter != burningLines.end();
+					 iter++)
+				{
+					res.push_back((**iter).getShape());
+				}
+
 				return res;
 			}
 
@@ -157,12 +177,12 @@ namespace sfmlcubes
 
 			void mergeShape(const Shape& other) { fallen += other; }
 			void fireFullLines() { collectLines(); }
-			int getLinesFired() const { return linesFired; }
-			int getLinesJustFired() const { return linesJustFired; }
+			int getLinesFired() const { return linesBurnt; }
+			int getLinesJustBurnt() const { return linesJustFilled; }
 
 			State getState() const { return state; }
 			int getWidth() const { return right - left + 1; }
-			int getHeight() const { return bottom - top + 1; }
+			int getFieldHeight() const { return fieldBottom - top + 1; }
 			int countHoles() const;
 
 			virtual ~FallenController();

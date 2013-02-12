@@ -64,7 +64,7 @@ namespace sfmlcubes
 			bool paused;
 
 		public:
-			CubesField(int width, int height);
+			CubesField(int width, int height, int visibleHeight);
 			virtual ~CubesField();
 
 			const ShapeDealer& getShapeDealer() const { return shapeDealer; }

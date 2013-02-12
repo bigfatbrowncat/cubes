@@ -17,12 +17,10 @@ namespace sfmlcubes
 	using namespace movingcubes;
 	namespace controllers
 	{
-		WallsController::WallsController(const VelocityController& velocityController, int width, int height) :
+		WallsController::WallsController(const VelocityController& velocityController, int width, int height, int visibleHeight) :
 				velocityController(velocityController),
-				wallsKinematics(*this), width(width), height(height), state(sIdle)
+				wallsKinematics(*this), state(sIdle), width(width), height(height), visibleHeight(visibleHeight), wallColor(sf::Color(96, 96, 96))
 		{
-			sf::Color wallColor = sf::Color(96, 96, 96);
-
 			for (int i = 0; i < width; i++)
 			{
 				walls.addCube(Cube(i, height - 1, Cube::mtWall, wallColor));
@@ -59,17 +57,27 @@ namespace sfmlcubes
 			}
 		}
 
-		void WallsController::startMovingDown()
+		void WallsController::addTopBricks(int count)
 		{
-			state = sMovingDown;
-			wallsKinematics.moveVertical(1, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());
-			Logger::DEFAULT.logInfo("down");
+			for (int j = -1; j >= -count; j--)
+			{
+				walls.addCube(Cube(0, j, Cube::mtWall, wallColor));
+				walls.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
+			}
 		}
 
-		void WallsController::moveDown()
+		void WallsController::startFalling(int count)
 		{
-			//walls.moveVerticalNoTransition(1);
-			startMovingDown();
+			// Here we should emulate endless walls,
+			// so adding the new bricks to the top
+			addTopBricks(count);
+
+			// removing the invisible bricks which we will never see again
+			walls.removeAllBelow(visibleHeight);
+
+			state = sMovingDown;
+			wallsKinematics.moveVertical(count, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());
+			Logger::DEFAULT.logInfo("down");
 		}
 
 		WallsController::~WallsController()

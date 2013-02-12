@@ -70,7 +70,7 @@ namespace sfmlcubes
 			AnimatedPopupMessage apm_message(wallsController.getShape());
 			AnimatedPopupMessage apm_counter(lastFallenShape);
 
-			int count = fallenController.getLinesJustFired();
+			int count = fallenController.getLinesJustBurnt();
 			// Showing the lines popup
 			if (count > 0)
 			{

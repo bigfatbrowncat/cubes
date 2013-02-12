@@ -64,6 +64,21 @@ namespace sfmlcubes
 				cubes.push_back(cube);
 			}
 
+			void removeAllBelow(int y)
+			{
+				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end();)
+				{
+					if ((*iter).y > y)
+					{
+						iter = cubes.erase(iter);
+					}
+					else
+					{
+						iter ++;
+					}
+				}
+			}
+
 			void removeCube(int x, int y)
 			{
 				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end(); iter++)

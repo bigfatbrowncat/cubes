@@ -31,19 +31,21 @@ namespace sfmlcubes
 			Shape walls;
 			ShapeKinematics wallsKinematics;
 			State state;
-			int width, height;
+			int width, height, visibleHeight;
 
-			void startMovingDown();
+			sf::Color wallColor;
+
+			void addTopBricks(int count);
 
 		public:
-			WallsController(const VelocityController& velocityController, int width, int height);
+			WallsController(const VelocityController& velocityController, int width, int height, int visibleHeight);
 
 			void processTimeStep(float dt);
 
 			Shape getShape() const { return walls; }
 			void setShape(const Shape& shape) { walls = shape; }
 
-			void moveDown();
+			void startFalling(int count);
 
 			virtual ~WallsController();
 		};
