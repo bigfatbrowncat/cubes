@@ -22,13 +22,13 @@ namespace sfmlcubes
 
 	namespace controllers
 	{
-		CubesField::CubesField(int width, int height, int visibleHeight):
+		CubesField::CubesField(int width, int height, int visibleFrame):
 
 				width(width), height(height),
 				state(cmsBetweenShapes),
 				velocityController(),
-				wallsController(velocityController, width, height, visibleHeight),
-				fallenController(wallsController, velocityController, 0, height - 2, visibleHeight,  1, width - 2),
+				wallsController(velocityController, width, height, visibleFrame),
+				fallenController(wallsController, velocityController, 0, height - 2, height + visibleFrame,  1, width - 2),
 				fallingShapeController(wallsController, fallenController, velocityController),
 				scoreCounter(fallenController, wallsController),
 

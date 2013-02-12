@@ -31,14 +31,14 @@ namespace sfmlcubes
 			Shape walls;
 			ShapeKinematics wallsKinematics;
 			State state;
-			int width, height, visibleHeight;
+			int width, height, visibleFrame;
 
 			sf::Color wallColor;
 
 			void addTopBricks(int count);
 
 		public:
-			WallsController(const VelocityController& velocityController, int width, int height, int visibleHeight);
+			WallsController(const VelocityController& velocityController, int width, int height, int visibleFrame);
 
 			void processTimeStep(float dt);
 

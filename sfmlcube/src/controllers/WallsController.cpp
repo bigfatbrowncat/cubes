@@ -17,9 +17,9 @@ namespace sfmlcubes
 	using namespace movingcubes;
 	namespace controllers
 	{
-		WallsController::WallsController(const VelocityController& velocityController, int width, int height, int visibleHeight) :
+		WallsController::WallsController(const VelocityController& velocityController, int width, int height, int visibleFrame) :
 				velocityController(velocityController),
-				wallsKinematics(*this), state(sIdle), width(width), height(height), visibleHeight(visibleHeight), wallColor(sf::Color(96, 96, 96))
+				wallsKinematics(*this), state(sIdle), width(width), height(height), visibleFrame(visibleFrame), wallColor(sf::Color(96, 96, 96))
 		{
 			for (int i = 0; i < width; i++)
 			{
@@ -29,7 +29,7 @@ namespace sfmlcubes
 			walls.addCube(Cube(0, -1, Cube::mtVoid, wallColor));
 			walls.addCube(Cube(width - 1, -1, Cube::mtVoid, wallColor));
 
-			for (int j = 0; j < height; j++)
+			for (int j = -visibleFrame; j < height; j++)
 			{
 				walls.addCube(Cube(0, j, Cube::mtWall, wallColor));
 				walls.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
@@ -59,7 +59,7 @@ namespace sfmlcubes
 
 		void WallsController::addTopBricks(int count)
 		{
-			for (int j = -1; j >= -count; j--)
+			for (int j = -1 - visibleFrame; j >= -count - visibleFrame; j--)
 			{
 				walls.addCube(Cube(0, j, Cube::mtWall, wallColor));
 				walls.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
@@ -73,7 +73,7 @@ namespace sfmlcubes
 			addTopBricks(count);
 
 			// removing the invisible bricks which we will never see again
-			walls.removeAllBelow(visibleHeight);
+			walls.removeAllBelow(height + visibleFrame);
 
 			state = sMovingDown;
 			wallsKinematics.moveVertical(count, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());

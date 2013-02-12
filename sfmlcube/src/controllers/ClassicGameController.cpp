@@ -12,7 +12,7 @@ namespace sfmlcubes
 	namespace controllers
 	{
 		ClassicGameController::ClassicGameController() :
-				board(12, 21, 24),
+				board(12, 21, 3),
 
 				rightKeyPressed(false),
 				leftKeyPressed(false),
