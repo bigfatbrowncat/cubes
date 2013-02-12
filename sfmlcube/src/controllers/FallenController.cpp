@@ -171,29 +171,39 @@ namespace sfmlcubes
 			for (int j = visibleBottom; j >= top; j--)
 			{
 				LineWithKinematics* curLine = new LineWithKinematics(velocityController, fallen, left, right, j);
-				if (j > fieldBottom)
+
+				if (!curLine->lineIsEmpty())
 				{
-					if (!curLine->lineIsEmpty()) flyingDownLines.push_back(curLine);
-				}
-				else if (curLine->lineIsFull())
-				{
-					if (burningBlockAtBottomEnd)
+
+					if (j > fieldBottom)
 					{
 						flyingDownLines.push_back(curLine);
-						linesJustFilledToFlyDown ++;
 					}
-					else if (!curLine->lineIsEmpty())
+					else if (curLine->lineIsFull())
 					{
-						curLine->setBlink(true);
-						burningLines.push_back(curLine);
-						burningCount++;
+						if (burningBlockAtBottomEnd)
+						{
+							flyingDownLines.push_back(curLine);
+							linesJustFilledToFlyDown ++;
+						}
+						else
+						{
+							curLine->setBlink(true);
+							burningLines.push_back(curLine);
+							burningCount++;
+						}
+					}
+					else
+					{
+						curLine->setMoveBy(linesJustFilledToFlyDown + burningCount);
+						burningBlockAtBottomEnd = false;
+						remainingLines.push_back(curLine);
 					}
 				}
-				else if (!curLine->lineIsEmpty())
+				else
 				{
-					curLine->setMoveBy(linesJustFilledToFlyDown + burningCount);
-					burningBlockAtBottomEnd = false;
-					remainingLines.push_back(curLine);
+					// current line is empty
+					delete curLine;
 				}
 			}
 
@@ -226,20 +236,19 @@ namespace sfmlcubes
 			while (burningLines.size() > 0)
 			{
 				fallen += burningLines.back()->getShape();
-				//delete (*burningLines.end());
+				delete burningLines.back();
 				burningLines.pop_back();
 			}
 			while (flyingDownLines.size() > 0)
 			{
 				fallen += flyingDownLines.back()->getShape();
-				//delete (*flyingDownLines.end());
+				delete flyingDownLines.back();
 				flyingDownLines.pop_back();
 			}
 			while (remainingLines.size() > 0)
 			{
-				LineWithKinematics* end = remainingLines.back();
-				fallen += end->getShape();
-				//delete end;
+				fallen += remainingLines.back()->getShape();
+				delete remainingLines.back();
 				remainingLines.pop_back();
 			}
 		}

@@ -95,6 +95,7 @@ namespace sfmlcubes
 					line = shape;
 				}
 
+				virtual ~LineWithKinematics() {}
 			};
 
 		public:
