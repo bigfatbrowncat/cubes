@@ -12,6 +12,7 @@
 #include "../movingcubes/ShapeContainer.h"
 #include "../movingcubes/ShapeKinematics.h"
 #include "VelocityController.h"
+#include "BackgroundDealer.h"
 
 namespace sfmlcubes
 {
@@ -30,12 +31,15 @@ namespace sfmlcubes
 
 			Shape walls;
 			ShapeKinematics wallsKinematics;
+			BackgroundDealer backgroundDealer;
+
 			State state;
 			int width, height, visibleFrame;
 
 			sf::Color wallColor;
 
 			void addTopBricks(int count);
+			void addRowsFromDealer(int count);
 
 		public:
 			WallsController(const VelocityController& velocityController, int width, int height, int visibleFrame);
