@@ -59,7 +59,7 @@ namespace sfmlcubes
 
 		void WallsController::addTopBricks(int count)
 		{
-			for (int j = -1 - visibleFrame; j >= -count - visibleFrame; j--)
+			for (int j = - visibleFrame; j >= -count - visibleFrame; j--)
 			{
 				walls.addCube(Cube(0, j, Cube::mtWall, wallColor));
 				walls.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
