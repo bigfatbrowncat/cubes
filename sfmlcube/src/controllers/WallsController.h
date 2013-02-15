@@ -31,7 +31,6 @@ namespace sfmlcubes
 
 			Shape walls;
 			ShapeKinematics wallsKinematics;
-			BackgroundDealer backgroundDealer;
 
 			State state;
 			int width, height, visibleFrame;
@@ -39,7 +38,6 @@ namespace sfmlcubes
 			sf::Color wallColor;
 
 			void addTopBricks(int count);
-			void addRowsFromDealer(int count);
 
 		public:
 			WallsController(const VelocityController& velocityController, int width, int height, int visibleFrame);
@@ -50,6 +48,8 @@ namespace sfmlcubes
 			void setShape(const Shape& shape) { walls = shape; }
 
 			void startFalling(int count);
+
+			bool anyCollisions(const Shape& shape);
 
 			virtual ~WallsController();
 		};
