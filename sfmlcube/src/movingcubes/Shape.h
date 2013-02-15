@@ -138,6 +138,8 @@ namespace sfmlcubes
 
 			Shape& operator += (const Shape& other);
 
+			bool isEmpty() { return cubes.size() == 0; }
+
 			virtual ~Shape() {}
 		};
 	}

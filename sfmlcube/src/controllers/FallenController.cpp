@@ -56,6 +56,7 @@ namespace sfmlcubes
 				                           int top, int fieldBottom, int visibleBottom, int left, int right) :
 				state(sPassive),
 				wallsController(wallsController),
+				backgroundDealer(right - left),
 				velocityController(velocityController),
 				left(left), top(top), right(right), fieldBottom(fieldBottom), visibleBottom(visibleBottom),
 				linesBurnt(0),
@@ -205,6 +206,14 @@ namespace sfmlcubes
 					// current line is empty
 					delete curLine;
 				}
+			}
+
+			// Dealing the new lines
+			for (int j = -1; j >= -linesJustFilledToFlyDown; j--)
+			{
+				LineWithKinematics* newLine = LineWithKinematics::fromDealer(velocityController, backgroundDealer, left, right, j);
+				newLine->setMoveBy(linesJustFilledToFlyDown + burningCount);
+				remainingLines.push_back(newLine);
 			}
 
 			// Set movement for flying down lines

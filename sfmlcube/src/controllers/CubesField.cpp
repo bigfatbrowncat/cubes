@@ -40,6 +40,46 @@ namespace sfmlcubes
 
 		CubesField::~CubesField() { }
 
+		Shape CubesField::findProperPosition(const Shape& shape)
+		{
+			Shape best, proper;
+			for (int i = width; i >= 0; i--)
+			{
+				Shape test = shape;
+				int x = width / 2 + (i % 2 == 0 ? 1 : -1) * (i / 2);
+
+				test.moveHorizontalNoTransition(x);
+
+				Shape testD = test;
+				testD.moveVerticalNoTransition(1);
+
+				Shape testDD = testD;
+				testD.moveVerticalNoTransition(1);
+
+				// Checking for collisions
+				if (!fallenController.anyCollisionsWithRemainingLines(test)  && !wallsController.anyCollisions(test) &&
+				    !fallenController.anyCollisionsWithRemainingLines(testD) && !wallsController.anyCollisions(testD))
+				{
+					if (!fallenController.anyCollisionsWithRemainingLines(testDD) && !wallsController.anyCollisions(testDD))
+					{
+						best = test;
+					}
+					else
+					{
+						proper = test;
+					}
+				}
+
+			}
+			if (!best.isEmpty())
+			{
+				return best;
+			}
+			else
+			{
+				return proper;
+			}
+		}
 
 		void CubesField::processTimeStep(float dt)
 		{
@@ -89,13 +129,13 @@ namespace sfmlcubes
 					{
 						scoreCounter.linesHasBeenFired();
 						// Dealing the new shape
-						Shape newShape = shapeDealer.dealNext();
+						Shape dealedShape = shapeDealer.dealNext();
 						// Positioning it to the top-center of the game field
-						newShape.moveHorizontalNoTransition(6);
-						//newShape.moveVerticalNoTransition(0);
 
-						// Checking for collisions
-						if (fallenController.anyCollisionsWithRemainingLines(newShape))
+						Shape newShape = findProperPosition(dealedShape);
+
+						// Checking if the positioning succeeded
+						if (newShape.isEmpty())
 						{
 							// Our new shape collides with the fallen ones.
 							// That means the game is over

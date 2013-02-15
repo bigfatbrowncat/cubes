@@ -41,12 +41,22 @@ namespace sfmlcubes
 			BackgroundDealer(int width);
 			virtual ~BackgroundDealer();
 
+			void setWidth(int value)
+			{
+				if (width != value)
+				{
+					width = value;
+				}
+			}
+
+			int getWidth() { return width; }
+
 			vector<CellType> dealRow()
 			{
 				vector<CellType> res(width, ctEmpty);
 				for (int i = 0; i < width; i++)
 				{
-					res[i] = (nextRandom() < RAND_MAX / 10) ? ctWall : ctEmpty;
+					res[i] = (nextRandom() < RAND_MAX / 50) ? ctWall : ctEmpty;
 				}
 				return res;
 			}

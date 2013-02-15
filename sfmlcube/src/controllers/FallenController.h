@@ -39,6 +39,29 @@ namespace sfmlcubes
 
 			public:
 				LineWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j);
+				static LineWithKinematics* fromDealer(const VelocityController& velocityController, BackgroundDealer& backgroundDealer, int left, int right, int j)
+				{
+					Shape shp;
+					backgroundDealer.setWidth(right - left + 1);
+					vector<BackgroundDealer::CellType> newRow = backgroundDealer.dealRow();
+					for (size_t i = 0; i < newRow.size(); i++)
+					{
+						switch (newRow[i])
+						{
+						case BackgroundDealer::ctEmpty:
+							// add nothing
+							break;
+						case BackgroundDealer::ctWall:
+							// add wall
+							shp.addCube(Cube(i + left, j, Cube::mtWall, sf::Color(128, 128, 128)));
+							break;
+						default:
+							Logger::DEFAULT.logWarning("Strange case here...");
+							break;
+						}
+					}
+					return new LineWithKinematics(velocityController, shp, left, right, j);
+				}
 
 				bool lineIsFull();
 				bool lineIsEmpty();
@@ -109,6 +132,8 @@ namespace sfmlcubes
 			State state;
 
 			WallsController& wallsController;
+			BackgroundDealer backgroundDealer;
+
 			const VelocityController& velocityController;
 
 			int left, top, right, fieldBottom, visibleBottom;
@@ -133,7 +158,7 @@ namespace sfmlcubes
 			void rebuildShape();
 			void removeBurntLinesAndStartFallingRemaining();
 
-
+			void addRowsFromDealer(int count);
 
 		public:
 			FallenController(WallsController& wallsController, const VelocityController& velocityController,
