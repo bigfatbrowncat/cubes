@@ -18,9 +18,9 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
-		float FallenController::LineWithKinematics::BLINKING_LONGITUDE = 0.6;
+		float FallenController::RowWithKinematics::BLINKING_LONGITUDE = 0.6;
 
-		FallenController::LineWithKinematics::LineWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j) :
+		FallenController::RowWithKinematics::RowWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j) :
 				velocityController(velocityController), kinematics(*this), left(left), right(right), j(j), blink(false), moveBy(0)
 		{
 			for (int i = left; i <= right; i++)
@@ -34,7 +34,7 @@ namespace sfmlcubes
 			}
 		}
 
-		bool FallenController::LineWithKinematics::lineIsFull()
+		bool FallenController::RowWithKinematics::lineIsFull()
 		{
 			for (int i = left; i <= right; i++)
 			{
@@ -43,7 +43,7 @@ namespace sfmlcubes
 			return true;
 		}
 
-		bool FallenController::LineWithKinematics::lineIsEmpty()
+		bool FallenController::RowWithKinematics::lineIsEmpty()
 		{
 			for (int i = left; i <= right; i++)
 			{
@@ -66,15 +66,15 @@ namespace sfmlcubes
 
 		void FallenController::processTimeStep(float dt)
 		{
-			for (list<LineWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
 				(**iter).advanceStep(dt);
 			}
-			for (list<LineWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
 				(**iter).advanceStep(dt);
 			}
-			for (list<LineWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
 				(**iter).advanceStep(dt);
 			}
@@ -105,7 +105,7 @@ namespace sfmlcubes
 		{
 			ShapeDynamics sd(shape);
 
-			for (list<LineWithKinematics*>::const_iterator iter = remainingLines.begin();
+			for (list<RowWithKinematics*>::const_iterator iter = remainingLines.begin();
 				 iter != remainingLines.end();
 				 iter ++)
 			{
@@ -118,12 +118,12 @@ namespace sfmlcubes
 
 		void FallenController::startFalling()
 		{
-			for (list<LineWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
 				(**iter).startAnimation();
 			}
 
-			for (list<LineWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
 				(**iter).startAnimation();
 			}
@@ -131,7 +131,7 @@ namespace sfmlcubes
 
 		void FallenController::startBlinking()
 		{
-			for (list<LineWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
 				(**iter).startAnimation();
 			}
@@ -139,7 +139,7 @@ namespace sfmlcubes
 
 		bool FallenController::isBlinkingInProgress()
 		{
-			for (list<LineWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
 				if ((**iter).isBlinkingInProgress()) return true;
 			}
@@ -148,12 +148,12 @@ namespace sfmlcubes
 
 		bool FallenController::isFallingInProgress()
 		{
-			for (list<LineWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
 				if ((**iter).isMovingInProgress()) return true;
 			}
 
-			for (list<LineWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
 				if ((**iter).isMovingInProgress()) return true;
 			}
@@ -171,7 +171,7 @@ namespace sfmlcubes
 			// Collecting the lines to lists
 			for (int j = visibleBottom; j >= top; j--)
 			{
-				LineWithKinematics* curLine = new LineWithKinematics(velocityController, fallen, left, right, j);
+				RowWithKinematics* curLine = new RowWithKinematics(velocityController, fallen, left, right, j);
 
 				if (!curLine->lineIsEmpty())
 				{
@@ -211,13 +211,13 @@ namespace sfmlcubes
 			// Dealing the new lines
 			for (int j = -1; j >= -linesJustFilledToFlyDown; j--)
 			{
-				LineWithKinematics* newLine = LineWithKinematics::fromDealer(velocityController, backgroundDealer, left, right, j);
+				RowWithKinematics* newLine = RowWithKinematics::fromDealer(velocityController, backgroundDealer, left, right, j);
 				newLine->setMoveBy(linesJustFilledToFlyDown + burningCount);
 				remainingLines.push_back(newLine);
 			}
 
 			// Set movement for flying down lines
-			for (list<LineWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
 				(*iter)->setMoveBy(linesJustFilledToFlyDown);
 			}

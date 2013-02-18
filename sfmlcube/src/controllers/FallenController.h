@@ -24,7 +24,7 @@ namespace sfmlcubes
 	{
 		class FallenController : public ShapeContainer, sf::NonCopyable
 		{
-			class LineWithKinematics : public ShapeContainer, sf::NonCopyable
+			class RowWithKinematics : public ShapeContainer, sf::NonCopyable
 			{
 				static float BLINKING_LONGITUDE;
 
@@ -38,8 +38,8 @@ namespace sfmlcubes
 				int moveBy;
 
 			public:
-				LineWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j);
-				static LineWithKinematics* fromDealer(const VelocityController& velocityController, BackgroundDealer& backgroundDealer, int left, int right, int j)
+				RowWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j);
+				static RowWithKinematics* fromDealer(const VelocityController& velocityController, BackgroundDealer& backgroundDealer, int left, int right, int j)
 				{
 					Shape shp;
 					backgroundDealer.setWidth(right - left + 1);
@@ -60,7 +60,7 @@ namespace sfmlcubes
 							break;
 						}
 					}
-					return new LineWithKinematics(velocityController, shp, left, right, j);
+					return new RowWithKinematics(velocityController, shp, left, right, j);
 				}
 
 				bool lineIsFull();
@@ -118,7 +118,7 @@ namespace sfmlcubes
 					line = shape;
 				}
 
-				virtual ~LineWithKinematics() {}
+				virtual ~RowWithKinematics() {}
 			};
 
 		public:
@@ -144,9 +144,9 @@ namespace sfmlcubes
 
 			Shape fallen;
 
-			list<LineWithKinematics*> remainingLines;
-			list<LineWithKinematics*> burningLines;
-			list<LineWithKinematics*> flyingDownLines;
+			list<RowWithKinematics*> remainingLines;
+			list<RowWithKinematics*> burningLines;
+			list<RowWithKinematics*> flyingDownLines;
 
 			void startFalling();
 			void startBlinking();
@@ -174,21 +174,21 @@ namespace sfmlcubes
 				list<Shape> res;
 				res.push_back(fallen);
 
-				for (list<LineWithKinematics*>::const_iterator iter = remainingLines.begin();
+				for (list<RowWithKinematics*>::const_iterator iter = remainingLines.begin();
 					 iter != remainingLines.end();
 					 iter++)
 				{
 					res.push_back((**iter).getShape());
 				}
 
-				for (list<LineWithKinematics*>::const_iterator iter = flyingDownLines.begin();
+				for (list<RowWithKinematics*>::const_iterator iter = flyingDownLines.begin();
 					 iter != flyingDownLines.end();
 					 iter++)
 				{
 					res.push_back((**iter).getShape());
 				}
 
-				for (list<LineWithKinematics*>::const_iterator iter = burningLines.begin();
+				for (list<RowWithKinematics*>::const_iterator iter = burningLines.begin();
 					 iter != burningLines.end();
 					 iter++)
 				{

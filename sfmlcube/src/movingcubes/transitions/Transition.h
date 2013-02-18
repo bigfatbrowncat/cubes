@@ -47,7 +47,6 @@ namespace sfmlcubes
 				void advanceStep(double delta);
 				virtual ~Transition();
 
-				float getPhase() const { return phase; }
 				bool isInProgress() const { return inProgress; }
 
 				virtual float getValue();
