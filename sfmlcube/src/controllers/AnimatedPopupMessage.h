@@ -1,7 +1,7 @@
 #ifndef ANIMATEDPOPUPMESSAGE_H_
 #define ANIMATEDPOPUPMESSAGE_H_
 
-#include "../movingcubes/Shape.h"
+#include "../movingcubes/ShapeState.h"
 #include "AnimatedPopupLine.h"
 
 namespace sfmlcubes
@@ -13,26 +13,19 @@ namespace sfmlcubes
 		class AnimatedPopupMessage
 		{
 		private:
-			ShapeCubes shape;
+			ShapeState shapeState;
 			list<AnimatedPopupLine> lines;
 		public:
-			AnimatedPopupMessage(const ShapeCubes& shape);
+			AnimatedPopupMessage(const ShapeState& shapeState);
 
-			AnimatedPopupMessage(const AnimatedPopupMessage& other)
+			AnimatedPopupMessage(const AnimatedPopupMessage& other) :
+					shapeState(other.shapeState),
+					lines(other.lines)
 			{
-				*this = other;
-			}
-
-			const AnimatedPopupMessage& operator = (const AnimatedPopupMessage& other)
-			{
-				shape = other.shape;
-				lines = other.lines;
-
 				for (list<AnimatedPopupLine>::iterator iter = lines.begin(); iter != lines.end(); iter++)
 				{
 					(*iter).message = this;
 				}
-				return *this;
 			}
 
 			void addLine(const AnimatedPopupLine& newLine)
@@ -42,7 +35,7 @@ namespace sfmlcubes
 			}
 
 			int getLinesCount() const { return lines.size(); }
-			ShapeCubes getShapeCubes() const { return shape; }
+			ShapeState getShapeState() const { return shapeState; }
 			const list<AnimatedPopupLine>::const_iterator getLinesBegin() const { return lines.begin(); }
 			const list<AnimatedPopupLine>::const_iterator getLinesEnd() const { return lines.end(); }
 

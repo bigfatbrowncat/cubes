@@ -14,12 +14,12 @@ namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		Shape::Shape() :
+		Shape::Shape(TimingManager& timingManager) :
 			ambient(128, 128, 128, 255),
-			slidingX(new ConstantParameter(0.0)),
-			slidingY(new ConstantParameter(0.0)),
-			rotatingAngle(new ConstantParameter(0.0)),
-			transparency(new ConstantParameter(1.0))
+			slidingX(new ConstantParameter(timingManager, 0.0)),
+			slidingY(new ConstantParameter(timingManager, 0.0)),
+			rotatingAngle(new ConstantParameter(timingManager, 0.0)),
+			transparency(new ConstantParameter(timingManager, 1.0))
 		{
 		}
 
@@ -32,14 +32,6 @@ namespace sfmlcubes
 			transparency((Parameter*)other.transparency->clone())
 		{
 
-		}
-
-		void Shape::processTimeStep(double delta)
-		{
-			slidingX->advanceStep(delta);
-			slidingY->advanceStep(delta);
-			rotatingAngle->advanceStep(delta);
-			transparency->advanceStep(delta);
 		}
 
 		void Shape::setSlidingXParameter(const Parameter& newParameter)

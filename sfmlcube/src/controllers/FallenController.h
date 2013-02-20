@@ -23,7 +23,7 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
-		class FallenController : public sf::NonCopyable
+		class FallenController : public sf::NonCopyable, public TimeDependent
 		{
 			class RowWithKinematics : public sf::NonCopyable
 			{
@@ -39,8 +39,8 @@ namespace sfmlcubes
 				int moveBy;
 
 			public:
-				RowWithKinematics(const VelocityController& velocityController, const ShapeCubes& source, int left, int right, int j);
-				static RowWithKinematics* fromDealer(const VelocityController& velocityController, BackgroundDealer& backgroundDealer, int left, int right, int j)
+				RowWithKinematics(TimingManager& timingManager, const VelocityController& velocityController, const ShapeCubes& source, int left, int right, int j);
+				static RowWithKinematics* fromDealer(TimingManager& timingManager, const VelocityController& velocityController, BackgroundDealer& backgroundDealer, int left, int right, int j)
 				{
 					ShapeCubes shp;
 					backgroundDealer.setWidth(right - left + 1);
@@ -61,7 +61,7 @@ namespace sfmlcubes
 							break;
 						}
 					}
-					return new RowWithKinematics(velocityController, shp, left, right, j);
+					return new RowWithKinematics(timingManager, velocityController, shp, left, right, j);
 				}
 
 				bool lineIsFull();
@@ -71,12 +71,6 @@ namespace sfmlcubes
 				bool getBlink() { return blink; }
 				void setMoveBy(int value) { moveBy = value; }
 				int getMoveBy() { return moveBy; }
-
-				void advanceStep(double delta)
-				{
-					line.processTimeStep(delta);
-					kinematics.processTimeStep(delta);
-				}
 
 				bool isBlinkingInProgress()
 				{
@@ -115,10 +109,6 @@ namespace sfmlcubes
 				{
 					return line;
 				}
-				/*void setShape(const Shape& shape)
-				{
-					line = shape;
-				}*/
 
 				virtual ~RowWithKinematics() {}
 			};
@@ -162,8 +152,11 @@ namespace sfmlcubes
 
 			void addRowsFromDealer(int count);
 
+		protected:
+			void processTimeStep(double dt);
+
 		public:
-			FallenController(WallsController& wallsController, const VelocityController& velocityController,
+			FallenController(TimingManager& timingManager, WallsController& wallsController, const VelocityController& velocityController,
 			                 int top, int fieldBottom, int visibleBottom, int left, int right);
 
 			const Shape& getShape() const
@@ -200,7 +193,6 @@ namespace sfmlcubes
 				return res;
 			}
 
-			void processTimeStep(float dt);
 			bool anyCollisionsWithRemainingLines(const ShapeCubes& cubes);
 
 			void fireFullLines() { collectLines(); }

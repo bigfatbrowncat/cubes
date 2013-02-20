@@ -13,10 +13,13 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
-			TransitionableParameter::TransitionableParameter(double duration,
+			TransitionableParameter::TransitionableParameter(TimingManager& timingManager,
+			                                                 double duration,
 			                                                 const PhaseProcessingFunction& function,
 			                                                 double startingValue,
 			                                                 double endingValue) :
+			        Parameter(timingManager),
+
 					linearPhase(0.0),
 					function((PhaseProcessingFunction*)(function.clone())),
 					processedPhase(this->function->process(linearPhase)),
@@ -29,6 +32,8 @@ namespace sfmlcubes
 			}
 
 			TransitionableParameter::TransitionableParameter(const TransitionableParameter& other) :
+					Parameter(other.getTimingManager()),
+
 			        linearPhase(other.linearPhase),
 			        function((PhaseProcessingFunction*)(other.function->clone())),
 			        processedPhase(other.processedPhase),
@@ -40,7 +45,7 @@ namespace sfmlcubes
 			{
 			}
 
-			void TransitionableParameter::advanceStep(double delta)
+			void TransitionableParameter::processTimeStep(double delta)
 			{
 				time += delta;
 				linearPhase = time / duration;

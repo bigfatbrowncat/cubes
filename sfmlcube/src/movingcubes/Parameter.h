@@ -9,16 +9,17 @@
 #define PARAMETER_H_
 
 #include "../Cloneable.h"
+#include "TimeDependent.h"
+#include "TimingManager.h"
 
 namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		class Parameter : public Cloneable
+		class Parameter : public Cloneable, public TimeDependent
 		{
 		public:
-			// Advances the time by delta
-			virtual void advanceStep(double delta) = 0;
+			Parameter(TimingManager& timingManager) : TimeDependent(timingManager) {}
 
 			// Returns the current value
 			virtual double getValue() const = 0;

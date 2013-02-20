@@ -1,20 +1,20 @@
 /*
- * TimedController.cpp
+ * TimeDependent.cpp
  *
  *  Created on: Feb 20, 2013
  *      Author: imizus
  */
 
 #include "TimingManager.h"
-#include "TimedController.h"
+#include "TimeDependent.h"
 
 namespace sfmlcubes
 {
-	TimedController::TimedController(TimingManager& timingManager) : timingManager(timingManager)
+	TimeDependent::TimeDependent(TimingManager& timingManager) : timingManager(timingManager)
 	{
 		timingManager.add(*this);
 	}
-	TimedController::~TimedController()
+	TimeDependent::~TimeDependent()
 	{
 		timingManager.remove(*this);
 	}

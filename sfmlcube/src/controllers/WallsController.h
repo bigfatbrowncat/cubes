@@ -18,7 +18,7 @@ namespace sfmlcubes
 	using namespace movingcubes;
 	namespace controllers
 	{
-		class WallsController
+		class WallsController : public TimeDependent
 		{
 			enum State
 			{
@@ -39,12 +39,11 @@ namespace sfmlcubes
 			void addTopBricks(int count);
 
 		public:
-			WallsController(const VelocityController& velocityController, int width, int height, int visibleFrame);
+			WallsController(TimingManager& timingManager, const VelocityController& velocityController, int width, int height, int visibleFrame);
 
-			void processTimeStep(float dt);
+			void processTimeStep(double dt);
 
 			const Shape& getShape() const { return walls; }
-//			void setShape(const Shape& shape) { walls = shape; }
 
 			void startFalling(int count);
 

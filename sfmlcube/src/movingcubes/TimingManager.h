@@ -10,7 +10,7 @@
 
 #include <list>
 
-#include "TimedController.h"
+#include "TimeDependent.h"
 
 using namespace std;
 
@@ -18,17 +18,17 @@ namespace sfmlcubes
 {
 	class TimingManager
 	{
-		friend class TimedController;
+		friend class TimeDependent;
 	private:
-		list<TimedController*> controllers;
+		list<TimeDependent*> controllers;
 
-		void add(TimedController& tc);
-		void remove(TimedController& tc);
+		void add(TimeDependent& tc);
+		void remove(TimeDependent& tc);
 	public:
-		TimingManager();
+		TimingManager() {}
 		void processTimeStep(double dt);
 
-		virtual ~TimingManager();
+		virtual ~TimingManager() {}
 	};
 
 }

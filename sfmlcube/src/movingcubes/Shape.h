@@ -41,7 +41,7 @@ namespace sfmlcubes
 
 			Parameter* transparency;
 
-			Shape();
+			Shape(TimingManager& timingManager);
 			Shape(const Shape& other);
 
 			void processTimeStep(double delta);

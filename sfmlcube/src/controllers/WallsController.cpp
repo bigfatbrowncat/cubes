@@ -18,9 +18,17 @@ namespace sfmlcubes
 	using namespace movingcubes;
 	namespace controllers
 	{
-		WallsController::WallsController(const VelocityController& velocityController, int width, int height, int visibleFrame) :
+		WallsController::WallsController(TimingManager& timingManager, const VelocityController& velocityController, int width, int height, int visibleFrame) :
+				TimeDependent(timingManager),
+
+				walls(timingManager),
 				velocityController(velocityController),
-				wallsKinematics(walls), state(sIdle), width(width), height(height), visibleFrame(visibleFrame), wallColor(sf::Color(96, 96, 96))
+				wallsKinematics(timingManager, walls),
+				state(sIdle),
+				width(width),
+				height(height),
+				visibleFrame(visibleFrame),
+				wallColor(sf::Color(96, 96, 96))
 		{
 			ShapeCubes wallsCubes;
 			for (int i = 0; i < width; i++)
@@ -39,11 +47,8 @@ namespace sfmlcubes
 			walls.setCubes(wallsCubes);
 		}
 
-		void WallsController::processTimeStep(float dt)
+		void WallsController::processTimeStep(double dt)
 		{
-			walls.processTimeStep(dt);
-			wallsKinematics.processTimeStep(dt);
-
 			switch (state)
 			{
 			case sIdle:
@@ -74,7 +79,7 @@ namespace sfmlcubes
 
 		bool WallsController::anyCollisions(const ShapeCubes& shape)
 		{
-			Shape shp;
+			Shape shp(getTimingManager());	// TODO Strange usage of Shape class. Maybe it should be simplified
 			shp.setCubes(shape);
 			ShapeDynamics sd(shp);
 

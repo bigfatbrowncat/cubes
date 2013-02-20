@@ -12,13 +12,8 @@ namespace sfmlcubes
 	namespace movingcubes
 	{
 
-		ConstantParameter::ConstantParameter() :
-				value(0.0)
-		{
-
-		}
-
-		ConstantParameter::ConstantParameter(double value) :
+		ConstantParameter::ConstantParameter(TimingManager& timingManager, double value) :
+				Parameter(timingManager),
 				value(value)
 		{
 

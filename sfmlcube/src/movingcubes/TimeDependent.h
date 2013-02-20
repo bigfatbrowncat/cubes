@@ -12,15 +12,18 @@ namespace sfmlcubes
 {
 	class TimingManager;
 
-	class TimedController
+	class TimeDependent
 	{
 		friend class TimingManager;
 	private:
 		TimingManager& timingManager;
-		virtual void processTimeStep(float dt) = 0;
+	protected:
+		virtual void processTimeStep(double dt) = 0;
 	public:
-		TimedController(TimingManager& timingManager);
-		~TimedController();
+		TimeDependent(TimingManager& timingManager);
+		TimingManager& getTimingManager() const { return timingManager; }
+
+		virtual ~TimeDependent();
 	};
 
 }

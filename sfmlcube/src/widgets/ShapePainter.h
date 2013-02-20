@@ -8,7 +8,7 @@
 #ifndef SHAPEPAINTER_H_
 #define SHAPEPAINTER_H_
 
-#include "../movingcubes/Shape.h"
+#include "../movingcubes/ShapeState.h"
 #include "../movingcubes/Coordinates.h"
 #include "../movingcubes/CubeCoordinates.h"
 #include "CubePainter.h"
@@ -24,8 +24,8 @@ namespace sfmlcubes
 			CubePainter& cubePainter;
 		public:
 			ShapePainter(CubePainter& cubePainter);
-			Coordinates fromCubeInShapeCoordsToShapeCoords(const Shape& shape, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const;
-			void paint(const Shape& cube) const;
+			Coordinates fromCubeInShapeCoordsToShapeCoords(const ShapeState& shapeState, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const;
+			void paint(const ShapeState& shapeState) const;
 			virtual ~ShapePainter();
 		};
 

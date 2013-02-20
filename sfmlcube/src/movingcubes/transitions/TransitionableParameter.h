@@ -45,12 +45,14 @@ namespace sfmlcubes
 				// The current value (the value at the current time)
 				double value;
 
-			public:
-				TransitionableParameter(double duration, const PhaseProcessingFunction& function, double startingValue, double endingValue);
-				TransitionableParameter(const TransitionableParameter& other);
+			protected:
 
 				// Advances the time by delta
-				virtual void advanceStep(double delta);
+				virtual void processTimeStep(double delta);
+
+			public:
+				TransitionableParameter(TimingManager& timingManager, double duration, const PhaseProcessingFunction& function, double startingValue, double endingValue);
+				TransitionableParameter(const TransitionableParameter& other);
 
 				// Returns the current value
 				virtual double getValue() const { return value; }

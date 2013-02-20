@@ -21,16 +21,13 @@ namespace sfmlcubes
 			double value;
 
 		public:
-			// Constructs the constant with zero
-			ConstantParameter();
-
 			// Constructs the constant with some value
-			ConstantParameter(double value);
+			ConstantParameter(TimingManager& timingManager, double value = 0);
 
 			// Advances the time by delta
 			//
 			// Implementation: Here it does nothing
-			virtual void advanceStep(double delta) {}
+			virtual void processTimeStep(double delta) {}
 
 			// Returns the current value
 			virtual double getValue() const { return value; }

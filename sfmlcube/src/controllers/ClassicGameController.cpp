@@ -12,7 +12,8 @@ namespace sfmlcubes
 	namespace controllers
 	{
 		ClassicGameController::ClassicGameController() :
-				board(12, 21, 3),
+				timingManager(),
+				board(timingManager, 12, 21, 3),
 
 				rightKeyPressed(false),
 				leftKeyPressed(false),
@@ -20,11 +21,6 @@ namespace sfmlcubes
 				rotateCWKeyPressed(false)
 		{
 
-		}
-
-		void ClassicGameController::processTimeStep(float dt)
-		{
-			board.processTimeStep(dt);
 		}
 
 		void ClassicGameController::handleKeyPressed(sf::Event::KeyEvent key)

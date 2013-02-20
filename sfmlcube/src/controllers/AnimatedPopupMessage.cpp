@@ -5,8 +5,8 @@ namespace sfmlcubes
 	namespace controllers
 	{
 
-		AnimatedPopupMessage::AnimatedPopupMessage(const ShapeCubes& shape) :
-				shape(shape)
+		AnimatedPopupMessage::AnimatedPopupMessage(const ShapeState& shapeState) :
+				shapeState(shapeState)
 		{
 		}
 

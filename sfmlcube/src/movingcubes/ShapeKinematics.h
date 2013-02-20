@@ -23,11 +23,11 @@ namespace sfmlcubes
 		class ShapeKinematics : sf::NonCopyable
 		{
 		private:
+			TimingManager& timingManager;
 			Shape& shape;
 		public:
-			ShapeKinematics(Shape& shape);
+			ShapeKinematics(TimingManager& timingManager, Shape& shape);
 
-			void processTimeStep(double delta);
 			bool transitionIsInProgress() const;
 
 			void moveVertical(int cells, const PhaseProcessingFunction& function, float longitude);
@@ -51,12 +51,6 @@ namespace sfmlcubes
 			{
 				return shape.transparency->isChanging();
 			}
-
-
-/*			const Transition& getHorizontalTransition() const { return mHorizontalTransition; }
-			const Transition& getVerticalTransition() const { return mVerticalTransition; }
-			const Transition& getRotateTransition() const { return mRotateTransition; }
-			const Transition& getBlinkingTransition() const { return mBlinkingTransition; }*/
 
 			virtual ~ShapeKinematics();
 		};

@@ -22,14 +22,15 @@ namespace sfmlcubes
 
 	namespace controllers
 	{
-		CubesField::CubesField(int width, int height, int visibleFrame):
+		CubesField::CubesField(TimingManager& timingManager, int width, int height, int visibleFrame):
+				TimeDependent(timingManager),
 
 				width(width), height(height),
 				state(cmsBetweenShapes),
 				velocityController(),
-				wallsController(velocityController, width, height, visibleFrame),
-				fallenController(wallsController, velocityController, 0, height - 2, height + visibleFrame,  1, width - 2),
-				fallingShapeController(wallsController, fallenController, velocityController),
+				wallsController(timingManager, velocityController, width, height, visibleFrame),
+				fallenController(timingManager, wallsController, velocityController, 0, height - 2, height + visibleFrame,  1, width - 2),
+				fallingShapeController(timingManager, wallsController, fallenController, velocityController),
 				scoreCounter(fallenController, wallsController),
 
 				time(0),
@@ -81,14 +82,10 @@ namespace sfmlcubes
 			}
 		}
 
-		void CubesField::processTimeStep(float dt)
+		void CubesField::processTimeStep(double dt)
 		{
 			if (!paused)
 			{
-				fallingShapeController.processTimeStep(dt);
-				fallenController.processTimeStep(dt);
-				wallsController.processTimeStep(dt);
-
 				time += dt;
 
 				switch (state)

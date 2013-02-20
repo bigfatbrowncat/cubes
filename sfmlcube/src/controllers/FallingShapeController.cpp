@@ -17,12 +17,15 @@ namespace sfmlcubes
 	{
 		using namespace sfmlcubes::movingcubes::transitions;
 
-		FallingShapeController::FallingShapeController(WallsController& wallsController, FallenController& fallenController, VelocityController& velocityController) :
+		FallingShapeController::FallingShapeController(TimingManager& timingManager, WallsController& wallsController, FallenController& fallenController, VelocityController& velocityController) :
+			TimeDependent(timingManager),
+			falling(timingManager),
+
 			wallsController(wallsController),
 			fallenController(fallenController),
 			velocityController(velocityController),
 
-			fallingKinematics(falling),
+			fallingKinematics(timingManager, falling),
 			fallingDynamics(falling),
 
 			fastFalling(false),
@@ -37,11 +40,8 @@ namespace sfmlcubes
 			fallingDynamics.addObstacle(wallsController.getShape());
 		}
 
-		void FallingShapeController::processTimeStep(float dt)
+		void FallingShapeController::processTimeStep(double dt)
 		{
-			fallingKinematics.processTimeStep(dt);
-			falling.processTimeStep(dt);
-
 			switch (state)
 			{
 

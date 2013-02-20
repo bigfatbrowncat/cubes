@@ -46,7 +46,7 @@ namespace sfmlcubes
 			cmsGameOver
 		};
 
-		class CubesField
+		class CubesField : public TimeDependent
 		{
 			int width, height;
 			CubesMechanicState state;
@@ -66,7 +66,7 @@ namespace sfmlcubes
 			ShapeCubes findProperPosition(const ShapeCubes& shape);
 
 		public:
-			CubesField(int width, int height, int visibleFrame);
+			CubesField(TimingManager& timingManager, int width, int height, int visibleFrame);
 			virtual ~CubesField();
 
 			const ShapeDealer& getShapeDealer() const { return shapeDealer; }
@@ -80,7 +80,7 @@ namespace sfmlcubes
 			void turnOn(CubesMechanicCommand command);
 			void turnOff(CubesMechanicCommand command);
 
-			void processTimeStep(float dt);
+			void processTimeStep(double dt);
 
 			CubesMechanicState getState() const { return state; }
 			int getLinesFired() const { return fallenController.getLinesFired(); }

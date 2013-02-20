@@ -20,35 +20,36 @@ namespace sfmlcubes
 
 		}
 
-		Coordinates ShapePainter::fromCubeInShapeCoordsToShapeCoords(const Shape& shape, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const
+		Coordinates ShapePainter::fromCubeInShapeCoordsToShapeCoords(const ShapeState& shapeState, CubeCoordinates currentCubeCoords, Coordinates coordsInTheCubeSpace) const
 		{
 			Coordinates res = coordsInTheCubeSpace;
+			const ShapeCubes& cubes = shapeState.getCubes();
 
 			float xx = currentCubeCoords.getX();
 			float yy = currentCubeCoords.getY();
 
 			// Moving the cube to it's rotating center
-			if (shape.getCubes().getRotatingCenterType() == rctCorner)
+			if (cubes.getRotatingCenterType() == rctCorner)
 			{
 				res = res.translate(1.0 / 2, -1.0 / 2, 0.f);
 			}
-			res = res.translate(-(shape.getCubes().getRotatingCenterX() - xx), shape.getCubes().getRotatingCenterY() - yy, 0.f);
+			res = res.translate(-(cubes.getRotatingCenterX() - xx), cubes.getRotatingCenterY() - yy, 0.f);
 
 			// Applying rotation
-			double angle = 90 * shape.rotatingAngle->getValue();
+			double angle = 90 * shapeState.getRotatingAngle();
 			res = res.rotate(angle, 0.f, 0.f, -1.f);
 
 			// Moving it back from rotating center
-			res = res.translate(shape.getCubes().getRotatingCenterX() - xx, -(shape.getCubes().getRotatingCenterY() - yy), 0.f);
-			if (shape.getCubes().getRotatingCenterType() == rctCorner)
+			res = res.translate(cubes.getRotatingCenterX() - xx, -(cubes.getRotatingCenterY() - yy), 0.f);
+			if (cubes.getRotatingCenterType() == rctCorner)
 			{
 				res = res.translate(-1.0 / 2, 1.0 / 2, 0.f);
 			}
 
 			// ** Sliding **
 
-			double hdistance = shape.slidingX->getValue();
-			double vdistance = shape.slidingY->getValue();
+			double hdistance = shapeState.getSlidingX();
+			double vdistance = shapeState.getSlidingY();
 			res = res.translate(hdistance, -vdistance, 0.f);
 
 			res = res.translate(xx, -yy, 0.f);		// Translating the cube to it's cube coords
@@ -56,10 +57,11 @@ namespace sfmlcubes
 			return res;
 		}
 
-		void ShapePainter::paint(const Shape& shape) const
+		void ShapePainter::paint(const ShapeState& shapeState) const
 		{
-			for (list<Cube>::const_iterator citer = shape.getCubes().getCubes().begin();
-				 citer != shape.getCubes().getCubes().end();
+			const ShapeCubes& cubes = shapeState.getCubes();
+			for (list<Cube>::const_iterator citer = cubes.getCubes().begin();
+				 citer != cubes.getCubes().end();
 				 citer ++)
 			{
 				glPushMatrix();
@@ -71,33 +73,33 @@ namespace sfmlcubes
 
 					glTranslatef(xx, -yy, 0.f);		// Translating the cube to it's cube coords
 
-					double hdistance = shape.slidingX->getValue();
-					double vdistance = shape.slidingY->getValue();
+					double hdistance = shapeState.getSlidingX();
+					double vdistance = shapeState.getSlidingY();
 					glTranslatef(hdistance, -vdistance, 0.f);
 
 					// ** Rotating **
 
 					// Moving it back from rotating center
-					if (shape.getCubes().getRotatingCenterType() == rctCorner)
+					if (cubes.getRotatingCenterType() == rctCorner)
 					{
 						glTranslatef(-1.0 / 2, 1.0 / 2, 0.f);
 					}
-					glTranslatef(shape.getCubes().getRotatingCenterX() - xx, -(shape.getCubes().getRotatingCenterY() - yy), 0.f);
+					glTranslatef(cubes.getRotatingCenterX() - xx, -(cubes.getRotatingCenterY() - yy), 0.f);
 
 					// Applying rotation
-					double angle = 90 * shape.rotatingAngle->getValue();
+					double angle = 90 * shapeState.getRotatingAngle();
 					glRotatef(angle, 0.f, 0.f, -1.f);
 
 					// Moving the cube to it's rotating center
-					glTranslatef(-(shape.getCubes().getRotatingCenterX() - xx), shape.getCubes().getRotatingCenterY() - yy, 0.f);
-					if (shape.getCubes().getRotatingCenterType() == rctCorner)
+					glTranslatef(-(cubes.getRotatingCenterX() - xx), cubes.getRotatingCenterY() - yy, 0.f);
+					if (cubes.getRotatingCenterType() == rctCorner)
 					{
 						glTranslatef(1.0 / 2, -1.0 / 2, 0.f);
 					}
 
-					sf::Color ambient = shape.ambient;
+					sf::Color ambient = shapeState.getAmbient();
 					cubePainter.setAmbient(ambient);
-					cubePainter.setTransparency(shape.transparency->getValue());
+					cubePainter.setTransparency(shapeState.getTransparency());
 
 					cubePainter.paint(*citer);
 				}

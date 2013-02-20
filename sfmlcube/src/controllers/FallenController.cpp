@@ -20,8 +20,15 @@ namespace sfmlcubes
 	{
 		float FallenController::RowWithKinematics::BLINKING_LONGITUDE = 0.6;
 
-		FallenController::RowWithKinematics::RowWithKinematics(const VelocityController& velocityController, const ShapeCubes& source, int left, int right, int j) :
-				velocityController(velocityController), kinematics(line), left(left), right(right), j(j), blink(false), moveBy(0)
+		FallenController::RowWithKinematics::RowWithKinematics(TimingManager& timingManager, const VelocityController& velocityController, const ShapeCubes& source, int left, int right, int j) :
+				line(timingManager),
+				velocityController(velocityController),
+				kinematics(timingManager, line),
+				left(left),
+				right(right),
+				j(j),
+				blink(false),
+				moveBy(0)
 		{
 			ShapeCubes lineCubes;
 			for (int i = left; i <= right; i++)
@@ -54,8 +61,10 @@ namespace sfmlcubes
 			return true;
 		}
 
-		FallenController::FallenController(WallsController& wallsController, const VelocityController& velocityController,
+		FallenController::FallenController(TimingManager& timingManager, WallsController& wallsController, const VelocityController& velocityController,
 				                           int top, int fieldBottom, int visibleBottom, int left, int right) :
+				TimeDependent(timingManager),
+				fallen(timingManager),
 				state(sPassive),
 				wallsController(wallsController),
 				backgroundDealer(right - left),
@@ -66,23 +75,8 @@ namespace sfmlcubes
 		{
 		}
 
-		void FallenController::processTimeStep(float dt)
+		void FallenController::processTimeStep(double dt)
 		{
-			fallen.processTimeStep(dt);
-
-			for (list<RowWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
-			{
-				(**iter).advanceStep(dt);
-			}
-			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
-			{
-				(**iter).advanceStep(dt);
-			}
-			for (list<RowWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
-			{
-				(**iter).advanceStep(dt);
-			}
-
 			switch (state)
 			{
 			case sPassive:
@@ -107,7 +101,7 @@ namespace sfmlcubes
 
 		bool FallenController::anyCollisionsWithRemainingLines(const ShapeCubes& cubes)
 		{
-			Shape shape;
+			Shape shape(getTimingManager());		// TODO Strange usage of Shape class. Maybe it should be simplified
 			shape.setCubes(cubes);
 			ShapeDynamics sd(shape);
 
@@ -177,7 +171,7 @@ namespace sfmlcubes
 			// Collecting the lines to lists
 			for (int j = visibleBottom; j >= top; j--)
 			{
-				RowWithKinematics* curLine = new RowWithKinematics(velocityController, fallen.getCubes(), left, right, j);
+				RowWithKinematics* curLine = new RowWithKinematics(getTimingManager(), velocityController, fallen.getCubes(), left, right, j);
 
 				if (!curLine->lineIsEmpty())
 				{
@@ -217,7 +211,7 @@ namespace sfmlcubes
 			// Dealing the new lines
 			for (int j = -1; j >= -linesJustFilledToFlyDown; j--)
 			{
-				RowWithKinematics* newLine = RowWithKinematics::fromDealer(velocityController, backgroundDealer, left, right, j);
+				RowWithKinematics* newLine = RowWithKinematics::fromDealer(getTimingManager(), velocityController, backgroundDealer, left, right, j);
 				newLine->setMoveBy(linesJustFilledToFlyDown + burningCount);
 				remainingLines.push_back(newLine);
 			}

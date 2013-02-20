@@ -21,6 +21,8 @@ namespace sfmlcubes
 			{
 			public:
 				virtual double process(double linearPhase) const = 0;
+
+				virtual ~PhaseProcessingFunction() {}
 			};
 
 		}

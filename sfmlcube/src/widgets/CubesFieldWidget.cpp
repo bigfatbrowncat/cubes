@@ -23,10 +23,10 @@ namespace sfmlcubes
 
 		}
 
-		Coordinates CubesFieldWidget::fromCubeInShapeCoordsToFieldCoords(const sf::Vector2u& targetSize, const Shape& shape, const CubeCoordinates& currentCubeCoords, const Coordinates& coordsInTheCubeSpace) const
+		Coordinates CubesFieldWidget::fromCubeInShapeCoordsToFieldCoords(const sf::Vector2u& targetSize, const ShapeState& shapeState, const CubeCoordinates& currentCubeCoords, const Coordinates& coordsInTheCubeSpace) const
 		{
 			float k = (float)targetSize.y / 480;
-			Coordinates res = shapePainter.fromCubeInShapeCoordsToShapeCoords(shape, currentCubeCoords, coordsInTheCubeSpace);
+			Coordinates res = shapePainter.fromCubeInShapeCoordsToShapeCoords(shapeState, currentCubeCoords, coordsInTheCubeSpace);
 
 			float delta_x = (cubesField.getWidth() - 0.5) / 2;
 			float delta_y = (cubesField.getHeight() - 0.5) / 2;

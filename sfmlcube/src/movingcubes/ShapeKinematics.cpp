@@ -14,12 +14,9 @@ namespace sfmlcubes
 	namespace movingcubes
 	{
 
-		ShapeKinematics::ShapeKinematics(Shape& shape) :
+		ShapeKinematics::ShapeKinematics(TimingManager& timingManager, Shape& shape) :
+			timingManager(timingManager),
 			shape(shape)
-		{
-		}
-
-		void ShapeKinematics::processTimeStep(double delta)
 		{
 		}
 
@@ -33,7 +30,7 @@ namespace sfmlcubes
 			ShapeCubes sc = shape.getCubes();
 			sc.moveVerticalNoTransition(cells);
 			shape.setCubes(sc);
-			shape.setSlidingYParameter(TransitionableParameter(longitude, function, -cells, 0));
+			shape.setSlidingYParameter(TransitionableParameter(timingManager, longitude, function, -cells, 0));
 		}
 
 		void ShapeKinematics::moveHorizontal(int cells, const PhaseProcessingFunction& function, float longitude)
@@ -41,7 +38,7 @@ namespace sfmlcubes
 			ShapeCubes sc = shape.getCubes();
 			sc.moveHorizontalNoTransition(cells);
 			shape.setCubes(sc);
-			shape.setSlidingXParameter(TransitionableParameter(longitude, function, -cells, 0));
+			shape.setSlidingXParameter(TransitionableParameter(timingManager,longitude, function, -cells, 0));
 		}
 
 		void ShapeKinematics::rotate(int angle, const PhaseProcessingFunction& function, float longitude)
@@ -49,12 +46,12 @@ namespace sfmlcubes
 			ShapeCubes sc = shape.getCubes();
 			sc.rotateNoTransition(angle);
 			shape.setCubes(sc);
-			shape.setRotatingAngleParameter(TransitionableParameter(longitude, function, -angle, 0));
+			shape.setRotatingAngleParameter(TransitionableParameter(timingManager,longitude, function, -angle, 0));
 		}
 
 		void ShapeKinematics::blink(float longitude, int blinks)
 		{
-			shape.setTransparencyParameter(TransitionableParameter(longitude, AbsCosinePhaseProcessingFunction(), 0, 1));
+			shape.setTransparencyParameter(TransitionableParameter(timingManager,longitude, AbsCosinePhaseProcessingFunction(), 0, 1));
 		}
 
 		ShapeKinematics::~ShapeKinematics()
