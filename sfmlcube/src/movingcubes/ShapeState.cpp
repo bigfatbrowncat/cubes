@@ -14,11 +14,11 @@ namespace sfmlcubes
 	namespace movingcubes
 	{
 		ShapeState::ShapeState(const Shape& shape) :
-			slidingX(shape.slidingX->getValue()),
-			slidingY(shape.slidingY->getValue()),
-			rotatingAngle(shape.rotatingAngle->getValue()),
-			transparency(shape.transparency->getValue()),
-			ambient(shape.ambient),
+			slidingX(shape.getSlidingXParameter().getValue()),
+			slidingY(shape.getSlidingYParameter().getValue()),
+			rotatingAngle(shape.getRotatingAngleParameter().getValue()),
+			transparency(shape.getTransparencyParameter().getValue()),
+			ambient(shape.getAmbient()),
 			cubes(shape.getCubes())
 		{
 

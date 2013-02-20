@@ -32,7 +32,7 @@ namespace sfmlcubes
 
 		bool ShapeDynamics::anyCollisions(const ShapeCubes& shape)
 		{
-			for (list<Cube>::const_iterator citer = shape.getCubes().begin(); citer != shape.getCubes().end(); citer++)
+			for (list<Cube>::const_iterator citer = shape.getCubeList().begin(); citer != shape.getCubeList().end(); citer++)
 			{
 				int i = (*citer).x;
 				int j = (*citer).y;

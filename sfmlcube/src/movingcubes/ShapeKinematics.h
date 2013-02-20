@@ -37,19 +37,19 @@ namespace sfmlcubes
 
 			bool isMovingHorizontally() const
 			{
-				return shape.slidingX->isChanging();
+				return shape.getSlidingXParameter().isChanging();
 			}
 			bool isMovingVertically() const
 			{
-				return shape.slidingY->isChanging();
+				return shape.getSlidingYParameter().isChanging();
 			}
 			bool isRotating() const
 			{
-				return shape.rotatingAngle->isChanging();
+				return shape.getRotatingAngleParameter().isChanging();
 			}
 			bool isBlinking() const
 			{
-				return shape.transparency->isChanging();
+				return shape.getTransparencyParameter().isChanging();
 			}
 
 			virtual ~ShapeKinematics();

@@ -60,8 +60,8 @@ namespace sfmlcubes
 		void ShapePainter::paint(const ShapeState& shapeState) const
 		{
 			const ShapeCubes& cubes = shapeState.getCubes();
-			for (list<Cube>::const_iterator citer = cubes.getCubes().begin();
-				 citer != cubes.getCubes().end();
+			for (list<Cube>::const_iterator citer = cubes.getCubeList().begin();
+				 citer != cubes.getCubeList().end();
 				 citer ++)
 			{
 				glPushMatrix();

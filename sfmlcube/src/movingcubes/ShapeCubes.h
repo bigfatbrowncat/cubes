@@ -26,7 +26,7 @@ namespace sfmlcubes
 		class ShapeCubes
 		{
 		private:
-			list<Cube> cubes;
+			list<Cube> cubeList;
 			int rotatingCenterX, rotatingCenterY;
 			RotatingCenterType rotatingCenterType;
 
@@ -34,13 +34,13 @@ namespace sfmlcubes
 			ShapeCubes();
 			virtual ~ShapeCubes();
 
-			const list<Cube>& getCubes() const { return cubes; }
+			const list<Cube>& getCubeList() const { return cubeList; }
 			void addCube(const Cube& cube);
 			void removeAllBelow(int y);
 			void removeCube(int x, int y);
 
 			void changeToFallenColor();
-			void clear() { cubes.clear(); }
+			void clear() { cubeList.clear(); }
 
 			void moveVerticalNoTransition(int cells);
 			void moveHorizontalNoTransition(int cells);
@@ -58,7 +58,7 @@ namespace sfmlcubes
 
 			ShapeCubes& operator += (const ShapeCubes& other);
 
-			bool isEmpty() { return cubes.size() == 0; }
+			bool isEmpty() { return cubeList.size() == 0; }
 
 			void setRotatingCenter(int centerX, int centerY, RotatingCenterType value)
 			{

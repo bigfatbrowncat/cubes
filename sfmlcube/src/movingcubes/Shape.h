@@ -27,7 +27,7 @@ namespace sfmlcubes
 		{
 		private:
 			ShapeCubes cubes;
-		public:
+
 			// Sliding
 			Parameter* slidingX;
 			Parameter* slidingY;
@@ -41,15 +41,12 @@ namespace sfmlcubes
 
 			Parameter* transparency;
 
+		public:
 			Shape(TimingManager& timingManager);
 			Shape(const Shape& other);
 
 			void processTimeStep(double delta);
 
-			void setSlidingXParameter(const Parameter& newParameter);
-			void setSlidingYParameter(const Parameter& newParameter);
-			void setRotatingAngleParameter(const Parameter& newParameter);
-			void setTransparencyParameter(const Parameter& newParameter);
 
 			bool isAnyParameterChanging();
 
@@ -59,7 +56,18 @@ namespace sfmlcubes
 			}
 
 			const ShapeCubes& getCubes() const { return cubes; }
+			const Parameter& getSlidingXParameter() const { return *slidingX; }
+			const Parameter& getSlidingYParameter() const { return *slidingY; }
+			const Parameter& getRotatingAngleParameter() const { return *rotatingAngle; }
+			const Parameter& getTransparencyParameter() const { return *transparency; }
+			const sf::Color& getAmbient() const { return ambient; }
+
+			void setSlidingXParameter(const Parameter& newParameter);
+			void setSlidingYParameter(const Parameter& newParameter);
+			void setRotatingAngleParameter(const Parameter& newParameter);
+			void setTransparencyParameter(const Parameter& newParameter);
 			void setCubes(const ShapeCubes& value) { cubes = value; }
+			void setAmbient(sf::Color& value) { ambient = value; }
 
 			void clear() { cubes.clear(); }
 
