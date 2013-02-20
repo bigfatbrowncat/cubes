@@ -14,21 +14,23 @@ namespace sfmlcubes
 	{
 		class VelocityController
 		{
-			static float ROTATION_LONGITUDE_START;
-			static float FALLING_DOWN_LONGITUDE_START;
-			static float FALLING_DOWN_FAST_LONGITUDE_START;
-			static float HORIZONTAL_MOVING_LONGITUDE_START;
+			static float ROTATION_DURATION_START;
+			static float FALLING_DOWN_DURATION_START;
+			static float FALLING_DOWN_FAST_DURATION_START;
+			static float HORIZONTAL_MOVING_DURATION_START;
 
-			static float ROTATION_LONGITUDE_LIMIT;
-			static float FALLING_DOWN_LONGITUDE_LIMIT;
-			static float FALLING_DOWN_FAST_LONGITUDE_LIMIT;
-			static float HORIZONTAL_MOVING_LONGITUDE_LIMIT;
+			static float ROTATION_DURATION_LIMIT;
+			static float FALLING_DOWN_DURATION_LIMIT;
+			static float FALLING_DOWN_FAST_DURATION_LIMIT;
+			static float HORIZONTAL_MOVING_DURATION_LIMIT;
 
 			static float FALLING_PERIOD;
 			static float VELOCITY_MULTIPLICATOR_BY_STEP;
 			static float EXPONENT_ARGUMENT_BY_STEP;
 
-			static float FALLING_DOWN_FIRED_LONGITUDE;
+			static float FALLING_DOWN_FIRED_DURATION;
+
+			static float BLINKING_DURATION;
 
 		private:
 			int step;
@@ -44,6 +46,7 @@ namespace sfmlcubes
 			float getFallingPeriod() const;
 			float getVelocityMultiplicator() const;
 			float getFallingDownFiredDuration() const;
+			float getBlinkingLongitude() const;
 
 			void advanceStep();
 

@@ -86,21 +86,21 @@ namespace sfmlcubes
 					 iter != remainingLines.end();
 					 iter++)
 				{
-					res.push_back((**iter).getShape());
+					res.push_back((*iter)->getShape());
 				}
 
 				for (list<RowWithKinematics*>::const_iterator iter = flyingDownLines.begin();
 					 iter != flyingDownLines.end();
 					 iter++)
 				{
-					res.push_back((**iter).getShape());
+					res.push_back((*iter)->getShape());
 				}
 
 				for (list<RowWithKinematics*>::const_iterator iter = burningLines.begin();
 					 iter != burningLines.end();
 					 iter++)
 				{
-					res.push_back((**iter).getShape());
+					res.push_back((*iter)->getShape());
 				}
 
 				return res;

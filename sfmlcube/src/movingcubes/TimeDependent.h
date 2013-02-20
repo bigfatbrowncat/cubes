@@ -5,8 +5,8 @@
  *      Author: imizus
  */
 
-#ifndef TIMEDCONTROLLER_H_
-#define TIMEDCONTROLLER_H_
+#ifndef TIMEDEPENDENT_H_
+#define TIMEDEPENDENT_H_
 
 namespace sfmlcubes
 {

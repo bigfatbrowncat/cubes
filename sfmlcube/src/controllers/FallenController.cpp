@@ -130,7 +130,7 @@ namespace sfmlcubes
 			{
 				RowWithKinematics* curLine = new RowWithKinematics(getTimingManager(), velocityController, fallen.getCubes(), left, right, j);
 
-				if (!curLine->lineIsEmpty())
+				if (!curLine->isEmpty())
 				{
 
 					if (j > fieldBottom)
@@ -153,7 +153,7 @@ namespace sfmlcubes
 					}
 					else
 					{
-						curLine->setMoveBy(linesJustFilledToFlyDown + burningCount);
+						curLine->setFallBy(linesJustFilledToFlyDown + burningCount);
 						burningBlockAtBottomEnd = false;
 						remainingLines.push_back(curLine);
 					}
@@ -169,14 +169,14 @@ namespace sfmlcubes
 			for (int j = -1; j >= -linesJustFilledToFlyDown; j--)
 			{
 				RowWithKinematics* newLine = RowWithKinematics::fromDealer(getTimingManager(), velocityController, backgroundDealer, left, right, j);
-				newLine->setMoveBy(linesJustFilledToFlyDown + burningCount);
+				newLine->setFallBy(linesJustFilledToFlyDown + burningCount);
 				remainingLines.push_back(newLine);
 			}
 
 			// Set movement for flying down lines
 			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
-				(*iter)->setMoveBy(linesJustFilledToFlyDown);
+				(*iter)->setFallBy(linesJustFilledToFlyDown);
 			}
 
 			// Clearing the source shape

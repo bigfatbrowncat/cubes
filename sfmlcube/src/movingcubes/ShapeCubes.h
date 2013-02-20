@@ -58,7 +58,7 @@ namespace sfmlcubes
 
 			ShapeCubes& operator += (const ShapeCubes& other);
 
-			bool isEmpty() { return cubeList.size() == 0; }
+			bool isEmpty() const { return cubeList.size() == 0; }
 
 			void setRotatingCenter(int centerX, int centerY, RotatingCenterType value)
 			{
