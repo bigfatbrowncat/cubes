@@ -5,8 +5,8 @@
  *      Author: imizus
  */
 
-#ifndef LINEARPHASEPROCESSINGFUNCTION_H_
-#define LINEARPHASEPROCESSINGFUNCTION_H_
+#ifndef CONSTANTPHASEPROCESSINGFUNCTION_H_
+#define CONSTANTPHASEPROCESSINGFUNCTION_H_
 
 #include "PhaseProcessingFunction.h"
 
@@ -20,6 +20,10 @@ namespace sfmlcubes
 			{
 			public:
 				virtual double process(double linearPhase) const;
+				virtual Cloneable* clone() const
+				{
+					return new ConstantPhaseProcessingFunction(*this);
+				}
 			};
 		}
 	}

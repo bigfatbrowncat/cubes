@@ -24,14 +24,14 @@ namespace sfmlcubes
 		public:
 			ShapeGenerator();
 
-			Shape createTBlock(const sf::Color& gen);
-			Shape createJBlock(const sf::Color& gen);
-			Shape createLBlock(const sf::Color& gen);
-			Shape createIBlock(const sf::Color& gen);
-			Shape createOBlock(const sf::Color& gen);
-			Shape createSBlock(const sf::Color& gen);
-			Shape createZBlock(const sf::Color& gen);
-			Shape createNewShape();
+			ShapeCubes createTBlock(const sf::Color& gen);
+			ShapeCubes createJBlock(const sf::Color& gen);
+			ShapeCubes createLBlock(const sf::Color& gen);
+			ShapeCubes createIBlock(const sf::Color& gen);
+			ShapeCubes createOBlock(const sf::Color& gen);
+			ShapeCubes createSBlock(const sf::Color& gen);
+			ShapeCubes createZBlock(const sf::Color& gen);
+			ShapeCubes createNewShape();
 
 			virtual ~ShapeGenerator();
 		};

@@ -24,7 +24,7 @@ namespace sfmlcubes
 		void ShapeDealerWidget::drawNextShape(sf::RenderTexture& win)
 		{
 	    	glMatrixMode(GL_PROJECTION);
-	    	Shape dealingShape = shapeDealer.getShape();
+	    	ShapeCubes dealingShapeCubes = shapeDealer.getShape();
 
 	    	glLoadIdentity();
 	    	gluPerspective(35.f, 1, 1, 1000);
@@ -47,8 +47,10 @@ namespace sfmlcubes
 			glRotatef(30, 0.0, -1, -0.5);
 			glScalef(cubeSize, cubeSize, cubeSize);
 
-			dealingShape.moveHorizontalNoTransition(-dealingShape.getRight());
-			dealingShape.moveVerticalNoTransition(-dealingShape.getTop());
+			dealingShapeCubes.moveHorizontalNoTransition(-dealingShapeCubes.getRight());
+			dealingShapeCubes.moveVerticalNoTransition(-dealingShapeCubes.getTop());
+			Shape dealingShape;
+			dealingShape.setCubes(dealingShapeCubes);
 			shapePainter.paint(dealingShape);
 		}
 

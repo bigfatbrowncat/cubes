@@ -63,7 +63,7 @@ namespace sfmlcubes
 			double momentWhenFallIssued;
 			bool paused;
 
-			Shape findProperPosition(const Shape& shape);
+			ShapeCubes findProperPosition(const ShapeCubes& shape);
 
 		public:
 			CubesField(int width, int height, int visibleFrame);

@@ -10,40 +10,53 @@
 
 #include <SFML/System/NonCopyable.hpp>
 
-#include "transitions/Transition.h"
 #include "Shape.h"
-#include "ShapeContainer.h"
-
-using namespace sfmlcubes::movingcubes::transitions;
+#include "Parameter.h"
+#include "transitions/PhaseProcessingFunction.h"
 
 namespace sfmlcubes
 {
 	namespace movingcubes
 	{
+		using namespace transitions;
+
 		class ShapeKinematics : sf::NonCopyable
 		{
 		private:
-			ShapeContainer& shapeContainer;
-
-			Transition mHorizontalTransition;
-			Transition mVerticalTransition;
-			Transition mRotateTransition;
-			Transition mBlinkingTransition;
+			Shape& shape;
 		public:
-			ShapeKinematics(ShapeContainer& shapeContainer);
+			ShapeKinematics(Shape& shape);
 
-			void advanceStep(double delta);
+			void processTimeStep(double delta);
 			bool transitionIsInProgress() const;
 
-			void moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude);
-			void moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude);
-			void rotate(int angle, Transition::PhaseProcessingFunction function, float longitude);
+			void moveVertical(int cells, const PhaseProcessingFunction& function, float longitude);
+			void moveHorizontal(int cells, const PhaseProcessingFunction& function, float longitude);
+			void rotate(int angle, const PhaseProcessingFunction& function, float longitude);
 			void blink(float longitude, int blinks);
 
-			const Transition& getHorizontalTransition() const { return mHorizontalTransition; }
+			bool isMovingHorizontally() const
+			{
+				return shape.slidingX->isChanging();
+			}
+			bool isMovingVertically() const
+			{
+				return shape.slidingY->isChanging();
+			}
+			bool isRotating() const
+			{
+				return shape.rotatingAngle->isChanging();
+			}
+			bool isBlinking() const
+			{
+				return shape.transparency->isChanging();
+			}
+
+
+/*			const Transition& getHorizontalTransition() const { return mHorizontalTransition; }
 			const Transition& getVerticalTransition() const { return mVerticalTransition; }
 			const Transition& getRotateTransition() const { return mRotateTransition; }
-			const Transition& getBlinkingTransition() const { return mBlinkingTransition; }
+			const Transition& getBlinkingTransition() const { return mBlinkingTransition; }*/
 
 			virtual ~ShapeKinematics();
 		};

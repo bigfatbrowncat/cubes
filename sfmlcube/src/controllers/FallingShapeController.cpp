@@ -7,17 +7,23 @@
 
 #include "FallingShapeController.h"
 
+#include "../movingcubes/transitions/ArctangentPhaseProcessingFunction.h"
+#include "../movingcubes/transitions/LinearPhaseProcessingFunction.h"
+
+
 namespace sfmlcubes
 {
 	namespace controllers
 	{
+		using namespace sfmlcubes::movingcubes::transitions;
+
 		FallingShapeController::FallingShapeController(WallsController& wallsController, FallenController& fallenController, VelocityController& velocityController) :
 			wallsController(wallsController),
 			fallenController(fallenController),
 			velocityController(velocityController),
 
-			fallingKinematics(*this),
-			fallingDynamics(*this),
+			fallingKinematics(falling),
+			fallingDynamics(falling),
 
 			fastFalling(false),
 			movingRight(false),
@@ -27,39 +33,40 @@ namespace sfmlcubes
 
 			state(fscsFlying)
 		{
-			fallingDynamics.addObstacle(fallenController);
-			fallingDynamics.addObstacle(wallsController);
+			fallingDynamics.addObstacle(fallenController.getShape());
+			fallingDynamics.addObstacle(wallsController.getShape());
 		}
 
 		void FallingShapeController::processTimeStep(float dt)
 		{
-			fallingKinematics.advanceStep(dt);
+			fallingKinematics.processTimeStep(dt);
+			falling.processTimeStep(dt);
 
 			switch (state)
 			{
 
 			case fscsFlying:
 
-				if (!fallingKinematics.getHorizontalTransition().isInProgress())
+				if (!fallingKinematics.isMovingHorizontally())
 				{
 					if (movingRight)
 					{
 						if (fallingDynamics.canMoveRight())
 						{
-							fallingKinematics.moveHorizontal(1, Transition::ppfLinear, velocityController.getHorizontalMovingLongitude());
+							fallingKinematics.moveHorizontal(1, sfmlcubes::movingcubes::transitions::LinearPhaseProcessingFunction(), velocityController.getHorizontalMovingDuration());
 						}
 					}
 					else if (movingLeft)
 					{
 						if (fallingDynamics.canMoveLeft())
 						{
-							fallingKinematics.moveHorizontal(-1, Transition::ppfLinear, velocityController.getHorizontalMovingLongitude());
+							fallingKinematics.moveHorizontal(-1, LinearPhaseProcessingFunction(), velocityController.getHorizontalMovingDuration());
 						}
 					}
 
 				}
 
-				if (!fallingKinematics.getVerticalTransition().isInProgress())
+				if (!fallingKinematics.isMovingVertically())
 				{
 					if (fallDownPending || fastFalling)
 					{
@@ -68,7 +75,7 @@ namespace sfmlcubes
 						{
 							if (fallingDynamics.canMoveDown())
 							{
-								fallingKinematics.moveVertical(1, Transition::ppfLinear, velocityController.getFallingDownFastLongitude());
+								fallingKinematics.moveVertical(1, LinearPhaseProcessingFunction(), velocityController.getFallingDownFastDuration());
 								canFallDown = true;
 							}
 						}
@@ -76,14 +83,14 @@ namespace sfmlcubes
 						{
 							if (fallingDynamics.canMoveDown())
 							{
-								fallingKinematics.moveVertical(1, Transition::ppfArctangent, velocityController.getFallingDownLongitude());
+								fallingKinematics.moveVertical(1, sfmlcubes::movingcubes::transitions::ArctangentPhaseProcessingFunction(), velocityController.getFallingDownDuration());
 								canFallDown = true;
 							}
 							fallDownPending = false;
 						}
 						if (!canFallDown)
 						{
-							if (!fallingKinematics.getHorizontalTransition().isInProgress())
+							if (!fallingKinematics.isMovingHorizontally())
 							{
 								state = fscsLanded;
 							}
@@ -96,19 +103,19 @@ namespace sfmlcubes
 					}
 				}
 
-				if (!fallingKinematics.getRotateTransition().isInProgress())
+				if (!fallingKinematics.isRotating())
 				{
 					if (rotatingCW)
 					{
 						if (fallingDynamics.canRotate(1))
 						{
-							fallingKinematics.rotate(1, Transition::ppfArctangent, velocityController.getRotationLongitude());
+							fallingKinematics.rotate(1, ArctangentPhaseProcessingFunction(), velocityController.getRotationLongitude());
 						}
 					}
 				}
 				break;
 			case fscsLandingPending:
-				if (!fallingKinematics.getHorizontalTransition().isInProgress())
+				if (!fallingKinematics.isMovingHorizontally())
 				{
 					state = fscsLanded;
 				}
@@ -157,9 +164,9 @@ namespace sfmlcubes
 			rotatingCW = false;
 		}
 
-		void FallingShapeController::launchNewShape(const Shape& shape)
+		void FallingShapeController::launchNewShape(const ShapeCubes& shape)
 		{
-			falling = shape;
+			falling.setCubes(shape);
 			state = fscsFlying;
 		}
 

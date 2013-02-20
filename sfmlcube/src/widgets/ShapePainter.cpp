@@ -28,27 +28,27 @@ namespace sfmlcubes
 			float yy = currentCubeCoords.getY();
 
 			// Moving the cube to it's rotating center
-			if (shape.rotatingCenterType == rctCorner)
+			if (shape.getCubes().getRotatingCenterType() == rctCorner)
 			{
 				res = res.translate(1.0 / 2, -1.0 / 2, 0.f);
 			}
-			res = res.translate(-(shape.rotatingCenterX - xx), shape.rotatingCenterY - yy, 0.f);
+			res = res.translate(-(shape.getCubes().getRotatingCenterX() - xx), shape.getCubes().getRotatingCenterY() - yy, 0.f);
 
 			// Applying rotation
-			double angle = 90 * shape.rotatingAngle;
+			double angle = 90 * shape.rotatingAngle->getValue();
 			res = res.rotate(angle, 0.f, 0.f, -1.f);
 
 			// Moving it back from rotating center
-			res = res.translate(shape.rotatingCenterX - xx, -(shape.rotatingCenterY - yy), 0.f);
-			if (shape.rotatingCenterType == rctCorner)
+			res = res.translate(shape.getCubes().getRotatingCenterX() - xx, -(shape.getCubes().getRotatingCenterY() - yy), 0.f);
+			if (shape.getCubes().getRotatingCenterType() == rctCorner)
 			{
 				res = res.translate(-1.0 / 2, 1.0 / 2, 0.f);
 			}
 
 			// ** Sliding **
 
-			double hdistance = shape.slidingX;
-			double vdistance = shape.slidingY;
+			double hdistance = shape.slidingX->getValue();
+			double vdistance = shape.slidingY->getValue();
 			res = res.translate(hdistance, -vdistance, 0.f);
 
 			res = res.translate(xx, -yy, 0.f);		// Translating the cube to it's cube coords
@@ -58,8 +58,8 @@ namespace sfmlcubes
 
 		void ShapePainter::paint(const Shape& shape) const
 		{
-			for (list<Cube>::const_iterator citer = shape.getCubes().begin();
-				 citer != shape.getCubes().end();
+			for (list<Cube>::const_iterator citer = shape.getCubes().getCubes().begin();
+				 citer != shape.getCubes().getCubes().end();
 				 citer ++)
 			{
 				glPushMatrix();
@@ -71,33 +71,33 @@ namespace sfmlcubes
 
 					glTranslatef(xx, -yy, 0.f);		// Translating the cube to it's cube coords
 
-					double hdistance = shape.slidingX;
-					double vdistance = shape.slidingY;
+					double hdistance = shape.slidingX->getValue();
+					double vdistance = shape.slidingY->getValue();
 					glTranslatef(hdistance, -vdistance, 0.f);
 
 					// ** Rotating **
 
 					// Moving it back from rotating center
-					if (shape.rotatingCenterType == rctCorner)
+					if (shape.getCubes().getRotatingCenterType() == rctCorner)
 					{
 						glTranslatef(-1.0 / 2, 1.0 / 2, 0.f);
 					}
-					glTranslatef(shape.rotatingCenterX - xx, -(shape.rotatingCenterY - yy), 0.f);
+					glTranslatef(shape.getCubes().getRotatingCenterX() - xx, -(shape.getCubes().getRotatingCenterY() - yy), 0.f);
 
 					// Applying rotation
-					double angle = 90 * shape.rotatingAngle;
+					double angle = 90 * shape.rotatingAngle->getValue();
 					glRotatef(angle, 0.f, 0.f, -1.f);
 
 					// Moving the cube to it's rotating center
-					glTranslatef(-(shape.rotatingCenterX - xx), shape.rotatingCenterY - yy, 0.f);
-					if (shape.rotatingCenterType == rctCorner)
+					glTranslatef(-(shape.getCubes().getRotatingCenterX() - xx), shape.getCubes().getRotatingCenterY() - yy, 0.f);
+					if (shape.getCubes().getRotatingCenterType() == rctCorner)
 					{
 						glTranslatef(1.0 / 2, -1.0 / 2, 0.f);
 					}
 
 					sf::Color ambient = shape.ambient;
 					cubePainter.setAmbient(ambient);
-					cubePainter.setTransparency(shape.transparency);
+					cubePainter.setTransparency(shape.transparency->getValue());
 
 					cubePainter.paint(*citer);
 				}

@@ -41,6 +41,11 @@ namespace sfmlcubes
 			// Implementation: The constant never changes.
 			virtual bool isChanging() const { return false; }
 
+			Cloneable* clone() const
+			{
+				return new ConstantParameter(*this);
+			}
+
 			virtual ~ConstantParameter() {}
 		};
 

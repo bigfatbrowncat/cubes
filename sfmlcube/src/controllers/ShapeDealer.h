@@ -10,7 +10,6 @@
 
 #include "ShapeGenerator.h"
 #include "../movingcubes/Shape.h"
-#include "../movingcubes/ShapeContainer.h"
 #include "../movingcubes/ShapeKinematics.h"
 
 namespace sfmlcubes
@@ -19,18 +18,16 @@ namespace sfmlcubes
 
 	namespace controllers
 	{
-		class ShapeDealer : ShapeContainer
+		class ShapeDealer
 		{
 			ShapeGenerator predictedShapeGenerator;
-			Shape predictedShape;
-			ShapeKinematics predictedShapeKinematics;
+			ShapeCubes predictedShape;
 		public:
 			ShapeDealer();
 
-			Shape dealNext();
+			ShapeCubes dealNext();
 
-			Shape getShape() const { return predictedShape; }
-			void setShape(const Shape& shape) { predictedShape = shape; }
+			const ShapeCubes& getShape() const { return predictedShape; }
 
 			virtual ~ShapeDealer();
 		};

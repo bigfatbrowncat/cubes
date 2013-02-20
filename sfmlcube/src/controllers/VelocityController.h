@@ -38,12 +38,12 @@ namespace sfmlcubes
 			VelocityController();
 
 			float getRotationLongitude() const;
-			float getFallingDownLongitude() const;
-			float getFallingDownFastLongitude() const;
-			float getHorizontalMovingLongitude() const;
+			float getFallingDownDuration() const;
+			float getFallingDownFastDuration() const;
+			float getHorizontalMovingDuration() const;
 			float getFallingPeriod() const;
 			float getVelocityMultiplicator() const;
-			float getFallingDownFiredLongitude() const;
+			float getFallingDownFiredDuration() const;
 
 			void advanceStep();
 

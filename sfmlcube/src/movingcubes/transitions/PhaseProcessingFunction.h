@@ -8,6 +8,8 @@
 #ifndef PHASEPROCESSINGFUNCTION_H_
 #define PHASEPROCESSINGFUNCTION_H_
 
+#include "../../Cloneable.h"
+
 namespace sfmlcubes
 {
 	namespace movingcubes
@@ -15,7 +17,7 @@ namespace sfmlcubes
 		namespace transitions
 		{
 
-			class PhaseProcessingFunction
+			class PhaseProcessingFunction : public Cloneable
 			{
 			public:
 				virtual double process(double linearPhase) const = 0;

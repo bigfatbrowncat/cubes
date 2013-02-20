@@ -12,16 +12,16 @@ namespace sfmlcubes
 	namespace movingcubes
 	{
 
-		ShapeDynamics::ShapeDynamics(const ShapeContainer& shapeContainer) :
-				shapeContainer(shapeContainer)
+		ShapeDynamics::ShapeDynamics(const Shape& shape) :
+				shape(shape)
 		{
 		}
 
-		void ShapeDynamics::addObstacle(const ShapeContainer& obstacle)
+		void ShapeDynamics::addObstacle(const Shape& obstacle)
 		{
 			obstacles.push_back(&obstacle);
 		}
-		void ShapeDynamics::removeObstacle(const ShapeContainer& obstacle)
+		void ShapeDynamics::removeObstacle(const Shape& obstacle)
 		{
 			obstacles.remove(&obstacle);
 		}
@@ -30,7 +30,7 @@ namespace sfmlcubes
 			obstacles.clear();
 		}
 
-		bool ShapeDynamics::anyCollisions(const Shape& shape)
+		bool ShapeDynamics::anyCollisions(const ShapeCubes& shape)
 		{
 			for (list<Cube>::const_iterator citer = shape.getCubes().begin(); citer != shape.getCubes().end(); citer++)
 			{
@@ -38,9 +38,9 @@ namespace sfmlcubes
 				int j = (*citer).y;
 
 				// Checking if there is a cube of an obstacle under our cube
-				for (list<const ShapeContainer*>::const_iterator sciter = obstacles.begin(); sciter != obstacles.end(); sciter++)
+				for (list<const Shape*>::const_iterator sciter = obstacles.begin(); sciter != obstacles.end(); sciter++)
 				{
-					if (!(*sciter)->getShape().cubeAt(i, j).empty()) return true;
+					if (!(*sciter)->getCubes().cubeAt(i, j).empty()) return true;
 				}
 			}
 
@@ -49,13 +49,12 @@ namespace sfmlcubes
 
 		bool ShapeDynamics::anyCollisions()
 		{
-			Shape shape = shapeContainer.getShape();
-			return anyCollisions(shape);
+			return anyCollisions(shape.getCubes());
 		}
 
 		bool ShapeDynamics::canMoveDown()
 		{
-			Shape tmp = shapeContainer.getShape();
+			ShapeCubes tmp(shape.getCubes());
 			tmp.moveVerticalNoTransition(1);
 			bool res = !anyCollisions(tmp);
 
@@ -64,7 +63,7 @@ namespace sfmlcubes
 
 		bool ShapeDynamics::canMoveLeft()
 		{
-			Shape tmp = shapeContainer.getShape();
+			ShapeCubes tmp(shape.getCubes());
 			tmp.moveHorizontalNoTransition(-1);
 			bool res = !anyCollisions(tmp);
 
@@ -73,7 +72,7 @@ namespace sfmlcubes
 
 		bool ShapeDynamics::canMoveRight()
 		{
-			Shape tmp = shapeContainer.getShape();
+			ShapeCubes tmp(shape.getCubes());
 			tmp.moveHorizontalNoTransition(1);
 			bool res = !anyCollisions(tmp);
 
@@ -82,7 +81,7 @@ namespace sfmlcubes
 
 		bool ShapeDynamics::canRotate(int angle)
 		{
-			Shape tmp = shapeContainer.getShape();
+			ShapeCubes tmp(shape.getCubes());
 			tmp.rotateNoTransition(angle);
 			bool res = !anyCollisions(tmp);
 

@@ -11,15 +11,14 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
-		ShapeDealer::ShapeDealer() :
-			predictedShapeKinematics(*this)
+		ShapeDealer::ShapeDealer()
 		{
 			predictedShape = predictedShapeGenerator.createNewShape();
 		}
 
-		Shape ShapeDealer::dealNext()
+		ShapeCubes ShapeDealer::dealNext()
 		{
-			Shape res = predictedShape;
+			ShapeCubes res = predictedShape;
 			predictedShape = predictedShapeGenerator.createNewShape();
 			return res;
 		}

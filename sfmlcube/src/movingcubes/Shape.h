@@ -12,135 +12,58 @@
 
 #include <SFML/System/NonCopyable.hpp>
 
-#include "transitions/Transition.h"
 #include "Cube.h"
-#include "ShapeContainer.h"
+#include "Parameter.h"
+#include "../Cloneable.h"
+#include "ShapeCubes.h"
 
 using namespace std;
-using namespace sfmlcubes::movingcubes::transitions;
 
 namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		enum RotatingCenterType
-		{
-			rctCenter, rctCorner
-		};
-
-		class Shape : public ShapeContainer
+		class Shape : sf::NonCopyable, public Cloneable
 		{
 		private:
-			list<Cube> cubes;
+			ShapeCubes cubes;
 		public:
 			// Sliding
-			float slidingX, slidingY;
+			Parameter* slidingX;
+			Parameter* slidingY;
+
 			// Rotating animation
-			RotatingCenterType rotatingCenterType;
-			int rotatingCenterX, rotatingCenterY;
-			float rotatingAngle;	// 1 = 90 degrees
+
+			Parameter* rotatingAngle;	// 1 = 90 degrees
 
 			// Ambient color
 			sf::Color ambient;
-			float transparency;
 
-			Shape() :
-				slidingX(0),
-				slidingY(0),
+			Parameter* transparency;
 
-				rotatingCenterType(rctCenter),
-				rotatingCenterX(0),
-				rotatingCenterY(0),
-				rotatingAngle(0),
+			Shape();
+			Shape(const Shape& other);
 
-				ambient(128, 128, 128, 255),
-				transparency(1.0)
+			void processTimeStep(double delta);
+
+			void setSlidingXParameter(const Parameter& newParameter);
+			void setSlidingYParameter(const Parameter& newParameter);
+			void setRotatingAngleParameter(const Parameter& newParameter);
+			void setTransparencyParameter(const Parameter& newParameter);
+
+			bool isAnyParameterChanging();
+
+			Cloneable* clone() const
 			{
+				return new Shape(*this);
 			}
 
-			const list<Cube>& getCubes() const { return cubes; }
-			void addCube(const Cube& cube)
-			{
-				cubes.push_back(cube);
-			}
-
-			void removeAllBelow(int y)
-			{
-				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end();)
-				{
-					if ((*iter).y > y)
-					{
-						iter = cubes.erase(iter);
-					}
-					else
-					{
-						iter ++;
-					}
-				}
-			}
-
-			void removeCube(int x, int y)
-			{
-				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end(); iter++)
-				{
-					if ((*iter).x == x && (*iter).y == y)
-					{
-						cubes.remove(*iter);
-						return;
-					}
-				}
-			}
-
-			void changeToFallenColor()
-			{
-				for (list<Cube>::iterator iter = cubes.begin(); iter != cubes.end(); iter++)
-				{
-					sf::Color cl = (*iter).color;
-					float avgColor = (cl.r + cl.g + cl.b) / 3;
-
-					cl.r = (cl.r + 2 * avgColor) / 3 * 0.8;
-					cl.g = (cl.g + 2 * avgColor) / 3 * 0.8;
-					cl.b = (cl.b + 2 * avgColor) / 3 * 0.8;
-
-					(*iter).color = cl;
-				}
-			}
+			const ShapeCubes& getCubes() const { return cubes; }
+			void setCubes(const ShapeCubes& value) { cubes = value; }
 
 			void clear() { cubes.clear(); }
 
-			void moveVerticalNoTransition(int cells);
-			void moveHorizontalNoTransition(int cells);
-			void rotateNoTransition(int angle);
-
-			Shape getShape() const { return *this; }
-			void setShape(const Shape& shape) { *this = shape; }
-
-			int getLeft() const;
-			int getRight() const;
-			int getTop() const;
-			int getBottom() const;
-
-			list<Cube> cubeAt(int i, int j) const;
-
-			void setRotatingCenter(int centerX, int centerY, RotatingCenterType value)
-			{
-				rotatingCenterX = centerX;
-				rotatingCenterY = centerY;
-				rotatingCenterType = value;
-			}
-
-			int getRotatingCenterX() const { return rotatingCenterX; }
-			int getRotatingCenterY() const { return rotatingCenterY; }
-			RotatingCenterType getRotatingCenterType() const { return rotatingCenterType; }
-
-			bool operator == (const Shape& other);
-			bool operator != (const Shape& other);
-
-			Shape& operator += (const Shape& other);
-
-			bool isEmpty() { return cubes.size() == 0; }
-
-			virtual ~Shape() {}
+			virtual ~Shape();
 		};
 	}
 }

@@ -51,15 +51,15 @@ namespace sfmlcubes
 		{
 			return startToLimit(ROTATION_LONGITUDE_START, ROTATION_LONGITUDE_LIMIT) / pow(VELOCITY_MULTIPLICATOR_BY_STEP, step);
 		}
-		float VelocityController::getFallingDownLongitude() const
+		float VelocityController::getFallingDownDuration() const
 		{
 			return startToLimit(FALLING_DOWN_LONGITUDE_START, FALLING_DOWN_LONGITUDE_LIMIT) / pow(VELOCITY_MULTIPLICATOR_BY_STEP, step);
 		}
-		float VelocityController::getFallingDownFastLongitude() const
+		float VelocityController::getFallingDownFastDuration() const
 		{
 			return startToLimit(FALLING_DOWN_FAST_LONGITUDE_START, FALLING_DOWN_FAST_LONGITUDE_LIMIT) / pow(VELOCITY_MULTIPLICATOR_BY_STEP, step);
 		}
-		float VelocityController::getHorizontalMovingLongitude() const
+		float VelocityController::getHorizontalMovingDuration() const
 		{
 			return startToLimit(HORIZONTAL_MOVING_LONGITUDE_START, HORIZONTAL_MOVING_LONGITUDE_LIMIT) / pow(VELOCITY_MULTIPLICATOR_BY_STEP, step);
 		}
@@ -73,7 +73,7 @@ namespace sfmlcubes
 			return pow(VELOCITY_MULTIPLICATOR_BY_STEP, step);
 		}
 
-		float VelocityController::getFallingDownFiredLongitude() const
+		float VelocityController::getFallingDownFiredDuration() const
 		{
 			return FALLING_DOWN_FIRED_LONGITUDE;
 		}

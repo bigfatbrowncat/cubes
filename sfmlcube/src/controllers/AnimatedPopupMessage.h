@@ -13,10 +13,10 @@ namespace sfmlcubes
 		class AnimatedPopupMessage
 		{
 		private:
-			Shape shape;
+			ShapeCubes shape;
 			list<AnimatedPopupLine> lines;
 		public:
-			AnimatedPopupMessage(const Shape& shape);
+			AnimatedPopupMessage(const ShapeCubes& shape);
 
 			AnimatedPopupMessage(const AnimatedPopupMessage& other)
 			{
@@ -25,8 +25,8 @@ namespace sfmlcubes
 
 			const AnimatedPopupMessage& operator = (const AnimatedPopupMessage& other)
 			{
-				this->shape = other.shape;
-				this->lines = other.lines;
+				shape = other.shape;
+				lines = other.lines;
 
 				for (list<AnimatedPopupLine>::iterator iter = lines.begin(); iter != lines.end(); iter++)
 				{
@@ -42,7 +42,7 @@ namespace sfmlcubes
 			}
 
 			int getLinesCount() const { return lines.size(); }
-			const Shape& getShape() const { return shape; }
+			ShapeCubes getShapeCubes() const { return shape; }
 			const list<AnimatedPopupLine>::const_iterator getLinesBegin() const { return lines.begin(); }
 			const list<AnimatedPopupLine>::const_iterator getLinesEnd() const { return lines.end(); }
 

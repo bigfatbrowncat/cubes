@@ -55,7 +55,7 @@ namespace sfmlcubes
 			while (currentPopup->getNext() != NULL)
 			{
 				const AnimatedPopupMessage& apt = *currentPopup->getPopupText();
-				Shape shp = apt.getShape();
+				//ShapeCubes shp = apt.getShapeCubes();
 
 				float sourceGlobalDeltaY, destinationGlobalDeltaY;
 				float sourceFullHeight = 0, destinationFullHeight = 0;

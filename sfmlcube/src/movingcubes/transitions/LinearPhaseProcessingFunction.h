@@ -20,6 +20,10 @@ namespace sfmlcubes
 			{
 			public:
 				virtual double process(double linearPhase) const;
+				virtual Cloneable* clone() const
+				{
+					return new LinearPhaseProcessingFunction(*this);
+				}
 			};
 		}
 	}

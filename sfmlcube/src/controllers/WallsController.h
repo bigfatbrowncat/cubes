@@ -9,7 +9,6 @@
 #define WALLSCONTROLLER_H_
 
 #include "../movingcubes/Shape.h"
-#include "../movingcubes/ShapeContainer.h"
 #include "../movingcubes/ShapeKinematics.h"
 #include "VelocityController.h"
 #include "BackgroundDealer.h"
@@ -19,7 +18,7 @@ namespace sfmlcubes
 	using namespace movingcubes;
 	namespace controllers
 	{
-		class WallsController : public ShapeContainer
+		class WallsController
 		{
 			enum State
 			{
@@ -44,12 +43,12 @@ namespace sfmlcubes
 
 			void processTimeStep(float dt);
 
-			Shape getShape() const { return walls; }
-			void setShape(const Shape& shape) { walls = shape; }
+			const Shape& getShape() const { return walls; }
+//			void setShape(const Shape& shape) { walls = shape; }
 
 			void startFalling(int count);
 
-			bool anyCollisions(const Shape& shape);
+			bool anyCollisions(const ShapeCubes& shape);
 
 			virtual ~WallsController();
 		};

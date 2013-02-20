@@ -28,7 +28,7 @@ namespace sfmlcubes
 		{
 		}
 
-		void ScoreCounter::beforeShapeFallen(const Shape& shape)
+		void ScoreCounter::beforeShapeFallen(const ShapeCubes& shape)
 		{
 			lastFallenShape = shape;
 			holesBeforeFallen = fallenController.countHoles();
@@ -67,7 +67,7 @@ namespace sfmlcubes
 
 		void ScoreCounter::linesHasBeenFired()
 		{
-			AnimatedPopupMessage apm_message(wallsController.getShape());
+			AnimatedPopupMessage apm_message(wallsController.getShape().getCubes());
 			AnimatedPopupMessage apm_counter(lastFallenShape);
 
 			int count = fallenController.getLinesJustBurnt();

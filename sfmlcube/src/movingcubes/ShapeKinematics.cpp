@@ -6,84 +6,55 @@
  */
 
 #include "ShapeKinematics.h"
+#include "transitions/TransitionableParameter.h"
+#include "transitions/AbsCosinePhaseProcessingFunction.h"
 
 namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		ShapeKinematics::ShapeKinematics(ShapeContainer& shapeContainer) :
-			shapeContainer(shapeContainer),
-			mBlinkingTransition(0.001, Transition::ppfConstant, 1)
+
+		ShapeKinematics::ShapeKinematics(Shape& shape) :
+			shape(shape)
 		{
 		}
 
-		void ShapeKinematics::advanceStep(double delta)
+		void ShapeKinematics::processTimeStep(double delta)
 		{
-			Shape shape = shapeContainer.getShape();
-
-			mRotateTransition.advanceStep(delta);
-			shape.rotatingAngle = mRotateTransition.getValue();
-
-			mHorizontalTransition.advanceStep(delta);
-			shape.slidingX = mHorizontalTransition.getValue();
-
-			mVerticalTransition.advanceStep(delta);
-			shape.slidingY = mVerticalTransition.getValue();
-
-			mBlinkingTransition.advanceStep(delta);
-			shape.transparency = mBlinkingTransition.getValue();
-
-			shapeContainer.setShape(shape);
 		}
 
 		bool ShapeKinematics::transitionIsInProgress() const
 		{
-			return mRotateTransition.isInProgress() ||
-				   mHorizontalTransition.isInProgress() ||
-				   mVerticalTransition.isInProgress();
+			return shape.isAnyParameterChanging();
 		}
 
-		void ShapeKinematics::moveVertical(int cells, Transition::PhaseProcessingFunction function, float longitude)
+		void ShapeKinematics::moveVertical(int cells, const PhaseProcessingFunction& function, float longitude)
 		{
-			Shape shape = shapeContainer.getShape();
-
-			shape.moveVerticalNoTransition(cells);
-			mVerticalTransition = Transition(longitude, function, -cells);
-			shape.slidingY = mVerticalTransition.getValue();
-
-			shapeContainer.setShape(shape);
+			ShapeCubes sc = shape.getCubes();
+			sc.moveVerticalNoTransition(cells);
+			shape.setCubes(sc);
+			shape.setSlidingYParameter(TransitionableParameter(longitude, function, -cells, 0));
 		}
 
-		void ShapeKinematics::moveHorizontal(int cells, Transition::PhaseProcessingFunction function, float longitude)
+		void ShapeKinematics::moveHorizontal(int cells, const PhaseProcessingFunction& function, float longitude)
 		{
-			Shape shape = shapeContainer.getShape();
-
-			shape.moveHorizontalNoTransition(cells);
-			mHorizontalTransition = Transition(longitude, function, -cells);
-			shape.slidingX = mHorizontalTransition.getValue();
-
-			shapeContainer.setShape(shape);
+			ShapeCubes sc = shape.getCubes();
+			sc.moveHorizontalNoTransition(cells);
+			shape.setCubes(sc);
+			shape.setSlidingXParameter(TransitionableParameter(longitude, function, -cells, 0));
 		}
 
-		void ShapeKinematics::rotate(int angle, Transition::PhaseProcessingFunction function, float longitude)
+		void ShapeKinematics::rotate(int angle, const PhaseProcessingFunction& function, float longitude)
 		{
-			Shape shape = shapeContainer.getShape();
-
-			shape.rotateNoTransition(angle);
-			mRotateTransition = Transition(longitude, function, -angle);
-			shape.rotatingAngle = mRotateTransition.getValue();
-
-			shapeContainer.setShape(shape);
+			ShapeCubes sc = shape.getCubes();
+			sc.rotateNoTransition(angle);
+			shape.setCubes(sc);
+			shape.setRotatingAngleParameter(TransitionableParameter(longitude, function, -angle, 0));
 		}
 
 		void ShapeKinematics::blink(float longitude, int blinks)
 		{
-			Shape shape = shapeContainer.getShape();
-
-			mBlinkingTransition = Transition(longitude, Transition::ppfAbsSine, blinks);
-			shape.transparency = mBlinkingTransition.getValue();
-
-			shapeContainer.setShape(shape);
+			shape.setTransparencyParameter(TransitionableParameter(longitude, AbsCosinePhaseProcessingFunction(), 0, 1));
 		}
 
 		ShapeKinematics::~ShapeKinematics()

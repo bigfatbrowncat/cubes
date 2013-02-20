@@ -29,7 +29,7 @@ namespace sfmlcubes
 			fscsLanded
 		};
 
-		class FallingShapeController : public ShapeContainer, sf::NonCopyable
+		class FallingShapeController : public sf::NonCopyable
 		{
 		private:
 			Shape falling;
@@ -50,8 +50,8 @@ namespace sfmlcubes
 		public:
 			FallingShapeController(WallsController& wallsController, FallenController& fallenController, VelocityController& velocityController);
 
-			Shape getShape() const { return falling; }
-			void setShape(const Shape& shape) { falling = shape; }
+			const Shape& getShape() const { return falling; }
+			//void setShape(const Shape& shape) { falling = shape; }
 
 			void processTimeStep(float dt);
 			void fallDown();
@@ -64,7 +64,7 @@ namespace sfmlcubes
 			void turnOffLeft();
 			void turnOffRotateCW();
 
-			void launchNewShape(const Shape& shape);
+			void launchNewShape(const ShapeCubes& shape);
 
 			FallingShapeControllerState getState() const { return state; }
 

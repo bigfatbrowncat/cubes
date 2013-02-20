@@ -5,8 +5,8 @@
  *      Author: imizus
  */
 
-#ifndef LINEARPHASEPROCESSINGFUNCTION_H_
-#define LINEARPHASEPROCESSINGFUNCTION_H_
+#ifndef ARCTANGENTPHASEPROCESSINGFUNCTION_H_
+#define ARCTANGENTPHASEPROCESSINGFUNCTION_H_
 
 #include "PhaseProcessingFunction.h"
 
@@ -23,6 +23,10 @@ namespace sfmlcubes
 			public:
 				ArctangentPhaseProcessingFunction();
 				virtual double process(double linearPhase) const;
+				virtual Cloneable* clone() const
+				{
+					return new ArctangentPhaseProcessingFunction(*this);
+				}
 			};
 		}
 	}

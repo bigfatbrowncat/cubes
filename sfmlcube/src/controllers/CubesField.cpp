@@ -40,20 +40,20 @@ namespace sfmlcubes
 
 		CubesField::~CubesField() { }
 
-		Shape CubesField::findProperPosition(const Shape& shape)
+		ShapeCubes CubesField::findProperPosition(const ShapeCubes& shape)
 		{
-			Shape best, proper;
+			ShapeCubes best, proper;
 			for (int i = width; i >= 0; i--)
 			{
-				Shape test = shape;
+				ShapeCubes test = shape;
 				int x = width / 2 + (i % 2 == 0 ? 1 : -1) * (i / 2);
 
 				test.moveHorizontalNoTransition(x);
 
-				Shape testD = test;
+				ShapeCubes testD = test;
 				testD.moveVerticalNoTransition(1);
 
-				Shape testDD = testD;
+				ShapeCubes testDD = testD;
 				testD.moveVerticalNoTransition(1);
 
 				// Checking for collisions
@@ -103,14 +103,17 @@ namespace sfmlcubes
 
 					if (fallingShapeController.getState() == fscsLanded)
 					{
-						scoreCounter.beforeShapeFallen(fallingShapeController.getShape());
+						scoreCounter.beforeShapeFallen(fallingShapeController.getShape().getCubes());
 
 						// Desaturating the shape
 						Shape falling = fallingShapeController.getShape();
-						falling.changeToFallenColor();
+
+						ShapeCubes sc = falling.getCubes();
+						sc.changeToFallenColor();
+						falling.setCubes(sc);
 
 						// Merging
-						fallenController.mergeShape(falling);
+						fallenController.mergeShape(falling.getCubes());
 						fallingShapeController.clearShape();
 						scoreCounter.afterShapeFallen();
 						fallenController.fireFullLines();
@@ -129,10 +132,10 @@ namespace sfmlcubes
 					{
 						scoreCounter.linesHasBeenFired();
 						// Dealing the new shape
-						Shape dealedShape = shapeDealer.dealNext();
+						ShapeCubes dealedShape = shapeDealer.dealNext();
 						// Positioning it to the top-center of the game field
 
-						Shape newShape = findProperPosition(dealedShape);
+						ShapeCubes newShape = findProperPosition(dealedShape);
 
 						// Checking if the positioning succeeded
 						if (newShape.isEmpty())

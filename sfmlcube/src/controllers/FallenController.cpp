@@ -20,25 +20,27 @@ namespace sfmlcubes
 	{
 		float FallenController::RowWithKinematics::BLINKING_LONGITUDE = 0.6;
 
-		FallenController::RowWithKinematics::RowWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j) :
-				velocityController(velocityController), kinematics(*this), left(left), right(right), j(j), blink(false), moveBy(0)
+		FallenController::RowWithKinematics::RowWithKinematics(const VelocityController& velocityController, const ShapeCubes& source, int left, int right, int j) :
+				velocityController(velocityController), kinematics(line), left(left), right(right), j(j), blink(false), moveBy(0)
 		{
+			ShapeCubes lineCubes;
 			for (int i = left; i <= right; i++)
 			{
 				if (!source.cubeAt(i, j).empty())
 				{
 					// Adding the cube to the current firing group
 					if (source.cubeAt(i, j).size() > 1) Logger::DEFAULT.logWarning("cubeAt returned more than one cube");
-					line.addCube(source.cubeAt(i, j).back());
+					lineCubes.addCube(source.cubeAt(i, j).back());
 				}
 			}
+			line.setCubes(lineCubes);
 		}
 
 		bool FallenController::RowWithKinematics::lineIsFull()
 		{
 			for (int i = left; i <= right; i++)
 			{
-				if (line.cubeAt(i, j).empty()) return false;
+				if (line.getCubes().cubeAt(i, j).empty()) return false;
 			}
 			return true;
 		}
@@ -47,7 +49,7 @@ namespace sfmlcubes
 		{
 			for (int i = left; i <= right; i++)
 			{
-				if (!line.cubeAt(i, j).empty()) return false;
+				if (!line.getCubes().cubeAt(i, j).empty()) return false;
 			}
 			return true;
 		}
@@ -66,6 +68,8 @@ namespace sfmlcubes
 
 		void FallenController::processTimeStep(float dt)
 		{
+			fallen.processTimeStep(dt);
+
 			for (list<RowWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
 				(**iter).advanceStep(dt);
@@ -101,8 +105,10 @@ namespace sfmlcubes
 			}
 		}
 
-		bool FallenController::anyCollisionsWithRemainingLines(const Shape& shape)
+		bool FallenController::anyCollisionsWithRemainingLines(const ShapeCubes& cubes)
 		{
+			Shape shape;
+			shape.setCubes(cubes);
 			ShapeDynamics sd(shape);
 
 			for (list<RowWithKinematics*>::const_iterator iter = remainingLines.begin();
@@ -171,7 +177,7 @@ namespace sfmlcubes
 			// Collecting the lines to lists
 			for (int j = visibleBottom; j >= top; j--)
 			{
-				RowWithKinematics* curLine = new RowWithKinematics(velocityController, fallen, left, right, j);
+				RowWithKinematics* curLine = new RowWithKinematics(velocityController, fallen.getCubes(), left, right, j);
 
 				if (!curLine->lineIsEmpty())
 				{
@@ -244,19 +250,28 @@ namespace sfmlcubes
 			fallen.clear();
 			while (burningLines.size() > 0)
 			{
-				fallen += burningLines.back()->getShape();
+				ShapeCubes fallenCubes = fallen.getCubes();
+				fallenCubes += burningLines.back()->getShape().getCubes();
+				fallen.setCubes(fallenCubes);
+
 				delete burningLines.back();
 				burningLines.pop_back();
 			}
 			while (flyingDownLines.size() > 0)
 			{
-				fallen += flyingDownLines.back()->getShape();
+				ShapeCubes fallenCubes = fallen.getCubes();
+				fallenCubes += flyingDownLines.back()->getShape().getCubes();
+				fallen.setCubes(fallenCubes);
+
 				delete flyingDownLines.back();
 				flyingDownLines.pop_back();
 			}
 			while (remainingLines.size() > 0)
 			{
-				fallen += remainingLines.back()->getShape();
+				ShapeCubes fallenCubes = fallen.getCubes();
+				fallenCubes += remainingLines.back()->getShape().getCubes();
+				fallen.setCubes(fallenCubes);
+
 				delete remainingLines.back();
 				remainingLines.pop_back();
 			}
@@ -294,7 +309,7 @@ namespace sfmlcubes
 				bool previousWasHole = false;
 				for (int j = top; j <= fieldBottom; j++)
 				{
-					if (!fallen.cubeAt(i, j).empty())
+					if (!fallen.getCubes().cubeAt(i, j).empty())
 					{
 						if (!shapeTopFound)
 						{

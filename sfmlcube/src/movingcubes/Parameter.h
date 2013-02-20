@@ -8,11 +8,13 @@
 #ifndef PARAMETER_H_
 #define PARAMETER_H_
 
+#include "../Cloneable.h"
+
 namespace sfmlcubes
 {
 	namespace movingcubes
 	{
-		class Parameter
+		class Parameter : public Cloneable
 		{
 		public:
 			// Advances the time by delta

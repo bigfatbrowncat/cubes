@@ -29,9 +29,9 @@ namespace sfmlcubes
 			srand (time(NULL));
 		}
 
-		Shape ShapeGenerator::createTBlock(const sf::Color& gen)
+		ShapeCubes ShapeGenerator::createTBlock(const sf::Color& gen)
 		{
-			Shape res;
+			ShapeCubes res;
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
@@ -41,9 +41,9 @@ namespace sfmlcubes
 			return res;
 		}
 
-		Shape ShapeGenerator::createJBlock(const sf::Color& gen)
+		ShapeCubes ShapeGenerator::createJBlock(const sf::Color& gen)
 		{
-			Shape res;
+			ShapeCubes res;
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
@@ -53,9 +53,9 @@ namespace sfmlcubes
 			return res;
 		}
 
-		Shape ShapeGenerator::createLBlock(const sf::Color& gen)
+		ShapeCubes ShapeGenerator::createLBlock(const sf::Color& gen)
 		{
-			Shape res;
+			ShapeCubes res;
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(1, 0, Cube::mtPlaying, gen));
@@ -65,9 +65,9 @@ namespace sfmlcubes
 			return res;
 		}
 
-		Shape ShapeGenerator::createIBlock(const sf::Color& gen)
+		ShapeCubes ShapeGenerator::createIBlock(const sf::Color& gen)
 		{
-			Shape res;
+			ShapeCubes res;
 			res.addCube(Cube(-2, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
@@ -77,9 +77,9 @@ namespace sfmlcubes
 			return res;
 		}
 
-		Shape ShapeGenerator::createZBlock(const sf::Color& gen)
+		ShapeCubes ShapeGenerator::createZBlock(const sf::Color& gen)
 		{
-			Shape res;
+			ShapeCubes res;
 			res.addCube(Cube(-2, -1, Cube::mtPlaying, gen));
 			res.addCube(Cube(-1, -1, Cube::mtPlaying, gen));
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
@@ -89,9 +89,9 @@ namespace sfmlcubes
 			return res;
 		}
 
-		Shape ShapeGenerator::createSBlock(const sf::Color& gen)
+		ShapeCubes ShapeGenerator::createSBlock(const sf::Color& gen)
 		{
-			Shape res;
+			ShapeCubes res;
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, 0, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, -1, Cube::mtPlaying, gen));
@@ -101,9 +101,9 @@ namespace sfmlcubes
 			return res;
 		}
 
-		Shape ShapeGenerator::createOBlock(const sf::Color& gen)
+		ShapeCubes ShapeGenerator::createOBlock(const sf::Color& gen)
 		{
-			Shape res;
+			ShapeCubes res;
 			res.addCube(Cube(-1, -1, Cube::mtPlaying, gen));
 			res.addCube(Cube(0, -1, Cube::mtPlaying, gen));
 			res.addCube(Cube(-1, 0, Cube::mtPlaying, gen));
@@ -113,9 +113,9 @@ namespace sfmlcubes
 			return res;
 		}
 
-		Shape ShapeGenerator::createNewShape()
+		ShapeCubes ShapeGenerator::createNewShape()
 		{
-			Shape result;
+			ShapeCubes result;
 			sf::Color gen = generateShapeColor();
 
 			int r = (float)rand() / RAND_MAX * 8;

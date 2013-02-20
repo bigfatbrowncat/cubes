@@ -9,7 +9,7 @@
 
 #include "../movingcubes/Cube.h"
 #include "../movingcubes/ShapeDynamics.h"
-
+#include "../movingcubes/transitions/ParabolicPhaseProcessingFunction.h"
 #include "WallsController.h"
 #include "../Logger.h"
 
@@ -20,26 +20,29 @@ namespace sfmlcubes
 	{
 		WallsController::WallsController(const VelocityController& velocityController, int width, int height, int visibleFrame) :
 				velocityController(velocityController),
-				wallsKinematics(*this), state(sIdle), width(width), height(height), visibleFrame(visibleFrame), wallColor(sf::Color(96, 96, 96))
+				wallsKinematics(walls), state(sIdle), width(width), height(height), visibleFrame(visibleFrame), wallColor(sf::Color(96, 96, 96))
 		{
+			ShapeCubes wallsCubes;
 			for (int i = 0; i < width; i++)
 			{
-				walls.addCube(Cube(i, height - 1, Cube::mtWall, wallColor));
+				wallsCubes.addCube(Cube(i, height - 1, Cube::mtWall, wallColor));
 			}
 
-			walls.addCube(Cube(0, -1, Cube::mtVoid, wallColor));
-			walls.addCube(Cube(width - 1, -1, Cube::mtVoid, wallColor));
+			wallsCubes.addCube(Cube(0, -1, Cube::mtVoid, wallColor));
+			wallsCubes.addCube(Cube(width - 1, -1, Cube::mtVoid, wallColor));
 
 			for (int j = -visibleFrame; j < height; j++)
 			{
-				walls.addCube(Cube(0, j, Cube::mtWall, wallColor));
-				walls.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
+				wallsCubes.addCube(Cube(0, j, Cube::mtWall, wallColor));
+				wallsCubes.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
 			}
+			walls.setCubes(wallsCubes);
 		}
 
 		void WallsController::processTimeStep(float dt)
 		{
-			wallsKinematics.advanceStep(dt);
+			walls.processTimeStep(dt);
+			wallsKinematics.processTimeStep(dt);
 
 			switch (state)
 			{
@@ -49,7 +52,7 @@ namespace sfmlcubes
 
 			case sMovingDown:
 
-				if (!wallsKinematics.getVerticalTransition().isInProgress())
+				if (!wallsKinematics.isMovingVertically())
 				{
 					Logger::DEFAULT.logInfo("down ok");
 					state = sIdle;
@@ -60,16 +63,20 @@ namespace sfmlcubes
 
 		void WallsController::addTopBricks(int count)
 		{
+			ShapeCubes wallsCubes = walls.getCubes();
 			for (int j = - visibleFrame; j >= -count - visibleFrame; j--)
 			{
-				walls.addCube(Cube(0, j, Cube::mtWall, wallColor));
-				walls.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
+				wallsCubes.addCube(Cube(0, j, Cube::mtWall, wallColor));
+				wallsCubes.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
 			}
+			walls.setCubes(wallsCubes);
 		}
 
-		bool WallsController::anyCollisions(const Shape& shape)
+		bool WallsController::anyCollisions(const ShapeCubes& shape)
 		{
-			ShapeDynamics sd(shape);
+			Shape shp;
+			shp.setCubes(shape);
+			ShapeDynamics sd(shp);
 
 			sd.addObstacle(walls);
 
@@ -83,10 +90,12 @@ namespace sfmlcubes
 			addTopBricks(count);
 
 			// removing the invisible bricks which we will never see again
-			walls.removeAllBelow(height + visibleFrame);
+			ShapeCubes wallsCubes = walls.getCubes();
+			wallsCubes.removeAllBelow(height + visibleFrame);
+			walls.setCubes(wallsCubes);
 
 			state = sMovingDown;
-			wallsKinematics.moveVertical(count, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());
+			wallsKinematics.moveVertical(count, ParabolicPhaseProcessingFunction(), velocityController.getFallingDownFiredDuration());
 			Logger::DEFAULT.logInfo("down");
 		}
 

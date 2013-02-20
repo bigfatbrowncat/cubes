@@ -96,13 +96,16 @@ namespace sfmlcubes
 				Logger::DEFAULT.logError("Incorrect value of apt type");
 			}
 
-			float cx = ((float)apt.getMessage().getShape().getLeft() + apt.getMessage().getShape().getRight()) / 2;
-			float cy = ((float)apt.getMessage().getShape().getTop() + apt.getMessage().getShape().getBottom()) / 2;
+			float cx = ((float)apt.getMessage().getShapeCubes().getLeft() + apt.getMessage().getShapeCubes().getRight()) / 2;
+			float cy = ((float)apt.getMessage().getShapeCubes().getTop() + apt.getMessage().getShapeCubes().getBottom()) / 2;
 
 			CubeCoordinates shapeCenter((int)cx, (int)cy);
 			Coordinates center((cx - (int)cx), -(cy - (int)cy), 0);
 
-			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(targetSize, apt.getMessage().getShape(), shapeCenter, center);
+			Shape shp;
+			shp.setCubes(apt.getMessage().getShapeCubes());
+			Coordinates pos = cubesFieldWidget.fromCubeInShapeCoordsToFieldCoords(targetSize, shp, shapeCenter, center);
+
 			text.move(pos.getX(), pos.getY());
 
 		}

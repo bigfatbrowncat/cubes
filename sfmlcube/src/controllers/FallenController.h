@@ -8,23 +8,24 @@
 #ifndef FALLENCONTROLLER_H_
 #define FALLENCONTROLLER_H_
 
-#include "../movingcubes/ShapeContainer.h"
+#include <SFML/System/NonCopyable.hpp>
+
+#include "../movingcubes/transitions/ParabolicPhaseProcessingFunction.h"
+#include "../movingcubes/transitions/ArctangentPhaseProcessingFunction.h"
 #include "../movingcubes/Shape.h"
 #include "../movingcubes/ShapeKinematics.h"
 #include "WallsController.h"
 #include "../Logger.h"
 
-#include <SFML/System/NonCopyable.hpp>
+using namespace sfmlcubes::movingcubes::transitions;
 
 namespace sfmlcubes
 {
-	using namespace movingcubes;
-
 	namespace controllers
 	{
-		class FallenController : public ShapeContainer, sf::NonCopyable
+		class FallenController : public sf::NonCopyable
 		{
-			class RowWithKinematics : public ShapeContainer, sf::NonCopyable
+			class RowWithKinematics : public sf::NonCopyable
 			{
 				static float BLINKING_LONGITUDE;
 
@@ -38,10 +39,10 @@ namespace sfmlcubes
 				int moveBy;
 
 			public:
-				RowWithKinematics(const VelocityController& velocityController, const Shape& source, int left, int right, int j);
+				RowWithKinematics(const VelocityController& velocityController, const ShapeCubes& source, int left, int right, int j);
 				static RowWithKinematics* fromDealer(const VelocityController& velocityController, BackgroundDealer& backgroundDealer, int left, int right, int j)
 				{
-					Shape shp;
+					ShapeCubes shp;
 					backgroundDealer.setWidth(right - left + 1);
 					vector<BackgroundDealer::CellType> newRow = backgroundDealer.dealRow();
 					for (size_t i = 0; i < newRow.size(); i++)
@@ -73,24 +74,25 @@ namespace sfmlcubes
 
 				void advanceStep(double delta)
 				{
-					kinematics.advanceStep(delta);
+					line.processTimeStep(delta);
+					kinematics.processTimeStep(delta);
 				}
 
 				bool isBlinkingInProgress()
 				{
-					return kinematics.getBlinkingTransition().isInProgress();
+					return kinematics.isBlinking();
 				}
 
 				bool isMovingInProgress()
 				{
-					return kinematics.getVerticalTransition().isInProgress();
+					return kinematics.isMovingVertically();
 				}
 
 				void startAnimation()
 				{
 					if (blink)
 					{
-						if (kinematics.getBlinkingTransition().isInProgress())
+						if (kinematics.isBlinking())
 						{
 							Logger::DEFAULT.logWarning("try to start blinking twice");
 						}
@@ -100,23 +102,23 @@ namespace sfmlcubes
 
 					if (moveBy != 0)
 					{
-						if (kinematics.getVerticalTransition().isInProgress())
+						if (kinematics.isMovingVertically())
 						{
 							Logger::DEFAULT.logWarning("try to start moving twice");
 						}
 
-						kinematics.moveVertical(moveBy, Transition::ppfParabolic, velocityController.getFallingDownFiredLongitude());
+						kinematics.moveVertical(moveBy, ParabolicPhaseProcessingFunction(), velocityController.getFallingDownFiredDuration());
 					}
 				}
 
-				Shape getShape() const
+				const Shape& getShape() const
 				{
 					return line;
 				}
-				void setShape(const Shape& shape)
+				/*void setShape(const Shape& shape)
 				{
 					line = shape;
-				}
+				}*/
 
 				virtual ~RowWithKinematics() {}
 			};
@@ -164,11 +166,11 @@ namespace sfmlcubes
 			FallenController(WallsController& wallsController, const VelocityController& velocityController,
 			                 int top, int fieldBottom, int visibleBottom, int left, int right);
 
-			Shape getShape() const
+			const Shape& getShape() const
 			{
 				return fallen;
 			}
-			void setShape(const Shape& shape) { fallen = shape; }
+			//void setShape(const Shape& shape) { fallen = shape; }
 			list<Shape> getShapes() const
 			{
 				list<Shape> res;
@@ -199,9 +201,8 @@ namespace sfmlcubes
 			}
 
 			void processTimeStep(float dt);
-			bool anyCollisionsWithRemainingLines(const Shape& shape);
+			bool anyCollisionsWithRemainingLines(const ShapeCubes& cubes);
 
-			void mergeShape(const Shape& other) { fallen += other; }
 			void fireFullLines() { collectLines(); }
 			int getLinesFired() const { return linesBurnt; }
 			int getLinesJustBurnt() const { return linesJustFilled; }
@@ -210,6 +211,12 @@ namespace sfmlcubes
 			int getWidth() const { return right - left + 1; }
 			int getFieldHeight() const { return fieldBottom - top + 1; }
 			int countHoles() const;
+
+			void mergeShape(const ShapeCubes& cubes)
+			{
+				ShapeCubes sc = fallen.getCubes();
+				fallen.setCubes(sc += cubes);
+			}
 
 			virtual ~FallenController();
 		};

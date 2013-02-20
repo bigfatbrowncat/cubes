@@ -27,11 +27,11 @@ namespace sfmlcubes
 			const FallenController& fallenController;
 			const WallsController& wallsController;
 			AnimatedPopupsManager animatedPopupsManager;
-			Shape lastFallenShape;
+			ShapeCubes lastFallenShape;
 		public:
 			ScoreCounter(const FallenController& fallenController, const WallsController& wallsController);
 
-			void beforeShapeFallen(const Shape& shape);
+			void beforeShapeFallen(const ShapeCubes& shape);
 			void afterShapeFallen();
 			void linesHasBeenFired();
 

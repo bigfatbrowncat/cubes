@@ -9,6 +9,7 @@
 #define TRANSITIONABLEVALUE_H_
 
 #include "PhaseProcessingFunction.h"
+#include "../Parameter.h"
 
 namespace sfmlcubes
 {
@@ -16,7 +17,7 @@ namespace sfmlcubes
 	{
 		namespace transitions
 		{
-			class TransitionableParameter
+			class TransitionableParameter : public Parameter
 			{
 			private:
 				// The current phase, which hasn't been modified with
@@ -24,7 +25,7 @@ namespace sfmlcubes
 				double linearPhase;
 
 				// The used phase processing function
-				const PhaseProcessingFunction& function;
+				PhaseProcessingFunction* function;
 
 				// The current phase which is modified with the processing function (0..1)
 				double processedPhase;
@@ -46,6 +47,7 @@ namespace sfmlcubes
 
 			public:
 				TransitionableParameter(double duration, const PhaseProcessingFunction& function, double startingValue, double endingValue);
+				TransitionableParameter(const TransitionableParameter& other);
 
 				// Advances the time by delta
 				virtual void advanceStep(double delta);
@@ -56,6 +58,11 @@ namespace sfmlcubes
 				// This function should tell if the parameter is changing now,
 				// or its changes are already ended
 				virtual bool isChanging() const { return time < duration; }
+
+				virtual Cloneable* clone() const
+				{
+					return new TransitionableParameter(*this);
+				}
 
 				virtual ~TransitionableParameter();
 			};
