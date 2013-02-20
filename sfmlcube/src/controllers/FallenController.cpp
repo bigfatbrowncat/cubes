@@ -62,7 +62,7 @@ namespace sfmlcubes
 			shape.setCubes(cubes);
 			ShapeDynamics sd(shape);
 
-			for (list<RowWithKinematics*>::const_iterator iter = remainingLines.begin();
+			for (list<FallenRow*>::const_iterator iter = remainingLines.begin();
 				 iter != remainingLines.end();
 				 iter ++)
 			{
@@ -75,12 +75,12 @@ namespace sfmlcubes
 
 		void FallenController::startFalling()
 		{
-			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<FallenRow*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
 				(**iter).startAnimation();
 			}
 
-			for (list<RowWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			for (list<FallenRow*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
 				(**iter).startAnimation();
 			}
@@ -88,7 +88,7 @@ namespace sfmlcubes
 
 		void FallenController::startBlinking()
 		{
-			for (list<RowWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			for (list<FallenRow*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
 				(**iter).startAnimation();
 			}
@@ -96,7 +96,7 @@ namespace sfmlcubes
 
 		bool FallenController::isBlinkingInProgress()
 		{
-			for (list<RowWithKinematics*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
+			for (list<FallenRow*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
 			{
 				if ((**iter).isBlinkingInProgress()) return true;
 			}
@@ -105,12 +105,12 @@ namespace sfmlcubes
 
 		bool FallenController::isFallingInProgress()
 		{
-			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<FallenRow*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
 				if ((**iter).isMovingInProgress()) return true;
 			}
 
-			for (list<RowWithKinematics*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
+			for (list<FallenRow*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
 			{
 				if ((**iter).isMovingInProgress()) return true;
 			}
@@ -128,7 +128,7 @@ namespace sfmlcubes
 			// Collecting the lines to lists
 			for (int j = visibleBottom; j >= top; j--)
 			{
-				RowWithKinematics* curLine = new RowWithKinematics(getTimingManager(), velocityController, fallen.getCubes(), left, right, j);
+				FallenRow* curLine = new FallenRow(getTimingManager(), velocityController, fallen.getCubes(), left, right, j);
 
 				if (!curLine->isEmpty())
 				{
@@ -168,13 +168,13 @@ namespace sfmlcubes
 			// Dealing the new lines
 			for (int j = -1; j >= -linesJustFilledToFlyDown; j--)
 			{
-				RowWithKinematics* newLine = RowWithKinematics::fromDealer(getTimingManager(), velocityController, backgroundDealer, left, right, j);
+				FallenRow* newLine = FallenRow::fromDealer(getTimingManager(), velocityController, backgroundDealer, left, right, j);
 				newLine->setFallBy(linesJustFilledToFlyDown + burningCount);
 				remainingLines.push_back(newLine);
 			}
 
 			// Set movement for flying down lines
-			for (list<RowWithKinematics*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
+			for (list<FallenRow*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
 			{
 				(*iter)->setFallBy(linesJustFilledToFlyDown);
 			}
