@@ -77,13 +77,13 @@ namespace sfmlcubes
 			shapePainter.paint(cubesField.getWallsController().getShape());
 			shapePainter.paint(cubesField.getFallingShapeController().getShape());
 
-			list<Shape> shps = cubesField.getFallenController().getShapes();
+			list<const Shape*> shps = cubesField.getFallenController().getShapes();
 
-			for (list<Shape>::const_iterator iter = shps.begin();
+			for (list<const Shape*>::const_iterator iter = shps.begin();
 				 iter != shps.end();
 				 iter++)
 			{
-				shapePainter.paint(*iter);
+				shapePainter.paint(**iter);
 			}
 		}
 

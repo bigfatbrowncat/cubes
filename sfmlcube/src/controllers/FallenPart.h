@@ -32,10 +32,6 @@ namespace sfmlcubes
 			FallenPart(TimingManager& timingManager,
 			                    const VelocityController& velocityController);
 
-/*			Shape& takeShape() { return shape; }
-			ShapeKinematics& takeKinematics() { return kinematics; }
-			const ShapeKinematics& getKinematics() const { return kinematics; }*/
-
 			void setBlink(bool value) { blink = value; }
 			bool getBlink() { return blink; }
 			void setFallBy(int value) { fallBy = value; }

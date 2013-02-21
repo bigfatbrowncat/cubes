@@ -12,13 +12,12 @@ namespace sfmlcubes
 {
 	namespace controllers
 	{
-
-
 		FallenRow::FallenRow(TimingManager& timingManager, const VelocityController& velocityController, const ShapeCubes& source, int left, int right, int j) :
 				FallenPart(timingManager, velocityController),
 				left(left),
 				right(right),
-				j(j)
+				j(j),
+				type(tUnknown)
 		{
 			ShapeCubes lineCubes;
 			for (int i = left; i <= right; i++)

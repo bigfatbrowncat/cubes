@@ -15,7 +15,7 @@ namespace sfmlcubes
 	namespace controllers
 	{
 		FallenPart::FallenPart(TimingManager& timingManager,
-                                                 const VelocityController& velocityController) :
+                               const VelocityController& velocityController) :
 			velocityController(velocityController),
 			shape(timingManager),
 			kinematics(timingManager, shape),

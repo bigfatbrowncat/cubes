@@ -16,7 +16,7 @@
 #include "../movingcubes/ShapeKinematics.h"
 #include "WallsController.h"
 #include "../Logger.h"
-#include "FallenRow.h"
+#include "FallenRows.h"
 
 using namespace sfmlcubes::movingcubes::transitions;
 
@@ -49,15 +49,7 @@ namespace sfmlcubes
 
 			Shape fallen;
 
-			list<FallenRow*> remainingLines;
-			list<FallenRow*> burningLines;
-			list<FallenRow*> flyingDownLines;
-
-			void startFalling();
-			void startBlinking();
-
-			bool isFallingInProgress();
-			bool isBlinkingInProgress();
+			FallenRows lines;
 
 			void collectLines();
 			void rebuildShape();
@@ -77,31 +69,11 @@ namespace sfmlcubes
 				return fallen;
 			}
 			//void setShape(const Shape& shape) { fallen = shape; }
-			list<Shape> getShapes() const
+			list<const Shape*> getShapes() const
 			{
-				list<Shape> res;
-				res.push_back(fallen);
-
-				for (list<FallenRow*>::const_iterator iter = remainingLines.begin();
-					 iter != remainingLines.end();
-					 iter++)
-				{
-					res.push_back((*iter)->getShape());
-				}
-
-				for (list<FallenRow*>::const_iterator iter = flyingDownLines.begin();
-					 iter != flyingDownLines.end();
-					 iter++)
-				{
-					res.push_back((*iter)->getShape());
-				}
-
-				for (list<FallenRow*>::const_iterator iter = burningLines.begin();
-					 iter != burningLines.end();
-					 iter++)
-				{
-					res.push_back((*iter)->getShape());
-				}
+				list<const Shape*> res;
+				res.push_back(&fallen);
+				lines.toShapes(res);
 
 				return res;
 			}

@@ -20,14 +20,24 @@ namespace sfmlcubes
 	{
 		class FallenRow : public sf::NonCopyable, public FallenPart
 		{
+		public:
+			enum Type
+			{
+				tUnknown, tFallingDown, tBurning, tRemaining
+			};
+
 		private:
 			int left, right, j;
+			Type type;
 
 		public:
 			FallenRow(TimingManager& timingManager, const VelocityController& velocityController, const ShapeCubes& source, int left, int right, int j);
 			static FallenRow* fromDealer(TimingManager& timingManager, const VelocityController& velocityController, BackgroundDealer& backgroundDealer, int left, int right, int j);
 
 			bool lineIsFull();
+
+			void setType(Type value) { type = value; }
+			Type getType() const { return type; }
 
 			virtual ~FallenRow() {}
 		};

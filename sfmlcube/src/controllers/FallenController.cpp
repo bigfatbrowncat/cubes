@@ -21,6 +21,7 @@ namespace sfmlcubes
 		FallenController::FallenController(TimingManager& timingManager, WallsController& wallsController, const VelocityController& velocityController,
 				                           int top, int fieldBottom, int visibleBottom, int left, int right) :
 				TimeDependent(timingManager),
+				lines(timingManager),
 				fallen(timingManager),
 				state(sPassive),
 				wallsController(wallsController),
@@ -40,14 +41,14 @@ namespace sfmlcubes
 				// Do nothing
 				break;
 			case sBlinking:
-				if (!isBlinkingInProgress())
+				if (!lines.isBurningBlinkingInProgress())
 				{
 					removeBurntLinesAndStartFallingRemaining();
 					state = sFalling;
 				}
 				break;
 			case sFalling:
-				if (!isFallingInProgress())
+				if (!lines.isFallingInProgress())
 				{
 					rebuildShape();
 					state = sPassive;
@@ -62,60 +63,11 @@ namespace sfmlcubes
 			shape.setCubes(cubes);
 			ShapeDynamics sd(shape);
 
-			for (list<FallenRow*>::const_iterator iter = remainingLines.begin();
-				 iter != remainingLines.end();
-				 iter ++)
-			{
-				sd.addObstacle((**iter).getShape());
-			}
+			lines.addAllRemainingToShapeDynamics(sd);
+
 			sd.addObstacle(fallen);
 
 			return sd.anyCollisions();
-		}
-
-		void FallenController::startFalling()
-		{
-			for (list<FallenRow*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
-			{
-				(**iter).startAnimation();
-			}
-
-			for (list<FallenRow*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
-			{
-				(**iter).startAnimation();
-			}
-		}
-
-		void FallenController::startBlinking()
-		{
-			for (list<FallenRow*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
-			{
-				(**iter).startAnimation();
-			}
-		}
-
-		bool FallenController::isBlinkingInProgress()
-		{
-			for (list<FallenRow*>::iterator iter = burningLines.begin(); iter != burningLines.end(); iter++)
-			{
-				if ((**iter).isBlinkingInProgress()) return true;
-			}
-			return false;
-		}
-
-		bool FallenController::isFallingInProgress()
-		{
-			for (list<FallenRow*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
-			{
-				if ((**iter).isMovingInProgress()) return true;
-			}
-
-			for (list<FallenRow*>::iterator iter = remainingLines.begin(); iter != remainingLines.end(); iter++)
-			{
-				if ((**iter).isMovingInProgress()) return true;
-			}
-
-			return false;
 		}
 
 		void FallenController::collectLines()
@@ -135,19 +87,22 @@ namespace sfmlcubes
 
 					if (j > fieldBottom)
 					{
-						flyingDownLines.push_back(curLine);
+						curLine->setType(FallenRow::tFallingDown);
+						lines.give(curLine);
 					}
 					else if (curLine->lineIsFull())
 					{
 						if (burningBlockAtBottomEnd)
 						{
-							flyingDownLines.push_back(curLine);
+							curLine->setType(FallenRow::tFallingDown);
+							lines.give(curLine);
 							linesJustFilledToFlyDown ++;
 						}
 						else
 						{
+							curLine->setType(FallenRow::tBurning);
 							curLine->setBlink(true);
-							burningLines.push_back(curLine);
+							lines.give(curLine);
 							burningCount++;
 						}
 					}
@@ -155,7 +110,9 @@ namespace sfmlcubes
 					{
 						curLine->setFallBy(linesJustFilledToFlyDown + burningCount);
 						burningBlockAtBottomEnd = false;
-						remainingLines.push_back(curLine);
+
+						curLine->setType(FallenRow::tRemaining);
+						lines.give(curLine);
 					}
 				}
 				else
@@ -170,14 +127,13 @@ namespace sfmlcubes
 			{
 				FallenRow* newLine = FallenRow::fromDealer(getTimingManager(), velocityController, backgroundDealer, left, right, j);
 				newLine->setFallBy(linesJustFilledToFlyDown + burningCount);
-				remainingLines.push_back(newLine);
+
+				newLine->setType(FallenRow::tRemaining);
+				lines.give(newLine);
 			}
 
 			// Set movement for flying down lines
-			for (list<FallenRow*>::iterator iter = flyingDownLines.begin(); iter != flyingDownLines.end(); iter++)
-			{
-				(*iter)->setFallBy(linesJustFilledToFlyDown);
-			}
+			lines.setFallByForFallingDown(linesJustFilledToFlyDown);
 
 			// Clearing the source shape
 			fallen.clear();
@@ -185,7 +141,7 @@ namespace sfmlcubes
 			if (linesJustFilledToFlyDown > 0 || burningCount > 0)
 			{
 				// Starting the blinking of the firing lines
-				startBlinking();
+				lines.startBlinking();
 				state = sBlinking;
 			}
 			else
@@ -198,49 +154,23 @@ namespace sfmlcubes
 
 		void FallenController::rebuildShape()
 		{
-			fallen.clear();
-			while (burningLines.size() > 0)
-			{
-				ShapeCubes fallenCubes = fallen.getCubes();
-				fallenCubes += burningLines.back()->getShape().getCubes();
-				fallen.setCubes(fallenCubes);
-
-				delete burningLines.back();
-				burningLines.pop_back();
-			}
-			while (flyingDownLines.size() > 0)
-			{
-				ShapeCubes fallenCubes = fallen.getCubes();
-				fallenCubes += flyingDownLines.back()->getShape().getCubes();
-				fallen.setCubes(fallenCubes);
-
-				delete flyingDownLines.back();
-				flyingDownLines.pop_back();
-			}
-			while (remainingLines.size() > 0)
-			{
-				ShapeCubes fallenCubes = fallen.getCubes();
-				fallenCubes += remainingLines.back()->getShape().getCubes();
-				fallen.setCubes(fallenCubes);
-
-				delete remainingLines.back();
-				remainingLines.pop_back();
-			}
+			fallen.setCubes(lines.toShapeCubes());
+			lines.clear();
 		}
 
 		void FallenController::removeBurntLinesAndStartFallingRemaining()
 		{
 			// Counting burnt lines
-			linesJustFilled = burningLines.size() + linesJustFilledToFlyDown;
+			linesJustFilled = lines.countBurningLines() + linesJustFilledToFlyDown;
 			linesBurnt += linesJustFilled;
 
 			// Clearing the burnt lines
-			burningLines.clear();
+			lines.removeBurningLines();
 
 			// Start falling down the walls
 			wallsController.startFalling(linesJustFilledToFlyDown);
 			// Starting falling
-			startFalling();
+			lines.startFalling();
 
 			{
 				stringstream ss;
