@@ -21,6 +21,29 @@ namespace sfmlcubes
 			lines.push_back(row);
 		}
 
+		FallenRow* FallenRows::editableRowAt(int j)
+		{
+			for (list<FallenRow*>::iterator iter = lines.begin(); iter != lines.end(); iter++)
+			{
+				if ((*iter)->getJ() == j)
+			    {
+			    	return (*iter);
+			    }
+			}
+			return NULL;
+		}
+		const FallenRow* FallenRows::getRowAt(int j) const
+		{
+			for (list<FallenRow*>::const_iterator iter = lines.begin(); iter != lines.end(); iter++)
+			{
+				if ((*iter)->getJ() == j)
+			    {
+			    	return (*iter);
+			    }
+			}
+			return NULL;
+		}
+
 		FallenRows::~FallenRows()
 		{
 		}

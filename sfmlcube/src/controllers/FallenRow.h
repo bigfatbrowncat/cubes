@@ -39,6 +39,8 @@ namespace sfmlcubes
 			void setType(Type value) { type = value; }
 			Type getType() const { return type; }
 
+			int getJ() const { return j; }
+
 			virtual ~FallenRow() {}
 		};
 

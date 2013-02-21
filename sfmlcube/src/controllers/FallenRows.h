@@ -26,10 +26,14 @@ namespace sfmlcubes
 		private:
 			list<FallenRow*> lines;
 			TimingManager& timingManager;
+
 		public:
 			FallenRows(TimingManager& timingManager);
 
 			void give(FallenRow* row);
+
+			FallenRow* editableRowAt(int j);
+			const FallenRow* getRowAt(int j) const;
 
 			bool anyCollisionsWithRemainingLines(const ShapeCubes& cubes);
 			void startFalling();
