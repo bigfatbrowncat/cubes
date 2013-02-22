@@ -135,6 +135,48 @@ namespace sfmlcubes
 			// Set movement for flying down lines
 			lines.setFallByForFallingDown(linesJustFilledToFlyDown);
 
+			// Extracting the brick-related
+			for (int j = fieldBottom; j >= 0; j--)
+			{
+				FallenRow* fr = lines.editableRowAt(j);
+				if (fr != NULL)
+				{
+					ShapeCubes cubes = fr->getShape().getCubes();
+					for (int i = left; i <= right; i++)
+					{
+						if (cubes.cubeAt(i, j).size() > 0 &&
+						    cubes.cubeAt(i, j).back().modelType == Cube::mtWall)
+						{
+							// Here we've found a wall cube. It should be extracted
+							// from it's place with all the cubes above it
+							FallenPart* fp = new FallenPart(getTimingManager(), velocityController);
+							for (int k = j; k >= 0; k--)
+							{
+								if (cubes.cubeAt(i, k).size() > 0)
+								{
+								    Cube theCube = cubes.cubeAt(i, k).back();
+								    if (theCube.modelType == Cube::mtWall)
+								    {
+								    	break;
+								    }
+								    else
+								    {
+								    	ShapeCubes sc = fp->editableShape().getCubes();
+								    	sc.addCube(theCube);
+								    	fp->editableShape().setCubes(sc);
+
+								    	cubes.removeCube(i, k);
+								    }
+								}
+							}
+
+						}
+					}
+				}
+				fr->setFallBy(linesJustFilledToFlyDown);
+				columns.push_back(fr);
+			}
+
 			// Clearing the source shape
 			fallen.clear();
 

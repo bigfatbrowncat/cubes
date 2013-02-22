@@ -44,6 +44,7 @@ namespace sfmlcubes
 			bool isEmpty() const;
 
 			const Shape& getShape() const { return shape; }
+			Shape& editableShape() { return shape; }
 
 			virtual ~FallenPart();
 		};

@@ -50,6 +50,7 @@ namespace sfmlcubes
 			Shape fallen;
 
 			FallenRows lines;
+			list<FallenPart*> columns;
 
 			void collectLines();
 			void rebuildShape();
