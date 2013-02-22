@@ -74,6 +74,7 @@ namespace sfmlcubes
 				wallsCubes.addCube(Cube(0, j, Cube::mtWall, wallColor));
 				wallsCubes.addCube(Cube(width - 1, j, Cube::mtWall, wallColor));
 			}
+			wallsCubes.removeAllBelow(height);
 			walls.setCubes(wallsCubes);
 		}
 
