@@ -149,23 +149,43 @@ namespace sfmlcubes
 						{
 							// Here we've found a wall cube. It should be extracted
 							// from it's place with all the cubes above it
+							int burntLines = 0;
 							FallenPart* fp = new FallenPart(getTimingManager(), velocityController);
-							for (int k = j; k >= 0; k--)
+
+							for (int k = j; k >= -1; k--)
 							{
+								const FallenRow* fr2 = lines.getRowAt(k);
+								if (fr2->getType() == FallenRow::tBurning || k == -1)
+								{
+									// Setting the current shape to fall by the correct number of lines
+									fp->setFallBy(linesJustFilledToFlyDown + burntLines);
+									// Closing the current fallen part
+									fp = NULL;
+
+									burntLines ++;		// Adding the new burnt line
+								}
+
 								if (cubes.cubeAt(i, k).size() > 0)
 								{
 								    Cube theCube = cubes.cubeAt(i, k).back();
-								    if (theCube.modelType == Cube::mtWall)
+								    if (theCube.modelType == Cube::mtWall && k < j)
 								    {
 								    	break;
 								    }
 								    else
 								    {
+								    	if (fp == NULL)
+								    	{
+								    		fp = new FallenPart(getTimingManager(), velocityController);
+								    		columns.push_back(fp);
+								    	}
+
 								    	ShapeCubes sc = fp->editableShape().getCubes();
 								    	sc.addCube(theCube);
 								    	fp->editableShape().setCubes(sc);
 
 								    	cubes.removeCube(i, k);
+
 								    }
 								}
 							}
@@ -173,9 +193,9 @@ namespace sfmlcubes
 						}
 					}
 				}
-				fr->setFallBy(linesJustFilledToFlyDown);
-				columns.push_back(fr);
 			}
+
+
 
 			// Clearing the source shape
 			fallen.clear();
@@ -196,7 +216,20 @@ namespace sfmlcubes
 
 		void FallenController::rebuildShape()
 		{
-			fallen.setCubes(lines.toShapeCubes());
+			// Setting the new cubes
+			ShapeCubes sc = lines.toShapeCubes();
+			for (list<FallenPart*>::iterator iter = columns.begin(); iter != columns.end(); iter++)
+			{
+				sc += (*iter)->editableShape().getCubes();
+			}
+			fallen.setCubes(sc);
+
+			// Clearing
+			list<FallenPart*>::iterator iter = columns.begin();
+			while (iter != columns.end())
+			{
+				iter = columns.erase(iter);
+			}
 			lines.clear();
 		}
 
@@ -211,12 +244,17 @@ namespace sfmlcubes
 
 			// Start falling down the walls
 			wallsController.startFalling(linesJustFilledToFlyDown);
+
 			// Starting falling
 			lines.startFalling();
+			for (list<FallenPart*>::iterator iter = columns.begin(); iter != columns.end(); iter++)
+			{
+				(*iter)->startAnimation();
+			}
 
 			{
 				stringstream ss;
-				ss << "Just cleared: " << linesJustFilled << " lines";
+				ss << "Columns: " << columns.size();
 				Logger::DEFAULT.logInfo(ss.str());
 			}
 
