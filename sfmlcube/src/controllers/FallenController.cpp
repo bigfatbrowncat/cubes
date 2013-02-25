@@ -155,7 +155,7 @@ namespace sfmlcubes
 							for (int k = j; k >= -1; k--)
 							{
 								const FallenRow* fr2 = lines.getRowAt(k);
-								if (fr2->getType() == FallenRow::tBurning || k == -1)
+								if ((fr2 != NULL && fr2->getType() == FallenRow::tBurning) || k == -1)
 								{
 									// Setting the current shape to fall by the correct number of lines
 									fp->setFallBy(linesJustFilledToFlyDown + burntLines);
